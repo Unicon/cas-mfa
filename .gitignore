@@ -1,6 +1,18 @@
-*.class
+.classpath
+!/.project
+.project
+.settings
+target
+test-output/
+bin/
+*.ipr
+*.iml
+*.iws
+.idea/
+.DS_Store
+.idea
+overlays/
+pom.xml.versionsBackup
+*.log
 
-# Package Files #
-*.jar
-*.war
-*.ear
+**/.checkstyle
