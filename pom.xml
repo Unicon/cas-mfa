@@ -95,7 +95,11 @@
             </excludes>
           </configuration>
         </plugin>
-
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -226,26 +230,23 @@
       </dependency>
 
       <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-test</artifactId>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
+        <version>${servlet.api.version}</version>
         <scope>provided</scope>
       </dependency>
 
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjrt</artifactId>
+        <version>${aspectj.version}</version>
         <scope>compile</scope>
       </dependency>
 
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjweaver</artifactId>
+        <version>${aspectj.version}</version>
         <scope>compile</scope>
       </dependency>
 
@@ -282,6 +283,14 @@
         <artifactId>jcl-over-slf4j</artifactId>
         <version>${slf4j.version}</version>
         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <scope>compile</scope>
+        <version>${commons.io.version}</version>
+        <type>jar</type>
       </dependency>
 
       <dependency>
@@ -400,24 +409,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>${servlet.api.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.aspectj</groupId>
-        <artifactId>aspectjweaver</artifactId>
-        <version>${aspectj.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.aspectj</groupId>
-        <artifactId>aspectjrt</artifactId>
-        <version>${aspectj.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>

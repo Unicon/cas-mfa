@@ -21,7 +21,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.3</version>
         <configuration>
           <warName>cas</warName>
           <overlays>
@@ -33,8 +32,6 @@
                 <exclude>WEB-INF/classes/log4j.xml</exclude>
               </excludes>
             </overlay>
-          </overlays>
-          <overlays>
             <overlay>
               <groupId>net.unicon</groupId>
               <artifactId>cas-mfa-web</artifactId>
