@@ -456,7 +456,7 @@
 
   <properties>
     <cas.version>3.5.2</cas.version>
-    <cas-addons.version>1.5-SNAPSHOT</cas-addons.version>
+    <cas-addons.version>1.5</cas-addons.version>
     <spring.webflow.version>2.3.2.RELEASE</spring.webflow.version>
     <spring.version>3.2.2.RELEASE</spring.version>
     <aspectj.version>1.7.2</aspectj.version>
