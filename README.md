@@ -30,7 +30,8 @@ An example of how a CAS adopter would compose a local good-practices maven overl
 
 # How do I build this and try it out?
 
-*Good question!*  Currently, you don't, because there's nothing hear yet.  Come back soon.
+* From the command line, run `mvn clean package` and grab the produced `cas.war` file from the overlay directory.
+* Or, modify the `build.xml` ANT build accordindly to your environment and simply run `ant deploy`.
 
 
 # Where will this code live eventually?
