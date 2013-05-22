@@ -48,16 +48,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.jasig.cas</groupId>
-      <artifactId>cas-server-webapp</artifactId>
-      <version>${cas.version}</version>
-      <type>war</type>
-      <scope>runtime</scope>
-    </dependency>
+        <groupId>org.jasig.cas</groupId>
+        <artifactId>cas-server-webapp</artifactId>
+        <scope>runtime</scope>
+        <type>war</type>
+     </dependency>
     <dependency>
       <groupId>net.unicon.cas</groupId>
       <artifactId>cas-addons</artifactId>
-      <version>${cas-addons.version}</version>
     </dependency>
     <dependency>
       <groupId>net.unicon</groupId>
