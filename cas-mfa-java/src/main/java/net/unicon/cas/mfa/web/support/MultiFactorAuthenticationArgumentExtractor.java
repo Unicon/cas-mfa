@@ -1,4 +1,4 @@
-package net.unicon.mfa.web.support;
+package net.unicon.cas.mfa.web.support;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +15,10 @@ public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSi
 
     private final List<String> supportedLevelsOfAuthentication;
 
+    /**
+     * Create an instance of {@link MultiFactorAuthenticationArgumentExtractor}.
+     * @param listOfLOAs list of supported values for the LOA
+     */
     public MultiFactorAuthenticationArgumentExtractor(final List<String> listOfLOAs) {
         this.supportedLevelsOfAuthentication = listOfLOAs;
     }

@@ -1,4 +1,4 @@
-package net.unicon.mfa.web.support;
+package net.unicon.cas.mfa.web.support;
 
 import java.util.List;
 
@@ -13,7 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * The service.
+ * The MultiFactorAuthenticationService is an extension of the generic CAS service
+ * that delegates calls to {@link SimpleWebApplicationServiceImpl}. The only difference
+ * is that it is only is activated when the request parameter {@link #CONST_PARAM_LOA} is
+ * present and its value is supported by the corresponding argument extractor.
+ * TODO The delegation is necessary because the {@link SimpleWebApplicationServiceImpl}
+ * itself is marked as final. Future versions of CAS might make the class more available.
  * @author Misagh Moayyed
  */
 class MultiFactorAuthenticationService extends AbstractWebApplicationService {
@@ -33,13 +38,22 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
 
     private final SimpleWebApplicationServiceImpl wrapperService;
 
+    private final String loa;
+
     /**
-     * Some data.
+     * Create an instance of {@link MultiFactorAuthenticationService}.
+     * Expects the request parameter {@link #CONST_PARAM_LOA} is
+     * present and its value is supported by the corresponding argument extractor.
+     * @param id the service id
+     * @param originalUrl the service url from the request, noted by {@link #CONST_PARAM_SERVICE} or {@link #CONST_PARAM_TARGET_SERVICE}
+     * @param artifactId the artifact id from the request, noted by {@link #CONST_PARAM_TICKET}
+     * @param httpClient http client to process requests
      */
     protected MultiFactorAuthenticationService(final String id, final String originalUrl,
-            final String artifactId, final HttpClient httpClient) {
+            final String artifactId, final HttpClient httpClient, final String loa) {
         super(id, originalUrl, artifactId, httpClient);
         this.wrapperService = new SimpleWebApplicationServiceImpl(id, httpClient);
+        this.loa = loa;
     }
 
     @Override
@@ -47,6 +61,9 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
         return wrapperService.getResponse(ticketId);
     }
 
+    public final String getLOA() {
+        return this.loa;
+    }
     /**
      * Create an instance of {@link MultiFactorAuthenticationService} if loa
      * parameter is defined and supported.
@@ -57,6 +74,7 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
      */
     public static MultiFactorAuthenticationService createServiceFrom(final HttpServletRequest request,
             final HttpClient httpClient, final List<String> supportedLevelsOfAuthentication) {
+        LOGGER.debug("Attempting to extract multifactor authentication parameters from the request");
         final String targetService = request.getParameter(CONST_PARAM_TARGET_SERVICE);
         final String loa = request.getParameter(CONST_PARAM_LOA);
         final String serviceToUse = StringUtils.hasText(targetService) ? targetService : request.getParameter(CONST_PARAM_SERVICE);
@@ -72,13 +90,17 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
         }
 
         if (!supportedLevelsOfAuthentication.contains(loa)) {
-            LOGGER.debug("Request does not support loa setting [{}].", loa);
+            LOGGER.debug("Multifactor authentication service does not support [{}] parameter value [{}].", CONST_PARAM_LOA, loa);
             return null;
         }
 
         final String id = cleanupUrl(serviceToUse);
         final String artifactId = request.getParameter(CONST_PARAM_TICKET);
 
-        return new MultiFactorAuthenticationService(id, serviceToUse, artifactId, httpClient);
+        final MultiFactorAuthenticationService svc = new MultiFactorAuthenticationService(id, serviceToUse,
+                artifactId, httpClient, loa);
+        LOGGER.debug("Created multifactor authentication request for [{}] with [{}] as [{]}.",
+                svc.getId(), CONST_PARAM_LOA, svc.getLOA());
+        return svc;
     }
 }

@@ -86,7 +86,7 @@
         <appender-ref ref="cas" />
     </logger>
 
-    <logger name="net.unicon.cas" additivity="true">
+    <logger name="net.unicon.cas">
         <level value="DEBUG" />
         <appender-ref ref="cas" />
     </logger>

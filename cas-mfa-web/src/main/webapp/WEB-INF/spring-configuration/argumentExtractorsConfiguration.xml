@@ -38,8 +38,8 @@
  	<bean id="samlArgumentExtractor" class="org.jasig.cas.web.support.SamlArgumentExtractor"
           parent="baseArgumentExtractor" />
  	
-    <bean id="casArgumentExtractor"
-          class="net.unicon.mfa.web.support.MultiFactorAuthenticationArgumentExtractor"
+    <bean id="mfaArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationArgumentExtractor"
           parent="baseArgumentExtractor"
           c:listOfLOAs-ref="listOfLOAs">
     </bean>

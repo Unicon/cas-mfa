@@ -16,6 +16,17 @@
     making use of the additional multi-factor authentication capabilities.
   </description>
 
+  <!--  Overlays are processed using a first-win strategy. We want to
+        have the cas-mfa-web overlay processed first so that any particular
+        CAS files that are modified for the MFA functionality are copied
+        to the work directory first. When the second overlay is processed,
+        it will ignore to overwrite the files that have already been copied
+        and match the name.
+  
+        In order words:
+        - cas-mfa-web is an overlay to the local CAS overlay.
+        - local CAS overlay is an overlay to the CAS original distribution.  
+   -->
   <build>
     <plugins>
       <plugin>
@@ -25,18 +36,18 @@
           <warName>cas</warName>
           <overlays>
             <overlay>
+              <groupId>net.unicon</groupId>
+              <artifactId>cas-mfa-web</artifactId>
+              <excludes>
+                <exclude>WEB-INF/web.xml</exclude>
+              </excludes>
+            </overlay>
+            <overlay>
               <groupId>org.jasig.cas</groupId>
               <artifactId>cas-server-webapp</artifactId>
               <excludes>
                 <exclude>WEB-INF/cas.properties</exclude>
                 <exclude>WEB-INF/classes/log4j.xml</exclude>
-              </excludes>
-            </overlay>
-            <overlay>
-              <groupId>net.unicon</groupId>
-              <artifactId>cas-mfa-web</artifactId>
-              <excludes>
-                <exclude>WEB-INF/web.xml</exclude>
               </excludes>
             </overlay>
           </overlays>
@@ -50,7 +61,6 @@
     <dependency>
         <groupId>org.jasig.cas</groupId>
         <artifactId>cas-server-webapp</artifactId>
-        <scope>runtime</scope>
         <type>war</type>
      </dependency>
     <dependency>
