@@ -99,7 +99,7 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
 
         final MultiFactorAuthenticationService svc = new MultiFactorAuthenticationService(id, serviceToUse,
                 artifactId, httpClient, loa);
-        LOGGER.debug("Created multifactor authentication request for [{}] with [{}] as [{]}.",
+        LOGGER.debug("Created multifactor authentication request for [{}] with [{}] as [{}].",
                 svc.getId(), CONST_PARAM_LOA, svc.getLOA());
         return svc;
     }
