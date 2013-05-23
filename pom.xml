@@ -144,7 +144,7 @@
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.0.5</version>
+                  <version>3.0.4</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>${project.build.sourceVersion}</version>
@@ -444,6 +444,24 @@
             <artifactId>jmxri</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jasig.cas</groupId>
+        <artifactId>cas-server-webapp</artifactId>
+        <version>${cas.version}</version>
+        <scope>runtime</scope>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.jasig.cas</groupId>
+        <artifactId>cas-server-core</artifactId>
+        <version>${cas.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>net.unicon.cas</groupId>
+        <artifactId>cas-addons</artifactId>
+        <version>${cas-addons.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
