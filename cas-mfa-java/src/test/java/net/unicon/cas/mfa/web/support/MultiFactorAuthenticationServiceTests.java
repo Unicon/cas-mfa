@@ -20,7 +20,7 @@ public class MultiFactorAuthenticationServiceTests {
     public void createNewMFAService() {
         final MultiFactorAuthenticationService svc = new MultiFactorAuthenticationService("https://www.github.com",
                 "https://www.github.com", null, null, "test_loa");
-        assertEquals(svc.getLOA(), "test_loa");
+        assertEquals(svc.getLoa(), "test_loa");
         final Response res = svc.getResponse("testTicketId");
         assertNotNull(res);
         assertEquals(res.getResponseType(), Response.ResponseType.REDIRECT);
@@ -70,6 +70,6 @@ public class MultiFactorAuthenticationServiceTests {
         final WebApplicationService svc = extractor.extractService(request);
         assertNotNull(svc);
         final MultiFactorAuthenticationService mfa = (MultiFactorAuthenticationService) svc;
-        assertEquals(mfa.getLOA(), "test_loa");
+        assertEquals(mfa.getLoa(), "test_loa");
     }
 }

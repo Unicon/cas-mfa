@@ -63,7 +63,7 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
         return wrapperService.getResponse(ticketId);
     }
 
-    public final String getLOA() {
+    public final String getLoa() {
         return this.loa;
     }
     /**
@@ -82,12 +82,12 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
         final String serviceToUse = StringUtils.hasText(targetService) ? targetService : request.getParameter(CONST_PARAM_SERVICE);
 
         if (!StringUtils.hasText(serviceToUse)) {
-            LOGGER.debug("Request has no service associated with it.");
+            LOGGER.debug("Request has no request parameter [{}]", CONST_PARAM_SERVICE);
             return null;
         }
 
         if (!StringUtils.hasText(loa)) {
-            LOGGER.debug("Request has no [{}] associated with it.", CONST_PARAM_LOA);
+            LOGGER.debug("Request has no request parameter [{}]", CONST_PARAM_LOA);
             return null;
         }
 
@@ -102,7 +102,7 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
         final MultiFactorAuthenticationService svc = new MultiFactorAuthenticationService(id, serviceToUse,
                 artifactId, httpClient, loa);
         LOGGER.debug("Created multifactor authentication request for [{}] with [{}] as [{}].",
-                svc.getId(), CONST_PARAM_LOA, svc.getLOA());
+                svc.getId(), CONST_PARAM_LOA, svc.getLoa());
         return svc;
     }
 }
