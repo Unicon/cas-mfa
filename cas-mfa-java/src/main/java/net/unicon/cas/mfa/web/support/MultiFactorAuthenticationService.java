@@ -3,6 +3,7 @@ package net.unicon.cas.mfa.web.support;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 
 import org.jasig.cas.authentication.principal.AbstractWebApplicationService;
 import org.jasig.cas.authentication.principal.Response;
@@ -48,9 +49,10 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
      * @param originalUrl the service url from the request, noted by {@link #CONST_PARAM_SERVICE} or {@link #CONST_PARAM_TARGET_SERVICE}
      * @param artifactId the artifact id from the request, noted by {@link #CONST_PARAM_TICKET}
      * @param httpClient http client to process requests
+     * @param loa the level of assurance parameter defined for this mfa service
      */
     protected MultiFactorAuthenticationService(final String id, final String originalUrl,
-            final String artifactId, final HttpClient httpClient, final String loa) {
+            final String artifactId, final HttpClient httpClient, @NotNull final String loa) {
         super(id, originalUrl, artifactId, httpClient);
         this.wrapperService = new SimpleWebApplicationServiceImpl(id, httpClient);
         this.loa = loa;
@@ -85,7 +87,7 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
         }
 
         if (!StringUtils.hasText(loa)) {
-            LOGGER.debug("Request has no service associated with it.");
+            LOGGER.debug("Request has no [{}] associated with it.", CONST_PARAM_LOA);
             return null;
         }
 
