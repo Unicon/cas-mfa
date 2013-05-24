@@ -25,7 +25,7 @@ public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSi
 
     @Override
     protected WebApplicationService extractServiceInternal(final HttpServletRequest request) {
-        return MultiFactorAuthenticationService.createServiceFrom(request,
+        return MultiFactorAuthenticationServiceImpl.createServiceFrom(request,
                 getHttpClientIfSingleSignOutEnabled(), this.supportedLevelsOfAuthentication);
     }
 
