@@ -91,6 +91,10 @@
             <param-name>publishContext</param-name>
             <param-value>false</param-value>
         </init-param>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/*-servlet.xml</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 

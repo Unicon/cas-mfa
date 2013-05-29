@@ -33,9 +33,17 @@
     <dependency>
         <groupId>net.unicon</groupId>
         <artifactId>cas-mfa-java</artifactId>
-        <scope>runtime</scope>
+        <scope>compile</scope>
         <type>jar</type>
         <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jasig.cas</groupId>
+        <artifactId>cas-server-support-generic</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
     </dependency>
   </dependencies>
 </project>

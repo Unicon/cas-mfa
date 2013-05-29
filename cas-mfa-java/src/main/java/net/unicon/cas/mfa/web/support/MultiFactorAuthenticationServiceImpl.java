@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
  * itself is marked as final. Future versions of CAS might make the class more available.
  * @author Misagh Moayyed
  */
-class MultiFactorAuthenticationServiceImpl extends AbstractWebApplicationService implements MultiFactorAuthenticationService {
+public final class MultiFactorAuthenticationServiceImpl extends AbstractWebApplicationService implements MultiFactorAuthenticationService {
 
     /** The logger instance. **/
     protected static final Logger LOGGER = LoggerFactory.getLogger(MultiFactorAuthenticationServiceImpl.class);
@@ -59,11 +59,11 @@ class MultiFactorAuthenticationServiceImpl extends AbstractWebApplicationService
     }
 
     @Override
-    public final Response getResponse(final String ticketId) {
+    public Response getResponse(final String ticketId) {
         return wrapperService.getResponse(ticketId);
     }
 
-    public final String getLoa() {
+    public String getLoa() {
         return this.loa;
     }
     /**
