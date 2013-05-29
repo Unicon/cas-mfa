@@ -291,26 +291,5 @@
 
   <bean id="credentialsValidator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
         p:messageInterpolator-ref="messageInterpolator"/>
-        
-        
-  <!--  Multifactor Authentication Actions -->
-  <bean id="mfaAuthenticationViaFormAction" class="net.unicon.cas.mfa.web.flow.MultiFactorAuthenticationViaFormAction"
-        p:centralAuthenticationService-ref="centralAuthenticationService"
-        p:warnCookieGenerator-ref="warnCookieGenerator"
-        p:authenticationManager-ref="authenticationManager" />
-        
-  <bean id="strongTwoFactorAuthenticationViaFormAction" class="net.unicon.cas.mfa.web.flow.StrongTwoFactorAuthenticationViaFormAction"
-        p:centralAuthenticationService-ref="centralAuthenticationService"
-        p:warnCookieGenerator-ref="warnCookieGenerator" />
-  
-  <!--  Multifactor Authentication Core Classes -->
-  <bean id="twoFactorStrongCentralAuthenticationService" parent="centralAuthenticationService"
-    p:authenticationManager-ref="twoFactorStrongAuthenticationManager" />
-    
-  <bean id="twoFactorStrongAuthenticationManager" parent="authenticationManager" 
-        p:authenticationHandlers-ref="listOfTwoFactorStrongAuthenticationHandlers"/>
-  
-  <util:list id="listOfTwoFactorStrongAuthenticationHandlers">
-    <bean class="org.jasig.cas.authentication.handler.support.SimpleTestUsernamePasswordAuthenticationHandler" />
-  </util:list>
+     
 </beans>
