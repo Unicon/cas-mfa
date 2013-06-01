@@ -79,6 +79,7 @@
 
     <logger name="org.springframework.webflow">
         <level value="DEBUG" />
+        <appender-ref ref="cas" />
     </logger>
 
     <logger name="org.jasig" additivity="true">

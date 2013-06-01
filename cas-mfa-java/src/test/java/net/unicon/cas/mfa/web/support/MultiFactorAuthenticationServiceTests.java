@@ -18,7 +18,7 @@ public class MultiFactorAuthenticationServiceTests {
 
     @Test
     public void createNewMFAService() {
-        final MultiFactorAuthenticationServiceImpl svc = new MultiFactorAuthenticationServiceImpl("https://www.github.com",
+        final DefaultMultiFactorAuthenticationSupportingWebApplicationService svc = new DefaultMultiFactorAuthenticationSupportingWebApplicationService("https://www.github.com",
                 "https://www.github.com", null, null, "test_loa");
         assertEquals(svc.getLoa(), "test_loa");
         final Response res = svc.getResponse("testTicketId");
@@ -69,7 +69,7 @@ public class MultiFactorAuthenticationServiceTests {
         when(request.getParameter("loa")).thenReturn("test_loa");
         final WebApplicationService svc = extractor.extractService(request);
         assertNotNull(svc);
-        final MultiFactorAuthenticationServiceImpl mfa = (MultiFactorAuthenticationServiceImpl) svc;
+        final DefaultMultiFactorAuthenticationSupportingWebApplicationService mfa = (DefaultMultiFactorAuthenticationSupportingWebApplicationService) svc;
         assertEquals(mfa.getLoa(), "test_loa");
     }
 }

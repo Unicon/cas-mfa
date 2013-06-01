@@ -24,9 +24,14 @@
       xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
     
-    <var name="credentials" class="org.jasig.cas.authentication.principal.UsernamePasswordCredentials" />
-    <input name="partialCredentials" />
-    <input name="service" />    
+    <var name="credentials" class="org.jasig.cas.authentication.principal.UsernamePasswordCredentials" />    
+    <input name="mfaCredentials" required="true" 
+           type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
+    
+    <on-start>
+        <evaluate expression="initialFlowSetupAction" />
+    </on-start>
+      
     <action-state id="generateLoginTicket">
         <evaluate expression="generateLoginTicketAction.generate(flowRequestContext)" />
         <transition on="generated" to="viewMfaLoginForm" />
@@ -41,22 +46,22 @@
             <set name="viewScope.commandName" value="'credentials'" />
         </on-entry>
         <transition on="submit" bind="true" validate="true" to="realSubmit">
-            <evaluate expression="strongTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
+            <evaluate expression="terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
     </view-state>
     
+
     <action-state id="realSubmit">
-        <evaluate expression="strongTwoFactorAuthenticationViaFormAction.submit(flowRequestContext, flowScope.credentials, messageContext)"
-                    result="flowScope.mfaFesult" />
-        <transition on="success" to="mfaSuccess" />
+        <on-entry>
+            <set name="flowScope.mfaCredentials" value="mfaCredentials" 
+                 type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
+        </on-entry>
+        <evaluate expression="terminatingTwoFactorAuthenticationViaFormAction.submit(flowRequestContext, flowScope.credentials, 
+                              messageContext, flowScope.credentials.username)" />
+        <transition on="mfaSuccess" to="mfaSuccess" />
         <transition on="error" to="mfaError" />
     </action-state>
-    
-    <end-state id="mfaSuccess">
-        <output name="mfaResult" value="flowScope.mfaResult" />
-    </end-state>
-    
-    <end-state id="mfaError">
-        <output name="mfaResult" value="flowScope.mfaResult" />
-    </end-state>
+ 
+    <end-state id="mfaSuccess" />
+    <end-state id="mfaError" />
 </flow>

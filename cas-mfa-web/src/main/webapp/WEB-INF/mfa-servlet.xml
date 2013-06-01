@@ -23,26 +23,50 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:webflow="http://www.springframework.org/schema/webflow-config"
        xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd">
 
-  <bean id="mfaAuthenticationViaFormAction" class="net.unicon.cas.mfa.web.flow.MultiFactorAuthenticationViaFormAction"
+  <bean id="authenticationSupport" class="net.unicon.cas.addons.authentication.internal.DefaultAuthenticationSupport"
+                  c:ticketRegistry-ref="ticketRegistry"/>
+  
+  <!-- Generate and chain multifactor credentials based on current authenticated credentials. -->
+  <bean id="generateMfaCredentialsAction" class="net.unicon.cas.mfa.web.flow.GenerateMultiFactorCredentialsAction"
+        p:authenticationSupport-ref="authenticationSupport"/>
+  
+  <!-- 
+    Initiating the the multifactor authentication sequence. Validates credentials and
+    resolve principal, or authenticate and proceed to the second factor authentication flow.
+  -->                      
+  <bean id="initiatingAuthenticationViaFormAction"
+        class="net.unicon.cas.mfa.web.flow.InitiatingMultiFactorAuthenticationViaFormAction"
         p:centralAuthenticationService-ref="centralAuthenticationService"
         p:warnCookieGenerator-ref="warnCookieGenerator"
-        p:authenticationManager-ref="authenticationManager" />
+        p:multiFactorAuthenticationManager-ref="authenticationManager" />
         
-  <bean id="strongTwoFactorAuthenticationViaFormAction" parent="authenticationViaFormAction"
-        p:centralAuthenticationService-ref="twoFactorStrongCentralAuthenticationService"
-        p:warnCookieGenerator-ref="warnCookieGenerator" />
+  <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->     
+  <bean id="terminatingTwoFactorAuthenticationViaFormAction"
+        class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction" 
+        p:centralAuthenticationService-ref="terminatingCentralAuthenticationService"
+        p:multiFactorAuthenticationManager-ref="terminatingAuthenticationManager" />
  
-  <bean id="twoFactorStrongCentralAuthenticationService" parent="centralAuthenticationService"
-    p:authenticationManager-ref="twoFactorStrongAuthenticationManager" />
-    
-  <bean id="twoFactorStrongAuthenticationManager" parent="authenticationManager" 
-        p:authenticationHandlers-ref="listOfTwoFactorStrongAuthenticationHandlers"/>
+  <!-- 
+    This is the authentication manager responsible to validate the second factor credentials.
+    Will use a second set of authentication handlers to verify credentials.
+  -->
+  <bean id="terminatingAuthenticationManager" parent="authenticationManager" 
+        p:authenticationHandlers-ref="listOfTwoFactorStrongAuthenticationHandlers" />
   
+  <!--  CAS instance responsible for creating the final authenticated principal. -->      
+  <bean id="terminatingCentralAuthenticationService" 
+        class="net.unicon.cas.mfa.MultiFactorAwareCentralAuthenticationService"
+        p:ticketRegistry-ref="ticketRegistry" p:ticketGrantingTicketExpirationPolicy-ref="grantingTicketExpirationPolicy" 
+        p:ticketGrantingTicketUniqueTicketIdGenerator-ref="ticketGrantingTicketUniqueIdGenerator"
+        p:centralAuthenticationServiceDelegate-ref="centralAuthenticationService" />
+  
+  <!-- Custom set of authentication handlers for the second factor authentication. -->
   <util:list id="listOfTwoFactorStrongAuthenticationHandlers">
     <bean class="org.jasig.cas.adaptors.generic.AcceptUsersAuthenticationHandler"
         p:users-ref="casUsers" />

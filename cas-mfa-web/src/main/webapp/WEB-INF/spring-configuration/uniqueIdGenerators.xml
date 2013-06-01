@@ -76,7 +76,7 @@
 			key="org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl"
 			value-ref="serviceTicketUniqueIdGenerator" />
         <entry
-            key="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationServiceImpl"
+            key="net.unicon.cas.mfa.web.support.DefaultMultiFactorAuthenticationSupportingWebApplicationService"
             value-ref="serviceTicketUniqueIdGenerator" />
         <entry
             key="org.jasig.cas.support.openid.authentication.principal.OpenIdService"

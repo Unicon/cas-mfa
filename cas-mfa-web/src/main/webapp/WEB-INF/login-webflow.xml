@@ -29,14 +29,12 @@
         <evaluate expression="initialFlowSetupAction" />
     </on-start>
 
-    <!-- 
     <decision-state id="mfaTicketGrantingTicketExistsCheck">
         <if test="flowScope.ticketGrantingTicketId != null and flowScope.service != null and 
                   requestParameters.loa != null and listOfLOAs.contains(requestParameters.loa)"
-            then="ticketGrantingTicketExistsCheck" else="gatewayRequestCheck" />
+            then="multiFactorAuthentication" else="ticketGrantingTicketExistsCheck" />
     </decision-state>
-     -->
-     
+         
 	<decision-state id="ticketGrantingTicketExistsCheck">
 		<if test="flowScope.ticketGrantingTicketId != null" then="hasServiceCheck" else="gatewayRequestCheck" />
 	</decision-state>
@@ -81,16 +79,17 @@
             <set name="viewScope.commandName" value="'credentials'" />
         </on-entry>
 		<transition on="submit" bind="true" validate="true" to="realSubmit">
-            <evaluate expression="mfaAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
+            <evaluate expression="initiatingAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
 	</view-state>
 
   	<action-state id="realSubmit">
-        <evaluate expression="mfaAuthenticationViaFormAction.submit(flowRequestContext, flowScope.credentials, messageContext)" />
+        <evaluate expression="initiatingAuthenticationViaFormAction.submit(flowRequestContext,
+                              flowScope.credentials, messageContext, flowScope.credentials.username)" />
 		<transition on="warn" to="warn" />
 		<transition on="success" to="sendTicketGrantingTicket" />
 		<transition on="error" to="generateLoginTicket" />
-        <transition on="mfa" to="multiFactorAuthentication" />
+        <transition on="mfaSuccess" to="multiFactorAuthentication" />
 	</action-state>
 	
 	<action-state id="sendTicketGrantingTicket">
@@ -103,8 +102,13 @@
 	</decision-state>
 	
     <subflow-state id="multiFactorAuthentication" subflow="mfa">
-        <input name="partialCredentials" required="true" value="credentials" />
-        <input name="service" required="true" value="flowScope.service" />
+        <on-entry>
+            <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"
+                      result="flowScope.mfaCredentials" />
+        </on-entry>
+            
+        <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
+               type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
         <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
         <transition on="mfaError" to="generateLoginTicket" />
     </subflow-state>

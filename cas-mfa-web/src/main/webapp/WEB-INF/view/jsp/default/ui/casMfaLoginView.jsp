@@ -21,8 +21,8 @@
 
 <div id="msg" class="info">
   <h2>Multifactor Authentication In Progress</h2>
-  <h4>Authenticated as [${partialCredentials.username}].
-  The required level of assurance specified is: [${service.loa}]</h4>
+  <h4>The level of assurance set to [${service.loa}].</h4>
+  <h4>Authentication is requested by [${service}].</h4>
 </div>
 
 <div class="box fl-panel" id="login">
