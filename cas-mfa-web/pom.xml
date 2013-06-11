@@ -42,10 +42,6 @@
         <artifactId>cas-server-support-generic</artifactId>
     </dependency>
     <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>net.unicon.cas</groupId>
       <artifactId>cas-addons</artifactId>
     </dependency>

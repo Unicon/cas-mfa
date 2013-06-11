@@ -465,12 +465,6 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.jasig.cas</groupId>
-        <artifactId>cas-server-integration-restlet</artifactId>
-        <version>${cas.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
         <groupId>net.unicon.cas</groupId>
         <artifactId>cas-addons</artifactId>
         <version>${cas-addons.version}</version>
