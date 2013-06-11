@@ -17,7 +17,7 @@ public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSi
     private final List<String> supportedLevelsOfAuthentication;
 
     /**
-     * Create an instance of {@link MultiFactorAuthenticationArgumentExtractor}.
+     * Create an instance of {@link MultiFactorAuthenticationArgumentExtractorTests}.
      * @param listOfLOAs list of supported values for the LOA
      */
     public MultiFactorAuthenticationArgumentExtractor(final List<String> listOfLOAs) {
