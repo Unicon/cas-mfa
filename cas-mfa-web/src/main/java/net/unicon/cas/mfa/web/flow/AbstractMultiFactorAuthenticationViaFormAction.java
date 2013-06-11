@@ -22,9 +22,13 @@ import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
 /**
+ * An abstraction that specifies how the authentication flow should behave.
+ * It primarily acts as a wrapper recipient of authentication requests via form,
+ * which is loosely mimics the behavior of {@link org.jasig.cas.web.flow.AuthenticationViaFormAction}.
  *
+ * <p>Implementations are notified of the authentication type (MFA, non-MFA)
+ * and are responsible to act accordingly.
  * @author Misagh Moayyed
- *
  */
 @SuppressWarnings("deprecation")
 public abstract class AbstractMultiFactorAuthenticationViaFormAction {
@@ -57,6 +61,15 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction {
         return (service != null && service instanceof MultiFactorAuthenticationSupportingWebApplicationService);
     }
 
+    /**
+     * In the event of an MFA request, authenticate the credentials by default, and place
+     * the authentication context back into the flow.
+     * @param context request context
+     * @param credentials the requesting credentials
+     * @param messageContext the message bundle manager
+     * @param id the identifier of the credential, based on implementation provided in the flow setup.
+     * @return the resulting event
+     */
     protected final Event doMultiFactorAuthentication(final RequestContext context, final Credentials credentials,
             final MessageContext messageContext, final String id) throws Exception {
         try {
@@ -74,6 +87,15 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction {
         return getErrorEvent();
     }
 
+    /**
+    * In the event of a non-MFA request, return the result of {@link #getErrorEvent()} by default.
+    * Implementations are expected to override this method if they wish to respond to authentication
+    * requests.
+    * @param context request context
+    * @param credentials the requesting credentials
+    * @param messageContext the message bundle manager
+    * @return the resulting event
+    */
     protected Event doAuthentication(final RequestContext context, final Credentials credentials, final MessageContext messageContext)
             throws Exception {
         return getErrorEvent();
