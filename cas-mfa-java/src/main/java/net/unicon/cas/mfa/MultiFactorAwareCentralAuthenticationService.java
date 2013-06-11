@@ -14,9 +14,13 @@ import org.jasig.cas.util.UniqueTicketIdGenerator;
 import org.jasig.cas.validation.Assertion;
 
 /**
- *
+ * An extension of {@link CentralAuthenticationService} that routes CAS requests to a delegate,
+ * thereby allowing the ability to partially override behavior that is MFA specific.
+ * The current implementation is specific on the operation of creating ticket creating tickets
+ * based on the assumptions that the credentials received are of type {@link MultiFactorCredentials}
+ * and that the authentication context is verified and readily available, based on which the TGT will
+ * be added to the configured {@link TicketRegistry}.
  * @author Misagh Moayyed
- *
  */
 public final class MultiFactorAwareCentralAuthenticationService implements CentralAuthenticationService {
     private CentralAuthenticationService delegate;
@@ -34,7 +38,6 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
 
         this.ticketRegistry.addTicket(ticketGrantingTicket);
         return ticketGrantingTicket.getId();
-
     }
 
     @Override
@@ -56,7 +59,6 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
     @Override
     public void destroyTicketGrantingTicket(final String ticketGrantingTicketId) {
         this.delegate.destroyTicketGrantingTicket(ticketGrantingTicketId);
-
     }
 
     @Override

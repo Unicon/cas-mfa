@@ -13,7 +13,7 @@ import org.springframework.webflow.execution.RequestContext;
 
 /**
  * This is the final webflow action in the mfa authentication sequence that
- * would ultimate issue the TGT and presents the "success" event. If multiple
+ * would ultimately issue the TGT and presents the "success" event. If multiple
  * actions are chained during the authentication sequence, this should be the last.
  * @author Misagh Moayyed
  */
@@ -29,16 +29,14 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
     private Event createTicketGrantingTicket(final Authentication authentication, final RequestContext context,
             final Credentials credentials, final MessageContext messageContext, final String id) {
         try {
-
-            final MultiFactorCredentials mfa = (MultiFactorCredentials) context.getFlowScope().get("mfaCredentials",
-                    MultiFactorCredentials.class);
+            final MultiFactorCredentials mfa = (MultiFactorCredentials) context.getFlowScope().get(
+                    MultiFactorAuthenticationConstants.CAS_MFA_CREDENTIALS_ATTR_NAME, MultiFactorCredentials.class);
 
             mfa.getChainedAuthentication().add(authentication);
             mfa.getChainedCredentials().put(id, credentials);
 
-            context.getFlowScope().put("mfaCredentials", mfa);
-            WebUtils.putTicketGrantingTicketInRequestScope(context,
-                    this.centralAuthenticationService.createTicketGrantingTicket(mfa));
+            context.getFlowScope().put(MultiFactorAuthenticationConstants.CAS_MFA_CREDENTIALS_ATTR_NAME, mfa);
+            WebUtils.putTicketGrantingTicketInRequestScope(context, this.centralAuthenticationService.createTicketGrantingTicket(mfa));
             return getSuccessEvent();
         } catch (final TicketException e) {
             populateErrorsInstance(e, messageContext);
