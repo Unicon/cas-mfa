@@ -7,9 +7,10 @@ import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.web.support.AbstractSingleSignOutEnabledArgumentExtractor;
 
 /**
- * The multifactor authentication argument extractor.
+ * The multifactor authentication argument extractor, responsible to
+ * instruct CAS with the constructed instance of a {@link WebApplicationService}
+ * that is supported based on the configured {@link #supportedLevelsOfAuthentication}.
  * @author Misagh Moayyed
- *
  */
 public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSingleSignOutEnabledArgumentExtractor {
 

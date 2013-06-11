@@ -49,6 +49,10 @@ public class MultiFactorCredentials implements Credentials {
         return this.chainedCredentials;
     }
 
+    /**
+     * Indicate whether or not the authentication chain is empty.
+     * @return true, if the context is empty.
+     */
     public final boolean isEmpty() {
         return this.chainedAuthentication.isEmpty();
     }

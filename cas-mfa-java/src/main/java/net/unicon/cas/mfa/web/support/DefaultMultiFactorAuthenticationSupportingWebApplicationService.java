@@ -18,7 +18,7 @@ import org.springframework.util.StringUtils;
  * that delegates calls to {@link SimpleWebApplicationServiceImpl}. The only difference
  * is that it is only is activated when the request parameter {@link #CONST_PARAM_LOA} is
  * present and its value is supported by the corresponding argument extractor.
- * TODO The delegation is necessary because the {@link SimpleWebApplicationServiceImpl}
+ * <p>NOTE: The delegation is necessary because the {@link SimpleWebApplicationServiceImpl}
  * itself is marked as final. Future versions of CAS might make the class more available.
  * @author Misagh Moayyed
  */
