@@ -9,7 +9,7 @@ import org.springframework.webflow.execution.RequestContext;
  * Utility methods that facilitate retrieval and storage of MFA objects inside {@link RequestContext}.
  * @author Misagh Moayyed
  */
-public final class RequestContextUtils {
+public final class MultiFactorRequestContextUtils {
 
     /** Attribute name by which the authentication context can be retrieve/placed in the flow.**/
     private static final String CAS_AUTHENTICATION_ATTR_NAME = "casAuthentication";
@@ -20,7 +20,7 @@ public final class RequestContextUtils {
     /** Attribute name by which the MFA credentials can be retrieve/placed in the flow.**/
     private static final String CAS_MFA_CREDENTIALS_ATTR_NAME = "mfaCredentials";
 
-    private RequestContextUtils() {
+    private MultiFactorRequestContextUtils() {
     }
 
     public static MultiFactorCredentials getMfaCredentials(final RequestContext context) {
@@ -41,5 +41,9 @@ public final class RequestContextUtils {
 
     public static void setAuthentifcation(final RequestContext context, final Authentication auth) {
         context.getFlowScope().put(CAS_AUTHENTICATION_ATTR_NAME, auth);
+    }
+
+    public static void setTicketGrantingTicketId(final RequestContext context, final String tgtId) {
+        context.getFlowScope().put(CAS_TICKET_GRANTING_TICKET_ATTR_NAME, tgtId);
     }
 }

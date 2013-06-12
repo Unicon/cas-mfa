@@ -42,6 +42,7 @@
   -->                      
   <bean id="initiatingAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.InitiatingMultiFactorAuthenticationViaFormAction"
+        c:authenticationViaFormAction-ref="authenticationViaFormAction"
         p:centralAuthenticationService-ref="centralAuthenticationService"
         p:warnCookieGenerator-ref="warnCookieGenerator"
         p:multiFactorAuthenticationManager-ref="authenticationManager" />

@@ -18,16 +18,20 @@ import org.springframework.webflow.execution.RequestContext;
  */
 public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMultiFactorAuthenticationViaFormAction {
 
-    private final AuthenticationViaFormAction wrapperAuthenticationAction = new AuthenticationViaFormAction();
+    private final AuthenticationViaFormAction wrapperAuthenticationAction;
+
+    public InitiatingMultiFactorAuthenticationViaFormAction(final AuthenticationViaFormAction authenticationViaFormAction) {
+        this.wrapperAuthenticationAction = authenticationViaFormAction;
+    }
 
     @Override
     protected Event doAuthentication(final RequestContext context, final Credentials credentials, final MessageContext messageContext)
             throws Exception {
-        return new Event(this, wrapperAuthenticationAction.submit(context, credentials, messageContext));
+        return new Event(this, this.wrapperAuthenticationAction.submit(context, credentials, messageContext));
     }
 
     public final void setWarnCookieGenerator(final CookieGenerator warnCookieGenerator) {
-        wrapperAuthenticationAction.setWarnCookieGenerator(warnCookieGenerator);
+        this.wrapperAuthenticationAction.setWarnCookieGenerator(warnCookieGenerator);
     }
 
 }

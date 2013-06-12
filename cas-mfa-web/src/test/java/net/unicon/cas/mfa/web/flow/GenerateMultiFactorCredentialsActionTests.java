@@ -2,6 +2,7 @@ package net.unicon.cas.mfa.web.flow;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
+import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
@@ -64,7 +65,7 @@ public class GenerateMultiFactorCredentialsActionTests {
 
     @Test
     public void testAuthenticationViaContext() {
-        when(requestContext.getFlowScope().get(MultiFactorAuthenticationConstants.CAS_AUTHENTICATION_ATTR_NAME)).thenReturn(authentication);
+        MultiFactorRequestContextUtils.setAuthentifcation(requestContext, authentication);
 
         final Credentials c = getCredentials();
         final Credentials creds = this.action.createCredentials(requestContext, c, "usrPsw");
@@ -81,8 +82,8 @@ public class GenerateMultiFactorCredentialsActionTests {
 
     @Test
     public void testAuthenticationViaTGT() {
-        when(requestContext.getFlowScope().get(MultiFactorAuthenticationConstants.CAS_AUTHENTICATION_ATTR_NAME)).thenReturn(null);
-        when(requestContext.getFlowScope().get(MultiFactorAuthenticationConstants.CAS_TICKET_GRANTING_TICKET_ATTR_NAME)).thenReturn(TGT_ID);
+        MultiFactorRequestContextUtils.setAuthentifcation(requestContext, null);
+        MultiFactorRequestContextUtils.setTicketGrantingTicketId(requestContext, TGT_ID);
 
         final Credentials c = getCredentials();
         final Credentials creds = this.action.createCredentials(requestContext, c, "usrPsw");

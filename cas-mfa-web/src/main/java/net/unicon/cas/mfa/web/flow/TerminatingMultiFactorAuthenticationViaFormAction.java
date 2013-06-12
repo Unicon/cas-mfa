@@ -1,7 +1,7 @@
 package net.unicon.cas.mfa.web.flow;
 
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
-import net.unicon.cas.mfa.web.flow.util.RequestContextUtils;
+import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
@@ -30,12 +30,12 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
     private Event createTicketGrantingTicket(final Authentication authentication, final RequestContext context,
             final Credentials credentials, final MessageContext messageContext, final String id) {
         try {
-            final MultiFactorCredentials mfa = RequestContextUtils.getMfaCredentials(context);
+            final MultiFactorCredentials mfa = MultiFactorRequestContextUtils.getMfaCredentials(context);
 
             mfa.getChainedAuthentication().add(authentication);
             mfa.getChainedCredentials().put(id, credentials);
 
-            RequestContextUtils.setMfaCredentials(context, mfa);
+            MultiFactorRequestContextUtils.setMfaCredentials(context, mfa);
             WebUtils.putTicketGrantingTicketInRequestScope(context, this.centralAuthenticationService.createTicketGrantingTicket(mfa));
             return getSuccessEvent();
         } catch (final TicketException e) {

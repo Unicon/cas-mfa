@@ -9,7 +9,7 @@ import org.springframework.webflow.execution.RequestContext;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
-import net.unicon.cas.mfa.web.flow.util.RequestContextUtils;
+import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 
 /**
  * An action to obtain/construct the {@link MultiFactorCredentials} instance and pass it along
@@ -45,7 +45,7 @@ public final class GenerateMultiFactorCredentialsAction {
             credentials.getChainedCredentials().put(id, upCredentials);
         }
 
-        RequestContextUtils.setMfaCredentials(context, credentials);
+        MultiFactorRequestContextUtils.setMfaCredentials(context, credentials);
         return credentials;
     }
 
@@ -57,10 +57,10 @@ public final class GenerateMultiFactorCredentialsAction {
      */
     private Authentication getCasAuthentication(final RequestContext context) {
 
-        final Authentication authentication = RequestContextUtils.getAuthentication(context);
+        final Authentication authentication = MultiFactorRequestContextUtils.getAuthentication(context);
 
         if (authentication == null) {
-            final String tgt = RequestContextUtils.getTicketGrantingTicketId(context);
+            final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
             if (!StringUtils.isBlank(tgt)) {
                 return this.authenticationSupport.getAuthenticationFrom(tgt);
             }
@@ -70,7 +70,7 @@ public final class GenerateMultiFactorCredentialsAction {
     }
 
     private MultiFactorCredentials getMfaCredentialsInstanceFromContext(final RequestContext context) {
-        final MultiFactorCredentials c = RequestContextUtils.getMfaCredentials(context);
+        final MultiFactorCredentials c = MultiFactorRequestContextUtils.getMfaCredentials(context);
         if (c == null) {
             return new MultiFactorCredentials();
         }

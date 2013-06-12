@@ -3,7 +3,7 @@ package net.unicon.cas.mfa.web.flow;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
-import net.unicon.cas.mfa.web.flow.util.RequestContextUtils;
+import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
 import org.apache.commons.lang.StringUtils;
@@ -17,6 +17,7 @@ import org.jasig.cas.web.bind.CredentialsBinder;
 import org.jasig.cas.web.support.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.webflow.execution.Event;
@@ -32,7 +33,7 @@ import org.springframework.webflow.execution.RequestContext;
  * @author Misagh Moayyed
  */
 @SuppressWarnings("deprecation")
-public abstract class AbstractMultiFactorAuthenticationViaFormAction {
+public abstract class AbstractMultiFactorAuthenticationViaFormAction implements InitializingBean {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @NotNull
@@ -80,7 +81,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction {
             }
             final Authentication auth = this.authenticationManager.authenticate(credentials);
 
-            RequestContextUtils.setAuthentifcation(context, auth);
+            MultiFactorRequestContextUtils.setAuthentifcation(context, auth);
             return multiFactorAuthenticationSuccessful(auth, context, credentials, messageContext, id);
         } catch (final AuthenticationException e) {
             logger.error(e.getMessage(), e);
@@ -102,7 +103,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction {
         return getErrorEvent();
     }
 
-    protected boolean validateLoginTicket(final RequestContext context, final MessageContext messageContext) {
+    protected final boolean isValidLoginTicket(final RequestContext context, final MessageContext messageContext) {
         final String authoritativeLoginTicket = WebUtils.getLoginTicketFromFlowScope(context);
         final String providedLoginTicket = WebUtils.getLoginTicketFromRequest(context);
         if (!authoritativeLoginTicket.equals(providedLoginTicket)) {
@@ -117,14 +118,13 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction {
     public Event submit(final RequestContext context, final Credentials credentials, final MessageContext messageContext, final String id)
             throws Exception {
 
-        if (validateLoginTicket(context, messageContext)) {
-            if (isMultiFactorAuthenticationRequest(context)) {
+        if (isMultiFactorAuthenticationRequest(context)) {
+            if (isValidLoginTicket(context, messageContext)) {
                 return doMultiFactorAuthentication(context, credentials, messageContext, id);
             }
-            return doAuthentication(context, credentials, messageContext);
+            return getErrorEvent();
         }
-
-        return getErrorEvent();
+        return doAuthentication(context, credentials, messageContext);
     }
 
     protected Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
@@ -172,5 +172,9 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction {
      */
     protected Event getSuccessEvent() {
         return new Event(this, "mfaSuccess");
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
     }
 }
