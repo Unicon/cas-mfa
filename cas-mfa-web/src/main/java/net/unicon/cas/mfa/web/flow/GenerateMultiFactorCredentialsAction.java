@@ -32,16 +32,17 @@ public final class GenerateMultiFactorCredentialsAction {
      */
     public Credentials createCredentials(final RequestContext context, final Credentials upCredentials, final String id) {
         final Authentication authentication = getCasAuthentication(context);
-        if (authentication == null && id == null) {
+        if (authentication == null || id == null || upCredentials == null) {
             return null;
         }
 
-        final MultiFactorCredentials credentials = new MultiFactorCredentials();
+        final MultiFactorCredentials credentials = getMfaCredentialsInstanceFromContext(context);
         credentials.getChainedAuthentication().add(authentication);
-        if (id != null) {
+        if (id != null && upCredentials != null) {
             credentials.getChainedCredentials().put(id, upCredentials);
         }
 
+        context.getFlowScope().put(MultiFactorAuthenticationConstants.CAS_MFA_CREDENTIALS_ATTR_NAME, credentials);
         return credentials;
     }
 
@@ -52,17 +53,27 @@ public final class GenerateMultiFactorCredentialsAction {
      * @return the {@link Authentication} object
      */
     private Authentication getCasAuthentication(final RequestContext context) {
+
         final Authentication authentication = (Authentication) context.getFlowScope().get(
-                MultiFactorAuthenticationConstants.CAS_AUTHENTICATION_ATTR_NAME, Authentication.class);
+                MultiFactorAuthenticationConstants.CAS_AUTHENTICATION_ATTR_NAME);
 
         if (authentication == null) {
-            final String tgt = (String) context.getFlowScope().get(MultiFactorAuthenticationConstants.CAS_TICKET_GRANTING_TICKET_ATTR_NAME,
-                    String.class);
+            final String tgt = (String) context.getFlowScope().get(MultiFactorAuthenticationConstants.CAS_TICKET_GRANTING_TICKET_ATTR_NAME);
             if (!StringUtils.isBlank(tgt)) {
                 return this.authenticationSupport.getAuthenticationFrom(tgt);
             }
         }
 
         return authentication;
+    }
+
+    private MultiFactorCredentials getMfaCredentialsInstanceFromContext(final RequestContext context) {
+        final MultiFactorCredentials c = (MultiFactorCredentials) context.getFlowScope().get(
+                MultiFactorAuthenticationConstants.CAS_MFA_CREDENTIALS_ATTR_NAME);
+        if (c == null) {
+            return new MultiFactorCredentials();
+        }
+        return c;
+
     }
 }
