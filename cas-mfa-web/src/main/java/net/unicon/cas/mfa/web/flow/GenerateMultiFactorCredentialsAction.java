@@ -1,5 +1,7 @@
 package net.unicon.cas.mfa.web.flow;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
@@ -7,6 +9,7 @@ import org.springframework.webflow.execution.RequestContext;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
+import net.unicon.cas.mfa.web.flow.util.RequestContextUtils;
 
 /**
  * An action to obtain/construct the {@link MultiFactorCredentials} instance and pass it along
@@ -30,7 +33,7 @@ public final class GenerateMultiFactorCredentialsAction {
      * @param id the identifier for the credentials used.
      * @return an instance of {@link MultiFactorCredentials}
      */
-    public Credentials createCredentials(final RequestContext context, final Credentials upCredentials, final String id) {
+    public Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials, @NotNull final String id) {
         final Authentication authentication = getCasAuthentication(context);
         if (authentication == null || id == null || upCredentials == null) {
             return null;
@@ -42,7 +45,7 @@ public final class GenerateMultiFactorCredentialsAction {
             credentials.getChainedCredentials().put(id, upCredentials);
         }
 
-        context.getFlowScope().put(MultiFactorAuthenticationConstants.CAS_MFA_CREDENTIALS_ATTR_NAME, credentials);
+        RequestContextUtils.setMfaCredentials(context, credentials);
         return credentials;
     }
 
@@ -54,11 +57,10 @@ public final class GenerateMultiFactorCredentialsAction {
      */
     private Authentication getCasAuthentication(final RequestContext context) {
 
-        final Authentication authentication = (Authentication) context.getFlowScope().get(
-                MultiFactorAuthenticationConstants.CAS_AUTHENTICATION_ATTR_NAME);
+        final Authentication authentication = RequestContextUtils.getAuthentication(context);
 
         if (authentication == null) {
-            final String tgt = (String) context.getFlowScope().get(MultiFactorAuthenticationConstants.CAS_TICKET_GRANTING_TICKET_ATTR_NAME);
+            final String tgt = RequestContextUtils.getTicketGrantingTicketId(context);
             if (!StringUtils.isBlank(tgt)) {
                 return this.authenticationSupport.getAuthenticationFrom(tgt);
             }
@@ -68,8 +70,7 @@ public final class GenerateMultiFactorCredentialsAction {
     }
 
     private MultiFactorCredentials getMfaCredentialsInstanceFromContext(final RequestContext context) {
-        final MultiFactorCredentials c = (MultiFactorCredentials) context.getFlowScope().get(
-                MultiFactorAuthenticationConstants.CAS_MFA_CREDENTIALS_ATTR_NAME);
+        final MultiFactorCredentials c = RequestContextUtils.getMfaCredentials(context);
         if (c == null) {
             return new MultiFactorCredentials();
         }

@@ -3,6 +3,7 @@ package net.unicon.cas.mfa.web.flow;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
+import net.unicon.cas.mfa.web.flow.util.RequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
 import org.apache.commons.lang.StringUtils;
@@ -79,7 +80,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction {
             }
             final Authentication auth = this.authenticationManager.authenticate(credentials);
 
-            context.getFlowScope().put(MultiFactorAuthenticationConstants.CAS_AUTHENTICATION_ATTR_NAME, auth);
+            RequestContextUtils.setAuthentifcation(context, auth);
             return multiFactorAuthenticationSuccessful(auth, context, credentials, messageContext, id);
         } catch (final AuthenticationException e) {
             logger.error(e.getMessage(), e);
