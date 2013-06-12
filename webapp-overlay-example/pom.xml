@@ -48,6 +48,7 @@
               <excludes>
                 <exclude>WEB-INF/cas.properties</exclude>
                 <exclude>WEB-INF/classes/log4j.xml</exclude>
+                <exclude>WEB-INF/restlet-servlet.xml</exclude>
               </excludes>
             </overlay>
           </overlays>
@@ -67,10 +68,6 @@
       <groupId>net.unicon.cas</groupId>
       <artifactId>cas-addons</artifactId>
     </dependency>
-    <dependency>
-        <groupId>org.jasig.cas</groupId>
-        <artifactId>cas-server-integration-restlet</artifactId>
-      </dependency>
     <dependency>
       <groupId>net.unicon</groupId>
       <artifactId>cas-mfa-web</artifactId>
