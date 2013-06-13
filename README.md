@@ -28,12 +28,16 @@ These Web components can depend on the cas-mfa-java .jar
 An example of how a CAS adopter would compose a local good-practices maven overlay configuration to build a localized CAS server incorporating the features in this project.
 
 
-# How do I build this and try it out? [![Build Status](https://secure.travis-ci.org/Unicon/cas-mfa.png)](http://travis-ci.org/Unicon/cas-mfa)
+# How do I build this and try it out? 
 
 * This project is currently configured to integrate with CAS server `v3.5.2`.
 * From the command line, run `mvn clean package` and grab the produced `cas.war` file from the overlay directory.
 * Or, modify the `build.xml` ANT build accordingly to your environment and simply run `ant deploy`.
 
+## Build Status
+
+* [![Build Status](https://secure.travis-ci.org/Unicon/cas-mfa.png)](http://travis-ci.org/Unicon/cas-mfa)
+* [![Codeship Status for Unicon/cas-mfa](https://www.codeship.io/projects/94af73f0-b621-0130-ee60-52e2877ac259/status?branch=master)](https://www.codeship.io/projects/4277)
 
 # Where will this code live eventually?
 
