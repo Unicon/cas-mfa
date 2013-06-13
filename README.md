@@ -37,7 +37,6 @@ An example of how a CAS adopter would compose a local good-practices maven overl
 ## Build Status
 
 * [![Build Status](https://secure.travis-ci.org/Unicon/cas-mfa.png)](http://travis-ci.org/Unicon/cas-mfa)
-* [![Codeship Status for Unicon/cas-mfa](https://www.codeship.io/projects/94af73f0-b621-0130-ee60-52e2877ac259/status?branch=master)](https://www.codeship.io/projects/4277)
 
 # Where will this code live eventually?
 
