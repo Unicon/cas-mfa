@@ -21,7 +21,7 @@
 
 <div id="msg" class="info">
   <h2>Multifactor Authentication In Progress</h2>
-  <h4>The level of assurance set to [${service.loa}].</h4>
+  <h4>Authentication method is set to [${service.authenticationMethod}].</h4>
   <h4>Authentication is requested by [${service}].</h4>
 </div>
 
