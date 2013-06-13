@@ -21,7 +21,7 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
         final DefaultMultiFactorAuthenticationSupportingWebApplicationService svc =
                 new DefaultMultiFactorAuthenticationSupportingWebApplicationService("https://www.github.com",
                 "https://www.github.com", null, null, "test_loa");
-        assertEquals(svc.getLoa(), "test_loa");
+        assertEquals(svc.getAuthenticationMethod(), "test_loa");
         final Response res = svc.getResponse("testTicketId");
         assertNotNull(res);
         assertEquals(res.getResponseType(), Response.ResponseType.REDIRECT);
@@ -55,7 +55,7 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
                 Arrays.asList("test_loa"));
 
         when(request.getParameter("service")).thenReturn("https://www.github.com");
-        when(request.getParameter("loa")).thenReturn("bad_loa");
+        when(request.getParameter("authn_method")).thenReturn("bad_loa");
         final WebApplicationService svc = extractor.extractService(request);
         assertNull(svc);
     }
@@ -67,11 +67,11 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
                 Arrays.asList("test_loa"));
 
         when(request.getParameter("service")).thenReturn("https://www.github.com");
-        when(request.getParameter("loa")).thenReturn("test_loa");
+        when(request.getParameter("authn_method")).thenReturn("test_loa");
         final WebApplicationService svc = extractor.extractService(request);
         assertNotNull(svc);
         final DefaultMultiFactorAuthenticationSupportingWebApplicationService mfa =
                 (DefaultMultiFactorAuthenticationSupportingWebApplicationService) svc;
-        assertEquals(mfa.getLoa(), "test_loa");
+        assertEquals(mfa.getAuthenticationMethod(), "test_loa");
     }
 }

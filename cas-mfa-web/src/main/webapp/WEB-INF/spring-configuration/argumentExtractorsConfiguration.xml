@@ -41,10 +41,10 @@
     <bean id="mfaArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationArgumentExtractor"
           parent="baseArgumentExtractor"
-          c:listOfLOAs-ref="listOfLOAs">
+          c:authnMethods-ref="listOfAuthenticationMethods">
     </bean>
     
-    <util:list id="listOfLOAs">
+    <util:list id="listOfAuthenticationMethods">
         <value>strong_two_factor</value>
     </util:list>
         

@@ -4,13 +4,13 @@ import org.jasig.cas.authentication.principal.WebApplicationService;
 
 /**
  * The MultiFactorAuthenticationService is an extension of the generic CAS {@link WebApplicationService}
- * that defines the level of assurance required and accepted by the service.
+ * that defines the authentication method accepted by the service.
  * @author Misagh Moayyed
  */
 public interface MultiFactorAuthenticationSupportingWebApplicationService extends WebApplicationService {
     /**
-     * Define the level of assurance accepted and supported by this MFA service.
-     * @return the supported loa
+     * Define the authentication method accepted and supported by this MFA service.
+     * @return the supported method
      */
-    String getLoa();
+    String getAuthenticationMethod();
 }

@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
 /**
  * The MultiFactorAuthenticationService is an extension of the generic CAS service
  * that delegates calls to {@link SimpleWebApplicationServiceImpl}. The only difference
- * is that it is only is activated when the request parameter {@link #CONST_PARAM_LOA} is
+ * is that it is only is activated when the request parameter {@link #CONST_PARAM_AUTHN_METHOD} is
  * present and its value is supported by the corresponding argument extractor.
  * <p>NOTE: The delegation is necessary because the {@link SimpleWebApplicationServiceImpl}
  * itself is marked as final. Future versions of CAS might make the class more available.
@@ -36,27 +36,27 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
 
     private static final String CONST_PARAM_TICKET = "ticket";
 
-    private static final String CONST_PARAM_LOA = "loa";
+    private static final String CONST_PARAM_AUTHN_METHOD = "authn_method";
 
     private final SimpleWebApplicationServiceImpl wrapperService;
 
-    private final String loa;
+    private final String authenticationMethod;
 
     /**
      * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}.
-     * Expects the request parameter {@link #CONST_PARAM_LOA} is
+     * Expects the request parameter {@link #CONST_PARAM_AUTHN_METHOD} is
      * present and its value is supported by the corresponding argument extractor.
      * @param id the service id
      * @param originalUrl the service url from the request, noted by {@link #CONST_PARAM_SERVICE} or {@link #CONST_PARAM_TARGET_SERVICE}
      * @param artifactId the artifact id from the request, noted by {@link #CONST_PARAM_TICKET}
      * @param httpClient http client to process requests
-     * @param loa the level of assurance parameter defined for this mfa service
+     * @param authnMethod the authentication method parameter defined for this mfa service
      */
     protected DefaultMultiFactorAuthenticationSupportingWebApplicationService(final String id, final String originalUrl,
-            final String artifactId, final HttpClient httpClient, @NotNull final String loa) {
+            final String artifactId, final HttpClient httpClient, @NotNull final String authnMethod) {
         super(id, originalUrl, artifactId, httpClient);
         this.wrapperService = new SimpleWebApplicationServiceImpl(id, httpClient);
-        this.loa = loa;
+        this.authenticationMethod = authnMethod;
     }
 
     @Override
@@ -64,8 +64,8 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
         return wrapperService.getResponse(ticketId);
     }
 
-    public String getLoa() {
-        return this.loa;
+    public String getAuthenticationMethod() {
+        return this.authenticationMethod;
     }
 
     /**
@@ -80,7 +80,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
             final HttpClient httpClient, final List<String> supportedLevelsOfAuthentication) {
         LOGGER.debug("Attempting to extract multifactor authentication parameters from the request");
         final String targetService = request.getParameter(CONST_PARAM_TARGET_SERVICE);
-        final String loa = request.getParameter(CONST_PARAM_LOA);
+        final String loa = request.getParameter(CONST_PARAM_AUTHN_METHOD);
         final String serviceToUse = StringUtils.hasText(targetService) ? targetService : request.getParameter(CONST_PARAM_SERVICE);
 
         if (!StringUtils.hasText(serviceToUse)) {
@@ -89,12 +89,12 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
         }
 
         if (!StringUtils.hasText(loa)) {
-            LOGGER.debug("Request has no request parameter [{}]", CONST_PARAM_LOA);
+            LOGGER.debug("Request has no request parameter [{}]", CONST_PARAM_AUTHN_METHOD);
             return null;
         }
 
         if (!supportedLevelsOfAuthentication.contains(loa)) {
-            LOGGER.debug("Multifactor authentication service does not support [{}] parameter value [{}].", CONST_PARAM_LOA, loa);
+            LOGGER.debug("Multifactor authentication service does not support [{}] parameter value [{}].", CONST_PARAM_AUTHN_METHOD, loa);
             return null;
         }
 
@@ -104,7 +104,8 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
         final MultiFactorAuthenticationSupportingWebApplicationService svc =
                 new DefaultMultiFactorAuthenticationSupportingWebApplicationService(
                 id, serviceToUse, artifactId, httpClient, loa);
-        LOGGER.debug("Created multifactor authentication request for [{}] with [{}] as [{}].", svc.getId(), CONST_PARAM_LOA, svc.getLoa());
+        LOGGER.debug("Created multifactor authentication request for [{}] with [{}] as [{}].",
+                svc.getId(), CONST_PARAM_AUTHN_METHOD, svc.getAuthenticationMethod());
         return svc;
     }
 }
