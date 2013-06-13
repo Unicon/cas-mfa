@@ -14,11 +14,12 @@ import org.junit.runners.JUnit4;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
-public class MultiFactorAuthenticationServiceTests {
+public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTests {
 
     @Test
     public void createNewMFAService() {
-        final MultiFactorAuthenticationService svc = new MultiFactorAuthenticationService("https://www.github.com",
+        final DefaultMultiFactorAuthenticationSupportingWebApplicationService svc =
+                new DefaultMultiFactorAuthenticationSupportingWebApplicationService("https://www.github.com",
                 "https://www.github.com", null, null, "test_loa");
         assertEquals(svc.getLoa(), "test_loa");
         final Response res = svc.getResponse("testTicketId");
@@ -69,7 +70,8 @@ public class MultiFactorAuthenticationServiceTests {
         when(request.getParameter("loa")).thenReturn("test_loa");
         final WebApplicationService svc = extractor.extractService(request);
         assertNotNull(svc);
-        final MultiFactorAuthenticationService mfa = (MultiFactorAuthenticationService) svc;
+        final DefaultMultiFactorAuthenticationSupportingWebApplicationService mfa =
+                (DefaultMultiFactorAuthenticationSupportingWebApplicationService) svc;
         assertEquals(mfa.getLoa(), "test_loa");
     }
 }
