@@ -80,7 +80,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
             final HttpClient httpClient, final List<String> supportedLevelsOfAuthentication) {
         LOGGER.debug("Attempting to extract multifactor authentication parameters from the request");
         final String targetService = request.getParameter(CONST_PARAM_TARGET_SERVICE);
-        final String loa = request.getParameter(CONST_PARAM_AUTHN_METHOD);
+        final String authenticationMethod = request.getParameter(CONST_PARAM_AUTHN_METHOD);
         final String serviceToUse = StringUtils.hasText(targetService) ? targetService : request.getParameter(CONST_PARAM_SERVICE);
 
         if (!StringUtils.hasText(serviceToUse)) {
@@ -88,13 +88,14 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
             return null;
         }
 
-        if (!StringUtils.hasText(loa)) {
+        if (!StringUtils.hasText(authenticationMethod)) {
             LOGGER.debug("Request has no request parameter [{}]", CONST_PARAM_AUTHN_METHOD);
             return null;
         }
 
-        if (!supportedLevelsOfAuthentication.contains(loa)) {
-            LOGGER.debug("Multifactor authentication service does not support [{}] parameter value [{}].", CONST_PARAM_AUTHN_METHOD, loa);
+        if (!supportedLevelsOfAuthentication.contains(authenticationMethod)) {
+            LOGGER.debug("Multifactor authentication service does not support [{}] parameter value [{}].",
+                    CONST_PARAM_AUTHN_METHOD, authenticationMethod);
             return null;
         }
 
@@ -103,7 +104,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
 
         final MultiFactorAuthenticationSupportingWebApplicationService svc =
                 new DefaultMultiFactorAuthenticationSupportingWebApplicationService(
-                id, serviceToUse, artifactId, httpClient, loa);
+                id, serviceToUse, artifactId, httpClient, authenticationMethod);
         LOGGER.debug("Created multifactor authentication request for [{}] with [{}] as [{}].",
                 svc.getId(), CONST_PARAM_AUTHN_METHOD, svc.getAuthenticationMethod());
         return svc;

@@ -20,8 +20,8 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
     public void createNewMFAService() {
         final DefaultMultiFactorAuthenticationSupportingWebApplicationService svc =
                 new DefaultMultiFactorAuthenticationSupportingWebApplicationService("https://www.github.com",
-                "https://www.github.com", null, null, "test_loa");
-        assertEquals(svc.getAuthenticationMethod(), "test_loa");
+                "https://www.github.com", null, null, "test_authn_method");
+        assertEquals(svc.getAuthenticationMethod(), "test_authn_method");
         final Response res = svc.getResponse("testTicketId");
         assertNotNull(res);
         assertEquals(res.getResponseType(), Response.ResponseType.REDIRECT);
@@ -32,16 +32,16 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
     public void createMFAServiceByRequestNoService() {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
-                Arrays.asList("test_loa"));
+                Arrays.asList("test_authn_method"));
         final WebApplicationService svc = extractor.extractService(request);
         assertNull(svc);
     }
 
     @Test
-    public void createMFAServiceByRequestNoLoa() {
+    public void createMFAServiceByRequestNoAuthnMethod() {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
-                Arrays.asList("test_loa"));
+                Arrays.asList("test_authn_method"));
 
         when(request.getParameter("service")).thenReturn("https://www.github.com");
         final WebApplicationService svc = extractor.extractService(request);
@@ -49,29 +49,29 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
     }
 
     @Test
-    public void createMFAServiceByRequestBadLoa() {
+    public void createMFAServiceByRequestBadAuthnMethod() {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
-                Arrays.asList("test_loa"));
+                Arrays.asList("test_authn_method"));
 
         when(request.getParameter("service")).thenReturn("https://www.github.com");
-        when(request.getParameter("authn_method")).thenReturn("bad_loa");
+        when(request.getParameter("authn_method")).thenReturn("bad_authn_method");
         final WebApplicationService svc = extractor.extractService(request);
         assertNull(svc);
     }
 
     @Test
-    public void createMFAServiceByRequestSupportedLoa() {
+    public void createMFAServiceByRequestSupportedAuthnMethod() {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
-                Arrays.asList("test_loa"));
+                Arrays.asList("test_authn_method"));
 
         when(request.getParameter("service")).thenReturn("https://www.github.com");
-        when(request.getParameter("authn_method")).thenReturn("test_loa");
+        when(request.getParameter("authn_method")).thenReturn("test_authn_method");
         final WebApplicationService svc = extractor.extractService(request);
         assertNotNull(svc);
         final DefaultMultiFactorAuthenticationSupportingWebApplicationService mfa =
                 (DefaultMultiFactorAuthenticationSupportingWebApplicationService) svc;
-        assertEquals(mfa.getAuthenticationMethod(), "test_loa");
+        assertEquals(mfa.getAuthenticationMethod(), "test_authn_method");
     }
 }
