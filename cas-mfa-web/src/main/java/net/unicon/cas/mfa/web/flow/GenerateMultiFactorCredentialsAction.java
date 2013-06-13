@@ -40,7 +40,7 @@ public final class GenerateMultiFactorCredentialsAction {
         }
 
         final MultiFactorCredentials credentials = getMfaCredentialsInstanceFromContext(context);
-        credentials.getChainedAuthentication().add(authentication);
+        credentials.getChainedAuthentications().add(authentication);
         if (id != null && upCredentials != null) {
             credentials.getChainedCredentials().put(id, upCredentials);
         }

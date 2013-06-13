@@ -33,7 +33,7 @@ import org.jasig.cas.authentication.principal.Principal;
  * the instance of {@link MultiFactorCredentials} as it knows how to authenticate the user agent
  * and is itself the recipient of each credential identifier.
  * @author Misagh Moayyed
- * @see #getChainedAuthentication()
+ * @see #getChainedAuthentications()
  * @see #getChainedCredentials()
  * @see #getAuthentication()
  */
@@ -64,7 +64,7 @@ public class MultiFactorCredentials implements Credentials {
      * and establishes the context.
      * @return authentication contexts
      */
-    public final Collection<Authentication> getChainedAuthentication() {
+    public final Collection<Authentication> getChainedAuthentications() {
         return this.chainedAuthentication;
     }
 
