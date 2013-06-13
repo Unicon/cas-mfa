@@ -18,14 +18,15 @@ import org.springframework.util.StringUtils;
  * that delegates calls to {@link SimpleWebApplicationServiceImpl}. The only difference
  * is that it is only is activated when the request parameter {@link #CONST_PARAM_LOA} is
  * present and its value is supported by the corresponding argument extractor.
- * TODO The delegation is necessary because the {@link SimpleWebApplicationServiceImpl}
+ * <p>NOTE: The delegation is necessary because the {@link SimpleWebApplicationServiceImpl}
  * itself is marked as final. Future versions of CAS might make the class more available.
  * @author Misagh Moayyed
  */
-class MultiFactorAuthenticationService extends AbstractWebApplicationService {
+public final class DefaultMultiFactorAuthenticationSupportingWebApplicationService extends AbstractWebApplicationService implements
+        MultiFactorAuthenticationSupportingWebApplicationService {
 
     /** The logger instance. **/
-    protected static final Logger LOGGER = LoggerFactory.getLogger(MultiFactorAuthenticationService.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(DefaultMultiFactorAuthenticationSupportingWebApplicationService.class);
 
     private static final long serialVersionUID = 7537062414761087535L;
 
@@ -42,7 +43,7 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
     private final String loa;
 
     /**
-     * Create an instance of {@link MultiFactorAuthenticationService}.
+     * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}.
      * Expects the request parameter {@link #CONST_PARAM_LOA} is
      * present and its value is supported by the corresponding argument extractor.
      * @param id the service id
@@ -51,7 +52,7 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
      * @param httpClient http client to process requests
      * @param loa the level of assurance parameter defined for this mfa service
      */
-    protected MultiFactorAuthenticationService(final String id, final String originalUrl,
+    protected DefaultMultiFactorAuthenticationSupportingWebApplicationService(final String id, final String originalUrl,
             final String artifactId, final HttpClient httpClient, @NotNull final String loa) {
         super(id, originalUrl, artifactId, httpClient);
         this.wrapperService = new SimpleWebApplicationServiceImpl(id, httpClient);
@@ -59,22 +60,23 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
     }
 
     @Override
-    public final Response getResponse(final String ticketId) {
+    public Response getResponse(final String ticketId) {
         return wrapperService.getResponse(ticketId);
     }
 
-    public final String getLoa() {
+    public String getLoa() {
         return this.loa;
     }
+
     /**
-     * Create an instance of {@link MultiFactorAuthenticationService} if loa
+     * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService} if loa
      * parameter is defined and supported.
      * @param request the http request
      * @param httpClient the http client
      * @param supportedLevelsOfAuthentication levels of mfa authentication supported by this service
-     * @return An instance of {@link MultiFactorAuthenticationService}
+     * @return An instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}
      */
-    public static MultiFactorAuthenticationService createServiceFrom(final HttpServletRequest request,
+    public static MultiFactorAuthenticationSupportingWebApplicationService createServiceFrom(final HttpServletRequest request,
             final HttpClient httpClient, final List<String> supportedLevelsOfAuthentication) {
         LOGGER.debug("Attempting to extract multifactor authentication parameters from the request");
         final String targetService = request.getParameter(CONST_PARAM_TARGET_SERVICE);
@@ -99,10 +101,10 @@ class MultiFactorAuthenticationService extends AbstractWebApplicationService {
         final String id = cleanupUrl(serviceToUse);
         final String artifactId = request.getParameter(CONST_PARAM_TICKET);
 
-        final MultiFactorAuthenticationService svc = new MultiFactorAuthenticationService(id, serviceToUse,
-                artifactId, httpClient, loa);
-        LOGGER.debug("Created multifactor authentication request for [{}] with [{}] as [{}].",
-                svc.getId(), CONST_PARAM_LOA, svc.getLoa());
+        final MultiFactorAuthenticationSupportingWebApplicationService svc =
+                new DefaultMultiFactorAuthenticationSupportingWebApplicationService(
+                id, serviceToUse, artifactId, httpClient, loa);
+        LOGGER.debug("Created multifactor authentication request for [{}] with [{}] as [{}].", svc.getId(), CONST_PARAM_LOA, svc.getLoa());
         return svc;
     }
 }
