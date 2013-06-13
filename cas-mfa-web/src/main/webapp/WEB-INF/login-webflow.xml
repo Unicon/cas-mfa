@@ -31,7 +31,8 @@
 
     <decision-state id="mfaTicketGrantingTicketExistsCheck">
         <if test="flowScope.ticketGrantingTicketId != null and flowScope.service != null and 
-                  requestParameters.loa != null and listOfLOAs.contains(requestParameters.loa)"
+                  requestParameters.authn_method != null and
+                  listOfAuthenticationMethods.contains(requestParameters.authn_method)"
             then="multiFactorAuthentication" else="ticketGrantingTicketExistsCheck" />
     </decision-state>
          
