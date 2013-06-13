@@ -32,7 +32,7 @@
 <c:if test="${service.getClass().simpleName == 'DefaultMultiFactorAuthenticationSupportingWebApplicationService'}">
   <div id="msg" class="info">
       <h2>This service requires multifactor authentication!</h2>
-      <h4>The required level of assurance specified is: [${service.loa}] </h4>
+      <h4>The required authentication method specified is: [${service.authenticationMethod}] </h4>
   </div>
 </c:if>
   
