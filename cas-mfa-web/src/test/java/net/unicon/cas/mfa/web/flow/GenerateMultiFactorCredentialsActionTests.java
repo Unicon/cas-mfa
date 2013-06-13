@@ -46,6 +46,15 @@ public class GenerateMultiFactorCredentialsActionTests {
 
         final MutableAttributeMap flowScope = mock(MutableAttributeMap.class);
         when(requestContext.getFlowScope()).thenReturn(flowScope);
+
+    }
+
+    private void setMockAuthenticationContextWith(final Authentication auth) {
+        when(requestContext.getFlowScope().get(MultiFactorRequestContextUtils.CAS_AUTHENTICATION_ATTR_NAME)).thenReturn(auth);
+    }
+
+    private void setMockTgtContextWith(final String tgt) {
+        when(requestContext.getFlowScope().get(MultiFactorRequestContextUtils.CAS_TICKET_GRANTING_TICKET_ATTR_NAME)).thenReturn(tgt);
     }
 
     @Test
@@ -65,7 +74,8 @@ public class GenerateMultiFactorCredentialsActionTests {
 
     @Test
     public void testAuthenticationViaContext() {
-        MultiFactorRequestContextUtils.setAuthentifcation(requestContext, authentication);
+        setMockAuthenticationContextWith(authentication);
+        setMockTgtContextWith(null);
 
         final Credentials c = getCredentials();
         final Credentials creds = this.action.createCredentials(requestContext, c, "usrPsw");
@@ -82,8 +92,8 @@ public class GenerateMultiFactorCredentialsActionTests {
 
     @Test
     public void testAuthenticationViaTGT() {
-        MultiFactorRequestContextUtils.setAuthentifcation(requestContext, null);
-        MultiFactorRequestContextUtils.setTicketGrantingTicketId(requestContext, TGT_ID);
+        setMockAuthenticationContextWith(null);
+        setMockTgtContextWith(TGT_ID);
 
         final Credentials c = getCredentials();
         final Credentials creds = this.action.createCredentials(requestContext, c, "usrPsw");

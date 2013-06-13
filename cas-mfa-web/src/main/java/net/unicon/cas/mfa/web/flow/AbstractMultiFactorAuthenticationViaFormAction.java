@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
+import org.springframework.util.Assert;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
@@ -34,6 +35,10 @@ import org.springframework.webflow.execution.RequestContext;
  */
 @SuppressWarnings("deprecation")
 public abstract class AbstractMultiFactorAuthenticationViaFormAction implements InitializingBean {
+    public static final String MFA_ERROR_EVENT_ID = "error";
+
+    public static final String MFA_SUCCESS_EVENT_ID = "mfaSuccess";
+
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @NotNull
@@ -74,6 +79,10 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      */
     protected final Event doMultiFactorAuthentication(final RequestContext context, final Credentials credentials,
             final MessageContext messageContext, final String id) throws Exception {
+
+        Assert.notNull(id);
+        Assert.notNull(credentials);
+
         try {
             final String tgt = WebUtils.getTicketGrantingTicketId(context);
             if (!StringUtils.isBlank(tgt)) {
@@ -136,7 +145,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * Set the binder instance.
      * @param credentialsBinder the binder instance
      */
-    public void setCredentialsBinder(final CredentialsBinder credentialsBinder) {
+    public void setCredentialsBinder(@SuppressWarnings("hiding") final CredentialsBinder credentialsBinder) {
         this.credentialsBinder = credentialsBinder;
     }
 
@@ -163,7 +172,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * @return error event id
      */
     protected Event getErrorEvent() {
-        return new Event(this, "error");
+        return new Event(this, MFA_ERROR_EVENT_ID);
     }
 
     /**
@@ -171,7 +180,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * @return the webflow id
      */
     protected Event getSuccessEvent() {
-        return new Event(this, "mfaSuccess");
+        return new Event(this, MFA_SUCCESS_EVENT_ID);
     }
 
     @Override

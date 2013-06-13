@@ -12,13 +12,13 @@ import org.springframework.webflow.execution.RequestContext;
 public final class MultiFactorRequestContextUtils {
 
     /** Attribute name by which the authentication context can be retrieve/placed in the flow.**/
-    private static final String CAS_AUTHENTICATION_ATTR_NAME = "casAuthentication";
+    public static final String CAS_AUTHENTICATION_ATTR_NAME = "casAuthentication";
 
     /** Attribute name by which the TGT can be retrieve/placed in the flow.**/
-    private static final String CAS_TICKET_GRANTING_TICKET_ATTR_NAME = "ticketGrantingTicketId";
+    public static final String CAS_TICKET_GRANTING_TICKET_ATTR_NAME = "ticketGrantingTicketId";
 
     /** Attribute name by which the MFA credentials can be retrieve/placed in the flow.**/
-    private static final String CAS_MFA_CREDENTIALS_ATTR_NAME = "mfaCredentials";
+    public static final String CAS_MFA_CREDENTIALS_ATTR_NAME = "mfaCredentials";
 
     private MultiFactorRequestContextUtils() {
     }
