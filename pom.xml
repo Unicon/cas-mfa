@@ -144,7 +144,7 @@
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.0.4</version>
+                  <version>[3.0.0,)</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>${project.build.sourceVersion}</version>
