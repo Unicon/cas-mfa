@@ -32,7 +32,7 @@ An example of how a CAS adopter would compose a local good-practices maven overl
 
 * This project is currently configured to integrate with CAS server `v3.5.2`.
 * From the command line, run `mvn clean package` and grab the produced `cas.war` file from the overlay directory.
-* Or, modify the `build.xml` ANT build accordindly to your environment and simply run `ant deploy`.
+* Or, modify the `build.xml` ANT build accordingly to your environment and simply run `ant deploy`.
 
 
 # Where will this code live eventually?
