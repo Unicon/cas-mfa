@@ -19,8 +19,14 @@ import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
  */
 public final class GenerateMultiFactorCredentialsAction {
 
+    /** The authentication support. */
     private AuthenticationSupport authenticationSupport;
 
+    /**
+     * Sets the authentication support.
+     *
+     * @param authSupport the new authentication support
+     */
     public void setAuthenticationSupport(final AuthenticationSupport authSupport) {
         this.authenticationSupport = authSupport;
     }
@@ -28,8 +34,8 @@ public final class GenerateMultiFactorCredentialsAction {
     /**
      * Construct the {@link MultiFactorCredentials} instance by chaining current {@link Credentials}
      * and the {@link Authentication}.
-     * @param context
-     * @param upCredentials
+     * @param context the request context
+     * @param upCredentials the credentials to authenticate
      * @param id the identifier for the credentials used.
      * @return an instance of {@link MultiFactorCredentials}
      */
@@ -52,7 +58,7 @@ public final class GenerateMultiFactorCredentialsAction {
     /**
      * Obtain the {@link Authentication} object from the webflow's flow scope. If none,
      * attempt to obtain the authentication object from the current TGT.
-     * @param context
+     * @param context the request context
      * @return the {@link Authentication} object
      */
     private Authentication getCasAuthentication(final RequestContext context) {
@@ -69,6 +75,12 @@ public final class GenerateMultiFactorCredentialsAction {
         return authentication;
     }
 
+    /**
+     * Gets the mfa credentials instance from context.
+     *
+     * @param context the context
+     * @return the mfa credentials instance from context
+     */
     private MultiFactorCredentials getMfaCredentialsInstanceFromContext(final RequestContext context) {
         final MultiFactorCredentials c = MultiFactorRequestContextUtils.getMfaCredentials(context);
         if (c == null) {

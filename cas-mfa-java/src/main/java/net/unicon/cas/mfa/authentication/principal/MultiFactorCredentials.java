@@ -105,7 +105,7 @@ public class MultiFactorCredentials implements Credentials {
      * into account.
      * @return the primary authentication context
      */
-    protected int getPrimaryAuthenticationContextIndex() {
+    private int getPrimaryAuthenticationContextIndex() {
         return 0;
     }
 }

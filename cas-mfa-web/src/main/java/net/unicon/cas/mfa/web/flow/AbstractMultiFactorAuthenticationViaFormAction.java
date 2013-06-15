@@ -35,18 +35,25 @@ import org.springframework.webflow.execution.RequestContext;
  */
 @SuppressWarnings("deprecation")
 public abstract class AbstractMultiFactorAuthenticationViaFormAction implements InitializingBean {
+
+    /** The Constant MFA_ERROR_EVENT_ID. */
     public static final String MFA_ERROR_EVENT_ID = "error";
 
+    /** The Constant MFA_SUCCESS_EVENT_ID. */
     public static final String MFA_SUCCESS_EVENT_ID = "mfaSuccess";
 
+    /** The logger. */
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /** The authentication manager. */
     @NotNull
     protected AuthenticationManager authenticationManager;
 
+    /** The central authentication service. */
     @NotNull
-    protected CentralAuthenticationService centralAuthenticationService;
+    protected CentralAuthenticationService cas;
 
+    /** The credentials binder. */
     @NotNull
     protected CredentialsBinder credentialsBinder;
 
@@ -77,11 +84,13 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
     /**
      * In the event of an MFA request, authenticate the credentials by default, and place
      * the authentication context back into the flow.
+     *
      * @param context request context
      * @param credentials the requesting credentials
      * @param messageContext the message bundle manager
      * @param id the identifier of the credential, based on implementation provided in the flow setup.
      * @return the resulting event
+     * @throws Exception the exception
      */
     protected final Event doMultiFactorAuthentication(final RequestContext context, final Credentials credentials,
             final MessageContext messageContext, final String id) throws Exception {
@@ -92,11 +101,11 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
         try {
             final String tgt = WebUtils.getTicketGrantingTicketId(context);
             if (!StringUtils.isBlank(tgt)) {
-                centralAuthenticationService.destroyTicketGrantingTicket(tgt);
+                cas.destroyTicketGrantingTicket(tgt);
             }
             final Authentication auth = this.authenticationManager.authenticate(credentials);
 
-            MultiFactorRequestContextUtils.setAuthentifcation(context, auth);
+            MultiFactorRequestContextUtils.setAuthentication(context, auth);
             return multiFactorAuthenticationSuccessful(auth, context, credentials, messageContext, id);
         } catch (final AuthenticationException e) {
             logger.error(e.getMessage(), e);
@@ -105,19 +114,27 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
     }
 
     /**
-    * In the event of a non-MFA request, return the result of {@link #getErrorEvent()} by default.
-    * Implementations are expected to override this method if they wish to respond to authentication
-    * requests.
-    * @param context request context
-    * @param credentials the requesting credentials
-    * @param messageContext the message bundle manager
-    * @return the resulting event
-    */
-    protected Event doAuthentication(final RequestContext context, final Credentials credentials, final MessageContext messageContext)
-            throws Exception {
-        return getErrorEvent();
-    }
+     * In the event of a non-MFA request, return the result of {@link #getErrorEvent()} by default.
+     * Implementations are expected to override this method if they wish to respond to authentication
+     * requests.
+     *
+     * @param context request context
+     * @param credentials the requesting credentials
+     * @param messageContext the message bundle manager
+     * @return the resulting event
+     * @throws Exception the exception
+     */
+    protected abstract Event doAuthentication(final RequestContext context, final Credentials credentials,
+            final MessageContext messageContext)
+            throws Exception;
 
+    /**
+     * Checks if is valid login ticket.
+     *
+     * @param context the context
+     * @param messageContext the message context
+     * @return true, if is valid login ticket
+     */
     protected final boolean isValidLoginTicket(final RequestContext context, final MessageContext messageContext) {
         final String authoritativeLoginTicket = WebUtils.getLoginTicketFromFlowScope(context);
         final String providedLoginTicket = WebUtils.getLoginTicketFromRequest(context);
@@ -130,7 +147,18 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
         return true;
     }
 
-    public Event submit(final RequestContext context, final Credentials credentials, final MessageContext messageContext, final String id)
+    /**
+     * Submit.
+     *
+     * @param context the context
+     * @param credentials the credentials
+     * @param messageContext the message context
+     * @param id the id
+     * @return the event
+     * @throws Exception the exception
+     */
+    public final Event submit(final RequestContext context, final Credentials credentials,
+            final MessageContext messageContext, final String id)
             throws Exception {
 
         if (isMultiFactorAuthenticationRequest(context)) {
@@ -142,16 +170,24 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
         return doAuthentication(context, credentials, messageContext);
     }
 
-    protected Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
-            final Credentials credentials, final MessageContext messageContext, final String id) {
-        return getSuccessEvent();
-    }
+    /**
+     * Multi factor authentication successful.
+     *
+     * @param authentication the authentication
+     * @param context the context
+     * @param credentials the credentials
+     * @param messageContext the message context
+     * @param id the id
+     * @return the event
+     */
+    protected abstract Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
+            final Credentials credentials, final MessageContext messageContext, final String id);
 
     /**
      * Set the binder instance.
      * @param credentialsBinder the binder instance
      */
-    public void setCredentialsBinder(@SuppressWarnings("hiding") final CredentialsBinder credentialsBinder) {
+    public final void setCredentialsBinder(@SuppressWarnings("hiding") final CredentialsBinder credentialsBinder) {
         this.credentialsBinder = credentialsBinder;
     }
 
@@ -160,16 +196,17 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * effective when the incoming service does not specify a valid loa.
      * @param centralAuthenticationService the cas instance.
      */
-    public void setCentralAuthenticationService(final CentralAuthenticationService centralAuthenticationService) {
-        this.centralAuthenticationService = centralAuthenticationService;
+    public final void setCentralAuthenticationService(final CentralAuthenticationService centralAuthenticationService) {
+        this.cas = centralAuthenticationService;
     }
 
     /**
      * Authentication manager instance to authenticate the user by its configured
      * handlers as the first leg of an multifactor authentication sequence.
-     * @param manager
+     *
+     * @param manager the new multi factor authentication manager
      */
-    public void setMultiFactorAuthenticationManager(final AuthenticationManager manager) {
+    public final void setMultiFactorAuthenticationManager(final AuthenticationManager manager) {
         this.authenticationManager = manager;
     }
 
@@ -177,7 +214,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * The webflow error event id.
      * @return error event id
      */
-    protected Event getErrorEvent() {
+    protected final Event getErrorEvent() {
         return new Event(this, MFA_ERROR_EVENT_ID);
     }
 
@@ -185,10 +222,13 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * Return the mfa webflow id.
      * @return the webflow id
      */
-    protected Event getSuccessEvent() {
+    protected final Event getSuccessEvent() {
         return new Event(this, MFA_SUCCESS_EVENT_ID);
     }
 
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
     }

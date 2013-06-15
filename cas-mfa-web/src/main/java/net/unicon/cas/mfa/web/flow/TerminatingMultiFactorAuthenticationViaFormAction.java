@@ -20,13 +20,24 @@ import org.springframework.webflow.execution.RequestContext;
  */
 public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractMultiFactorAuthenticationViaFormAction {
 
+    /* {@inheritDoc} */
     @Override
-    protected Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
+    protected final Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
             final Credentials credentials, final MessageContext messageContext, final String id) {
 
         return createTicketGrantingTicket(authentication, context, credentials, messageContext, id);
     }
 
+    /**
+     * Creates the ticket granting ticket.
+     *
+     * @param authentication the authentication
+     * @param context the context
+     * @param credentials the credentials
+     * @param messageContext the message context
+     * @param id the id
+     * @return the event
+     */
     private Event createTicketGrantingTicket(final Authentication authentication, final RequestContext context,
             final Credentials credentials, final MessageContext messageContext, final String id) {
         try {
@@ -36,7 +47,7 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
             mfa.getChainedCredentials().put(id, credentials);
 
             MultiFactorRequestContextUtils.setMfaCredentials(context, mfa);
-            WebUtils.putTicketGrantingTicketInRequestScope(context, this.centralAuthenticationService.createTicketGrantingTicket(mfa));
+            WebUtils.putTicketGrantingTicketInRequestScope(context, this.cas.createTicketGrantingTicket(mfa));
             return getSuccessEvent();
         } catch (final TicketException e) {
             populateErrorsInstance(e, messageContext);
@@ -45,11 +56,24 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
         }
     }
 
+    /**
+     * Populate errors instance.
+     *
+     * @param e the e
+     * @param messageContext the message context
+     */
     private void populateErrorsInstance(final TicketException e, final MessageContext messageContext) {
         try {
             messageContext.addMessage(new MessageBuilder().error().code(e.getCode()).defaultText(e.getCode()).build());
         } catch (final Exception fe) {
             logger.error(fe.getMessage(), fe);
         }
+    }
+
+    /* {@inheritDoc} */
+    @Override
+    protected final Event doAuthentication(final RequestContext context, final Credentials credentials,
+            final MessageContext messageContext) throws Exception {
+        return super.getErrorEvent();
     }
 }
