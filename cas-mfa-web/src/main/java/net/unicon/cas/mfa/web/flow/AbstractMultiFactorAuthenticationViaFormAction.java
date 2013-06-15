@@ -54,8 +54,9 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * Bind the request to the credentials.
      * @param context the context
      * @param credentials credentials
+     * @throws Exception if the binding operation fails, or if the request cant be obtained
      */
-    public void doBind(final RequestContext context, final Credentials credentials) throws Exception {
+    public final void doBind(final RequestContext context, final Credentials credentials) throws Exception {
         final HttpServletRequest request = WebUtils.getHttpServletRequest(context);
 
         if (this.credentialsBinder != null && this.credentialsBinder.supports(credentials.getClass())) {
@@ -63,7 +64,12 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
         }
     }
 
-    protected boolean isMultiFactorAuthenticationRequest(final RequestContext context) {
+    /**
+     * Determine whether the request is MFA compliant.
+     * @param context the request context
+     * @return true, if this is a MFA request.
+     */
+    private boolean isMultiFactorAuthenticationRequest(final RequestContext context) {
         final Service service = WebUtils.getService(context);
         return (service != null && service instanceof MultiFactorAuthenticationSupportingWebApplicationService);
     }
