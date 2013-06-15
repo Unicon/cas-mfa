@@ -5,6 +5,8 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.webflow.execution.RequestContext;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
@@ -18,6 +20,8 @@ import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
  * @author Misagh Moayyed
  */
 public final class GenerateMultiFactorCredentialsAction {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenerateMultiFactorCredentialsAction.class);
 
     /** The authentication support. */
     private AuthenticationSupport authenticationSupport;
@@ -41,17 +45,24 @@ public final class GenerateMultiFactorCredentialsAction {
      */
     public Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials, @NotNull final String id) {
         final Authentication authentication = getCasAuthentication(context);
-        if (authentication == null || id == null || upCredentials == null) {
+        if (authentication == null) {
+            LOGGER.debug("No authentication context is available.");
             return null;
         }
 
+        LOGGER.debug("Retrieved authentication context. Building multifactor credentials...");
         final MultiFactorCredentials credentials = getMfaCredentialsInstanceFromContext(context);
+
+        LOGGER.debug("Added authentication to the chain");
         credentials.getChainedAuthentications().add(authentication);
+
         if (id != null && upCredentials != null) {
+            LOGGER.debug("Added credentials to the chain by id [{}]", id);
             credentials.getChainedCredentials().put(id, upCredentials);
         }
-
         MultiFactorRequestContextUtils.setMfaCredentials(context, credentials);
+
+        LOGGER.debug("Added multifactor credentials to the request context.");
         return credentials;
     }
 
@@ -66,8 +77,10 @@ public final class GenerateMultiFactorCredentialsAction {
         final Authentication authentication = MultiFactorRequestContextUtils.getAuthentication(context);
 
         if (authentication == null) {
+            LOGGER.debug("Request is misssing authentication context. Examining TGT...");
             final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
             if (!StringUtils.isBlank(tgt)) {
+                LOGGER.debug("Retrieving authentication context from TGT [{}]", tgt);
                 return this.authenticationSupport.getAuthenticationFrom(tgt);
             }
         }
@@ -82,8 +95,10 @@ public final class GenerateMultiFactorCredentialsAction {
      * @return the mfa credentials instance from context
      */
     private MultiFactorCredentials getMfaCredentialsInstanceFromContext(final RequestContext context) {
+        LOGGER.debug("Attempting to collect multifactor credentials from the context...");
         final MultiFactorCredentials c = MultiFactorRequestContextUtils.getMfaCredentials(context);
         if (c == null) {
+            LOGGER.debug("Context is missing multifactor credentials. Initializing a new instance...");
             return new MultiFactorCredentials();
         }
         return c;

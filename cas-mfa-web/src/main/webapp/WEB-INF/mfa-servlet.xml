@@ -32,6 +32,10 @@
   <bean id="authenticationSupport" class="net.unicon.cas.addons.authentication.internal.DefaultAuthenticationSupport"
                   c:ticketRegistry-ref="ticketRegistry"/>
   
+  <bean id="validateInitialMfaRequestAction" 
+        class="net.unicon.cas.mfa.web.flow.ValidateInitialMultiFactorAuthenticationRequestAction"
+        c:authSupport-ref="authenticationSupport" />
+  
   <!-- Generate and chain multifactor credentials based on current authenticated credentials. -->
   <bean id="generateMfaCredentialsAction" class="net.unicon.cas.mfa.web.flow.GenerateMultiFactorCredentialsAction"
         p:authenticationSupport-ref="authenticationSupport"/>

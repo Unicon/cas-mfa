@@ -36,8 +36,6 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
 
     private static final String CONST_PARAM_TICKET = "ticket";
 
-    private static final String CONST_PARAM_AUTHN_METHOD = "authn_method";
-
     private final SimpleWebApplicationServiceImpl wrapperService;
 
     private final String authenticationMethod;
