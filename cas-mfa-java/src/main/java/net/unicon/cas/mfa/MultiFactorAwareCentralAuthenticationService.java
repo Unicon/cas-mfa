@@ -20,6 +20,11 @@ import org.jasig.cas.validation.Assertion;
  * based on the assumptions that the credentials received are of type {@link MultiFactorCredentials}
  * and that the authentication context is verified and readily available, based on which the TGT will
  * be added to the configured {@link TicketRegistry}.
+ *
+ * This implementation here is merely responsible for creating the ticket granting ticket
+ * and again, assumes that the authentication context has been established by all other
+ * authentication managers in the flow. The authentication context is carried within the
+ * {@link MultiFactorCredentials} instance.
  * @author Misagh Moayyed
  */
 public final class MultiFactorAwareCentralAuthenticationService implements CentralAuthenticationService {
