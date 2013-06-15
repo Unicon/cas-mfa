@@ -39,6 +39,13 @@ An example of how a CAS adopter would compose a local good-practices maven overl
 * [![Build Status](https://secure.travis-ci.org/Unicon/cas-mfa.png)](http://travis-ci.org/Unicon/cas-mfa)
 * [ ![Codeship Status for Unicon/cas-mfa](https://www.codeship.io/projects/0bbd72d0-b74c-0130-d193-1eff452fc99e/status?branch=master)](https://www.codeship.io/projects/4315)
 
+## Live Demo
+Snapshots are automatically deployed to [heroku.com](http://heroku.com). This is accomodated by the [codeship](http://codeship.io) plugin
+configured for the repository to auto build the `heroku` branch.
+
+You may experiment with the live demo at the following url:
+[http://casmfa.heroku.com](http://casmfa.herok.com)
+
 # Where will this code live eventually?
 
 *Good question!*  
