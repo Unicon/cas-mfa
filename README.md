@@ -13,19 +13,9 @@ The intention is to develop a solution that can be adopted by current CAS adopte
 
 This project is currently structured as three sub-projects
 
-## cas-mfa-java
-
-Java classes and interfaces that build to a .jar
-
-## cas-mfa-web
-
-Web components (JSPs, Spring Web Flow configuration, etc.) that build to a .war.
-
-These Web components can depend on the cas-mfa-java .jar
-
-## webapp-overlay-example
-
-An example of how a CAS adopter would compose a local good-practices maven overlay configuration to build a localized CAS server incorporating the features in this project.
+* `cas-mfa-java:` Java classes and interfaces that build to a .jar
+* `cas-mfa-web:` Web components (JSPs, Spring Web Flow configuration, etc.) that build to a .war. These Web components can depend on the cas-mfa-java .jar
+* `webapp-overlay-example:` An example of how a CAS adopter would compose a local good-practices maven overlay configuration to build a localized CAS server incorporating the features in this project.
 
 
 # How do I build this and try it out? 
