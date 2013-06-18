@@ -34,7 +34,8 @@ Snapshots are automatically deployed to [heroku.com](http://heroku.com). This is
 configured for the repository to auto build the `heroku` branch.
 
 You may experiment with the live demo at the following url:
-[https://casmfa.herokuapp.com](https://casmfa.herokuapp.com)
+[https://casmfa.herokuapp.com](https://casmfa.herokuapp.com) (Note: If you receive an "Application Error" upon initial access,
+try refreshing the page once)
 
 # Where will this code live eventually?
 
