@@ -1,4 +1,4 @@
-# What is this project
+# What is this project?
 
 This is a project to develop free and open source compatibly licensed extensions for the current-generation CAS server product implementing
 * support for authenticating using multiple authentication factors
@@ -9,7 +9,7 @@ Unicon is undertaking this project under contract for Evergreen State College as
 
 The intention is to develop a solution that can be adopted by current CAS adopters.
 
-# What are these directories
+# What are these directories?
 
 This project is currently structured as three sub-projects
 
