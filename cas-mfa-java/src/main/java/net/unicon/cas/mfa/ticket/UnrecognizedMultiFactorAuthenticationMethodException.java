@@ -3,7 +3,7 @@ package net.unicon.cas.mfa.ticket;
 
 /**
  * Multifactor authentication exception that is thrown
- * when the request authentication method cannot be accepted
+ * when the requested authentication method cannot be accepted
  * or isn't support by this CAS server.
  * @author Misagh Moayyed
  * @see net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification
