@@ -29,6 +29,7 @@ import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodExce
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
 import org.jasig.cas.CentralAuthenticationService;
+import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.HttpBasedServiceCredentials;
 import org.jasig.cas.authentication.principal.WebApplicationService;
@@ -79,6 +80,9 @@ public class ServiceValidateController extends DelegateController {
 
     /** Constant representing the Assertion in the model. */
     private static final String MODEL_ASSERTION = "assertion";
+
+    /** Constant representing the authentication method in the model. */
+    private static final String MODEL_AUTHN_METHOD = MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
 
     /** The CORE which we will delegate all requests to. */
     @NotNull
@@ -136,9 +140,7 @@ public class ServiceValidateController extends DelegateController {
         final String serviceTicketId = service != null ? service.getArtifactId() : null;
 
         if (service == null || serviceTicketId == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug(String.format("Could not process request; Service: %s, Service Ticket Id: %s", service, serviceTicketId));
-            }
+            logger.debug(String.format("Could not process request; Service: %s, Service Ticket Id: %s", service, serviceTicketId));
             return generateErrorView("INVALID_REQUEST", "INVALID_REQUEST", null);
         }
 
@@ -198,9 +200,18 @@ public class ServiceValidateController extends DelegateController {
                 success.addObject(MODEL_PROXY_GRANTING_TICKET_IOU, proxyIou);
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug(String.format("Successfully validated service ticket: %s", serviceTicketId));
+            /**
+             * Insert the authentication method into the view, if one is in fact used.
+             */
+            final int index = assertion.getChainedAuthentications().size() - 1;
+            final Authentication authToUse = assertion.getChainedAuthentications().get(index);
+
+            final String authnMethodUsed = (String) authToUse.getAttributes()
+                    .get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
+            if (authnMethodUsed != null) {
+                success.addObject(MODEL_AUTHN_METHOD, authnMethodUsed);
             }
+            logger.debug(String.format("Successfully validated service ticket: %s", serviceTicketId));
 
             return success;
         } catch (final TicketValidationException e) {
