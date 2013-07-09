@@ -1,5 +1,7 @@
 package net.unicon.cas.mfa.web.flow;
 
+import java.util.Map;
+
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
@@ -66,7 +68,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         setMockTgtContextWith(TGT_ID);
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_INVALID, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
     }
 
     @Test
@@ -76,7 +78,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
 
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_INVALID, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
     }
 
     @Test
@@ -86,7 +88,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
 
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_INVALID, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
     }
 
     @Test
@@ -97,7 +99,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
 
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_INVALID, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
     }
 
     @Test
@@ -105,11 +107,69 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         setMockTgtContextWith(TGT_ID);
         setMockServiceContextWith(mock(MultiFactorAuthenticationSupportingWebApplicationService.class));
         when(this.requestContext.getRequestParameters().isEmpty()).thenReturn(false);
-        when(this.requestContext.getRequestParameters().get(
-             MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD)).thenReturn("authn_method");
+        when(
+                this.requestContext.getRequestParameters().get(
+                        MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD)).thenReturn(
+                MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
 
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_VALID, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_MFA, ev.getId());
+    }
+
+    @Test
+    public void testValidRequestWithMfa() throws Exception {
+        final String AUTHN_METHOD = "strong_two_factor";
+
+        setMockTgtContextWith(TGT_ID);
+        final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
+                mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
+
+        when(mfaSvc.getAuthenticationMethod()).thenReturn(AUTHN_METHOD);
+        setMockServiceContextWith(mfaSvc);
+
+        when(this.requestContext.getRequestParameters().isEmpty()).thenReturn(false);
+        when(
+                this.requestContext.getRequestParameters().get(
+                        MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+                .thenReturn(AUTHN_METHOD);
+
+        final Map map = mock(Map.class);
+        when(map.get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+            .thenReturn(AUTHN_METHOD);
+
+        when(authentication.getAttributes()).thenReturn(map);
+
+        final Event ev = this.action.doExecute(this.requestContext);
+        assertNotNull(ev);
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
+    }
+
+    @Test
+    public void testValidRequestWithMfaUnknownAuthnMethod() throws Exception {
+        final String AUTHN_METHOD = "strong_two_factor";
+
+        setMockTgtContextWith(TGT_ID);
+        final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
+                mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
+
+        when(mfaSvc.getAuthenticationMethod()).thenReturn(AUTHN_METHOD);
+        setMockServiceContextWith(mfaSvc);
+
+        when(this.requestContext.getRequestParameters().isEmpty()).thenReturn(false);
+        when(
+                this.requestContext.getRequestParameters().get(
+                        MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+                .thenReturn("unknown_authn_method");
+
+        final Map map = mock(Map.class);
+        when(map.get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+            .thenReturn(AUTHN_METHOD);
+
+        when(authentication.getAttributes()).thenReturn(map);
+
+        final Event ev = this.action.doExecute(this.requestContext);
+        assertNotNull(ev);
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
     }
 }

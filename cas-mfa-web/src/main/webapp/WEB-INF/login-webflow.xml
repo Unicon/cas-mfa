@@ -31,8 +31,8 @@
 
     <action-state id="mfaTicketGrantingTicketExistsCheck">
         <evaluate expression="validateInitialMfaRequestAction" />
-        <transition on="valid" to="multiFactorAuthentication" />
-        <transition to="ticketGrantingTicketExistsCheck" />
+        <transition on="requireMfa" to="multiFactorAuthentication" />
+        <transition on="requireTgt" to="ticketGrantingTicketExistsCheck" />
     </action-state>
          
 	<decision-state id="ticketGrantingTicketExistsCheck">
