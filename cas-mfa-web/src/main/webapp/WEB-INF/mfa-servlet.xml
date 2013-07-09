@@ -23,14 +23,36 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:webflow="http://www.springframework.org/schema/webflow-config"
        xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:cas="http://unicon.net/schema/cas"
        xmlns:c="http://www.springframework.org/schema/c"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
-       http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd">
+       http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd
+       http://unicon.net/schema/cas http://unicon.net/schema/cas/cas-addons.xsd">
 
-  <bean id="authenticationSupport" class="net.unicon.cas.addons.authentication.internal.DefaultAuthenticationSupport"
-                  c:ticketRegistry-ref="ticketRegistry"/>
+  <import resource="cas-servlet.xml" />
+  
+  <!-- 
+  Spring WebFlow does not provide an option to aggregate multiple registry
+  instances together. That would have come in handy such that multiple overlays
+  could specify their own custom registries as extensions of the CAS flow registry,
+  the result of which could have been aggregated into a comprehensive registry 
+  available to CAS. That feature would have also removed the need to download
+  the cas-servlet.xml file into a local overlay.
+  
+  Due to the absence of that feature by default, we are specifying the MFA registry
+  subflow definition directly in this file, and assigning it a direct id.
+  
+  The id attribute is important. It needs to match the webflow state
+  that is invoked by Spring.
+  -->
+  <webflow:flow-registry id="flowRegistry" flow-builder-services="builder">
+    <webflow:flow-location path="/WEB-INF/login-webflow.xml" id="login"/>
+    <webflow:flow-location path="/WEB-INF/mfa-webflow.xml" id="mfa"/>
+  </webflow:flow-registry>
+  
+  <cas:default-authentication-support/>
   
   <bean id="validateInitialMfaRequestAction" 
         class="net.unicon.cas.mfa.web.flow.ValidateInitialMultiFactorAuthenticationRequestAction"
@@ -40,6 +62,20 @@
   <bean id="generateMfaCredentialsAction" class="net.unicon.cas.mfa.web.flow.GenerateMultiFactorCredentialsAction"
         p:authenticationSupport-ref="authenticationSupport"/>
   
+  <bean id="mfaAuthenticationManager" parent="authenticationManager">
+    <property name="authenticationMetaDataPopulators">
+        <util:list>
+            <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator" />
+        </util:list>
+    </property>
+  </bean>
+    
+  <bean id="serviceValidateController" class="org.jasig.cas.web.ServiceValidateController"
+        p:validationSpecificationClass="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
+        p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
+        p:proxyHandler-ref="proxy20Handler"
+        p:argumentExtractor-ref="casArgumentExtractor"/>
+        
   <!-- 
     Initiating the the multifactor authentication sequence. Validates credentials and
     resolve principal, or authenticate and proceed to the second factor authentication flow.
@@ -49,23 +85,23 @@
         c:authenticationViaFormAction-ref="authenticationViaFormAction"
         p:centralAuthenticationService-ref="centralAuthenticationService"
         p:warnCookieGenerator-ref="warnCookieGenerator"
-        p:multiFactorAuthenticationManager-ref="authenticationManager" />
+        p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager" />
         
   <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->     
   <bean id="terminatingTwoFactorAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction" 
-        p:centralAuthenticationService-ref="terminatingCentralAuthenticationService"
+        p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
         p:multiFactorAuthenticationManager-ref="terminatingAuthenticationManager" />
  
   <!-- 
     This is the authentication manager responsible to validate the second factor credentials.
     Will use a second set of authentication handlers to verify credentials.
   -->
-  <bean id="terminatingAuthenticationManager" parent="authenticationManager" 
+  <bean id="terminatingAuthenticationManager" parent="mfaAuthenticationManager" 
         p:authenticationHandlers-ref="listOfTwoFactorStrongAuthenticationHandlers" />
   
   <!--  CAS instance responsible for creating the final authenticated principal. -->      
-  <bean id="terminatingCentralAuthenticationService" 
+  <bean id="mfaAwareCentralAuthenticationService" 
         class="net.unicon.cas.mfa.MultiFactorAwareCentralAuthenticationService"
         p:ticketRegistry-ref="ticketRegistry" p:ticketGrantingTicketExpirationPolicy-ref="grantingTicketExpirationPolicy" 
         p:ticketGrantingTicketUniqueTicketIdGenerator-ref="ticketGrantingTicketUniqueIdGenerator"

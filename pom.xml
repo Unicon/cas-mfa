@@ -474,7 +474,7 @@
                 <artifactId>grouperClient</artifactId>
             </exclusion>
         </exclusions>
-      </dependency>
+      </dependency>            
     </dependencies>
   </dependencyManagement>
 
@@ -488,7 +488,7 @@
     <cas.version>3.5.2</cas.version>
     <cas-addons.version>1.5</cas-addons.version>
     <spring.webflow.version>2.3.2.RELEASE</spring.webflow.version>
-    <spring.version>3.2.2.RELEASE</spring.version>
+    <spring.version>3.2.3.RELEASE</spring.version>
     <aspectj.version>1.7.2</aspectj.version>
     <javax.validation.version>1.0.0.GA</javax.validation.version>
     <hibernate.validator.version>4.2.0.Final</hibernate.validator.version>

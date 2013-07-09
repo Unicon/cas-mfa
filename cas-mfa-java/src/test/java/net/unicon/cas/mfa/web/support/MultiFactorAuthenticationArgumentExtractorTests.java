@@ -24,7 +24,8 @@ public class MultiFactorAuthenticationArgumentExtractorTests {
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getParameter("service")).thenReturn("https://www.github.com");
-        when(request.getParameter("authn_method")).thenReturn("test_loa");
+        when(request.getParameter(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+                .thenReturn("test_loa");
 
         assertNull(extractor.extractService(request));
     }
@@ -37,7 +38,8 @@ public class MultiFactorAuthenticationArgumentExtractorTests {
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getParameter("service")).thenReturn("https://www.github.com");
-        when(request.getParameter("authn_method")).thenReturn("strong_two_factor");
+        when(request.getParameter(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+                .thenReturn("strong_two_factor");
 
         assertTrue(extractor.extractService(request) instanceof MultiFactorAuthenticationSupportingWebApplicationService);
     }

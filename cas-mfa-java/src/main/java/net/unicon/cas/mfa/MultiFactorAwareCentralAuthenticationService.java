@@ -3,6 +3,7 @@ package net.unicon.cas.mfa;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 
 import org.jasig.cas.CentralAuthenticationService;
+import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.Service;
 import org.jasig.cas.ticket.ExpirationPolicy;
@@ -37,9 +38,11 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
     @Override
     public String createTicketGrantingTicket(final Credentials credentials) throws TicketException {
         final MultiFactorCredentials mfaCredentials = (MultiFactorCredentials) credentials;
+        final Authentication authentication = mfaCredentials.getAuthentication();
+
         final TicketGrantingTicket ticketGrantingTicket = new TicketGrantingTicketImpl(
-                this.ticketGrantingTicketUniqueTicketIdGenerator.getNewTicketId(TicketGrantingTicket.PREFIX),
-                mfaCredentials.getAuthentication(), this.ticketGrantingTicketExpirationPolicy);
+                this.ticketGrantingTicketUniqueTicketIdGenerator.getNewTicketId(TicketGrantingTicket.PREFIX), authentication,
+                this.ticketGrantingTicketExpirationPolicy);
 
         this.ticketRegistry.addTicket(ticketGrantingTicket);
         return ticketGrantingTicket.getId();
@@ -58,7 +61,8 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
 
     @Override
     public Assertion validateServiceTicket(final String serviceTicketId, final Service service) throws TicketException {
-        return this.delegate.validateServiceTicket(serviceTicketId, service);
+        final Assertion assertion = this.delegate.validateServiceTicket(serviceTicketId, service);
+        return assertion;
     }
 
     @Override
