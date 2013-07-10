@@ -70,7 +70,7 @@
     </property>
   </bean>
     
-  <bean id="serviceValidateController" class="org.jasig.cas.web.ServiceValidateController"
+  <bean id="serviceValidateController" class="net.unicon.cas.mfa.web.MultiFactorServiceValidateController"
         p:validationSpecificationClass="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
         p:proxyHandler-ref="proxy20Handler"

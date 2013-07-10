@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.jasig.cas.web;
+package net.unicon.cas.mfa.web;
 
 import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +38,7 @@ import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.ticket.TicketValidationException;
 import org.jasig.cas.ticket.proxy.ProxyHandler;
 import org.jasig.cas.validation.Assertion;
+import org.jasig.cas.web.DelegateController;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -67,7 +68,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Misagh Moayyed
  * @since 3.0
  */
-public class ServiceValidateController extends DelegateController {
+public class MultiFactorServiceValidateController extends DelegateController {
 
     /** View if Service Ticket Validation Fails. */
     private static final String DEFAULT_SERVICE_FAILURE_VIEW_NAME = "casServiceFailureView";

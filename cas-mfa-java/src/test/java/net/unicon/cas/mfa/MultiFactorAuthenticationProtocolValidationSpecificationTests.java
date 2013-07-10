@@ -51,7 +51,7 @@ public class MultiFactorAuthenticationProtocolValidationSpecificationTests {
     }
 
     @Test
-    public void testValidSpecWuthAuthnMethods() {
+    public void testValidSpecWithAuthnMethods() {
         when(authentication.getAttributes().get(any(String.class))).thenReturn("strong_two_factor");
         spec.setAuthenticationMethod("strong_two_factor");
         assertTrue(this.spec.isSatisfiedBy(this.assertion));
@@ -61,13 +61,11 @@ public class MultiFactorAuthenticationProtocolValidationSpecificationTests {
     public void testUnacceptedSpec() {
         when(authentication.getAttributes().get(any(String.class))).thenReturn(null);
         spec.setAuthenticationMethod("strong_two_factor");
-        assertTrue(this.spec.isSatisfiedBy(this.assertion));
     }
 
     @Test(expected = UnrecognizedMultiFactorAuthenticationMethodException.class)
     public void testUnrecognizedSpec() {
         when(authentication.getAttributes().get(any(String.class))).thenReturn("strong_two_factor");
         spec.setAuthenticationMethod("weak_two_factor");
-        assertTrue(this.spec.isSatisfiedBy(this.assertion));
     }
 }

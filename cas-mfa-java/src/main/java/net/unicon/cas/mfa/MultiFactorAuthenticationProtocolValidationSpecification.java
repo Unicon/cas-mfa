@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Validate the requested protocol spec, primarily based on the requested authentication method.
  * @author Misagh Moayyed
- * @see org.jasig.cas.web.ServiceValidateController
+ * @see net.unicon.cas.mfa.web.MultiFactorServiceValidateController
  */
 public class MultiFactorAuthenticationProtocolValidationSpecification extends Cas20ProtocolValidationSpecification {
 
@@ -46,14 +46,27 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
      * If the authentication method used by the assertion is not blank, but does not match
      * the requested authentication method, an instance of {@link UnrecognizedMultiFactorAuthenticationMethodException}
      * will be thrown.
+     *
+     * <p>Note: The current {@link #isSatisfiedByInternal(Assertion)} method signature
+     * only allows for returning of a boolean value indicating whether the assertion
+     * can satisfy the requested protocol. This is not sufficient to fully explain the context
+     * of a validation failure, as in the case of multifactor authentication, whether
+     * the authentication method is unrecognized or unacceptable. In order to accommodate this,
+     * and rather than changing the method signature to return more than just a boolean, the
+     * implementation opts to throwing specific exceptions in order to indicate the context
+     * of the failure. Exceptions are unchecked, yet are expected to be caught by the caller
+     * in order to digest the failure.
+     *
+     * @see UnacceptableMultiFactorAuthenticationMethodException
+     * @see UnrecognizedMultiFactorAuthenticationMethodException
      */
     @Override
     protected boolean isSatisfiedByInternal(final Assertion assertion) {
         if (assertion.getChainedAuthentications().size() > 0) {
             final int index = assertion.getChainedAuthentications().size() - 1;
-            final Authentication authToUse = assertion.getChainedAuthentications().get(index);
+            final Authentication authencation = assertion.getChainedAuthentications().get(index);
 
-            final String authnMethodUsed = (String) authToUse.getAttributes()
+            final String authnMethodUsed = (String) authencation.getAttributes()
                     .get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
             if (!StringUtils.isBlank(getAuthenticationMethod())) {
                 if (StringUtils.isBlank(authnMethodUsed)) {
