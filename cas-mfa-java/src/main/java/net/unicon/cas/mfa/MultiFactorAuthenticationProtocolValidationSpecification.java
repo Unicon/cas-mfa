@@ -64,9 +64,9 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
     protected boolean isSatisfiedByInternal(final Assertion assertion) {
         if (assertion.getChainedAuthentications().size() > 0) {
             final int index = assertion.getChainedAuthentications().size() - 1;
-            final Authentication authencation = assertion.getChainedAuthentications().get(index);
+            final Authentication authentication = assertion.getChainedAuthentications().get(index);
 
-            final String authnMethodUsed = (String) authencation.getAttributes()
+            final String authnMethodUsed = (String) authentication.getAttributes()
                     .get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
             if (!StringUtils.isBlank(getAuthenticationMethod())) {
                 if (StringUtils.isBlank(authnMethodUsed)) {
