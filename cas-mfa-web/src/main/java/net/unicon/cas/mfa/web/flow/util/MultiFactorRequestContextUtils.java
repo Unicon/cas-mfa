@@ -11,7 +11,7 @@ import org.springframework.webflow.execution.RequestContext;
  */
 public final class MultiFactorRequestContextUtils {
 
-    /** Attribute name by which the authentication context can be retrieve/placed in the flow.**/
+    /** Attribute name by which the authentication context can be retrieved/placed in the flow.**/
     public static final String CAS_AUTHENTICATION_ATTR_NAME = "casAuthentication";
 
     /** Attribute name by which the TGT can be retrieve/placed in the flow.**/
