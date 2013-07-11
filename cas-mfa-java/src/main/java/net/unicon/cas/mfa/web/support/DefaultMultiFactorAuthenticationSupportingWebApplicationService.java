@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
  * present and its value is supported by the corresponding argument extractor.
  * <p>NOTE: The delegation is necessary because the {@link SimpleWebApplicationServiceImpl}
  * itself is marked as final. Future versions of CAS might make the class more available.
+ * Cf CAS server RFE https://github.com/Jasig/cas/issues/284 .
  * @author Misagh Moayyed
  */
 public final class DefaultMultiFactorAuthenticationSupportingWebApplicationService extends AbstractWebApplicationService implements
