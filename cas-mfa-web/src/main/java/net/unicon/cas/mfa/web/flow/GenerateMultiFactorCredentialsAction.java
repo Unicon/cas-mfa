@@ -77,7 +77,7 @@ public final class GenerateMultiFactorCredentialsAction {
         final Authentication authentication = MultiFactorRequestContextUtils.getAuthentication(context);
 
         if (authentication == null) {
-            LOGGER.debug("Request is misssing authentication context. Examining TGT...");
+            LOGGER.debug("Request is missing authentication context. Examining TGT...");
             final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
             if (!StringUtils.isBlank(tgt)) {
                 LOGGER.debug("Retrieving authentication context from TGT [{}]", tgt);
