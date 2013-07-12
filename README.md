@@ -10,7 +10,7 @@ Unicon is undertaking this project under contract for Evergreen State College as
 The intention is to develop a solution that can be adopted by current CAS adopters.
 
 #Documentation
-Please review the project wiki for additional information on scope, functionality and how-to walkthroughs. 
+Please review [the project wiki](https://github.com/Unicon/cas-mfa/wiki) for additional information on scope, functionality and how-to walkthroughs. 
 
 # Build Status
 
