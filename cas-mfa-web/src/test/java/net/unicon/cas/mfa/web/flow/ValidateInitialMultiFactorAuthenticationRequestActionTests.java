@@ -92,17 +92,6 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
     }
 
     @Test
-    public void testInvalidEmptyRequestParams() throws Exception {
-        setMockTgtContextWith(TGT_ID);
-        setMockServiceContextWith(mock(MultiFactorAuthenticationSupportingWebApplicationService.class));
-        when(this.requestContext.getRequestParameters().isEmpty()).thenReturn(true);
-
-        final Event ev = this.action.doExecute(this.requestContext);
-        assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
-    }
-
-    @Test
     public void testValidRequest() throws Exception {
         setMockTgtContextWith(TGT_ID);
         setMockServiceContextWith(mock(MultiFactorAuthenticationSupportingWebApplicationService.class));

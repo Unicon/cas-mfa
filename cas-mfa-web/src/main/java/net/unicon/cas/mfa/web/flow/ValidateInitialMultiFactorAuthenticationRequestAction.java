@@ -75,8 +75,8 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
         final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
         final Service svc = WebUtils.getService(context);
 
-        if (!StringUtils.isBlank(tgt) && svc != null && svc instanceof MultiFactorAuthenticationSupportingWebApplicationService
-                && !context.getRequestParameters().isEmpty()) {
+        if (!StringUtils.isBlank(tgt) && svc != null &&
+                svc instanceof MultiFactorAuthenticationSupportingWebApplicationService) {
 
             final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
                     (MultiFactorAuthenticationSupportingWebApplicationService) svc;
