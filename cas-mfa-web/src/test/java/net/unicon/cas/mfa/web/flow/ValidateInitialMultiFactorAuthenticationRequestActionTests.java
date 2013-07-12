@@ -112,11 +112,6 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         when(mfaSvc.getAuthenticationMethod()).thenReturn(AUTHN_METHOD);
         setMockServiceContextWith(mfaSvc);
 
-        when(
-                this.requestContext.getRequestParameters().get(
-                        MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
-                .thenReturn(AUTHN_METHOD);
-
         final Map map = mock(Map.class);
         when(map.get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
             .thenReturn(AUTHN_METHOD);
