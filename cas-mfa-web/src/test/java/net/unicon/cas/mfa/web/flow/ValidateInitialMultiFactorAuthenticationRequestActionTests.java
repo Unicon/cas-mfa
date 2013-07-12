@@ -95,10 +95,6 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
     public void testValidRequest() throws Exception {
         setMockTgtContextWith(TGT_ID);
         setMockServiceContextWith(mock(MultiFactorAuthenticationSupportingWebApplicationService.class));
-        when(
-                this.requestContext.getRequestParameters().get(
-                        MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD)).thenReturn(
-                MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
 
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
