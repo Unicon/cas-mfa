@@ -13,13 +13,15 @@ import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
 /**
- * Determines whether the login flow needs to branch to honor the authentication method requirements of
+ * Determines whether the login flow needs to branch *now* to honor the authentication method requirements of
  * {@link MultiFactorAuthenticationSupportingWebApplicationService}.
  *
- * If the Service expresses a requirement for how the user must authenticate, and there is not a record in the user's
+ * If the Service expresses a requirement for how the user must authenticate,
+ * and there's an existing single sign-on session, and there is not a record in the user's
  * single sign-on session of having already fulfilled that requirement, then fires the `requireMfa` event indicating
  * that exceptional handling is required.  Otherwise (i.e., if no exceptional authentication method is required,
- * or that exceptional authentication method is already fulfilled) then fire the `requireTgt` event indicating
+ * or there is no existing single sign-on session,
+ * or the required exceptional authentication method is already fulfilled) then fire the `requireTgt` event indicating
  * that the login flow should proceed as per normal.
  *
  * More explicitly:
@@ -37,6 +39,10 @@ import org.springframework.webflow.execution.RequestContext;
  *  is required to fulfill the service's authentication requirements.</li>
  *  <li>Otherwise, fire the `requireTgt` event to continue the login flow as per usual.</li>
  * </ol>
+ *
+ * This means that in the case where there is not an existing single sign-on session, this Action will continue
+ * the login flow as per normal <strong></strong>even though additional authentication will be required
+ * later in the flow to fulfill the authentication requirements of the CAS-using service</strong>.
  *
  * @author Misagh Moayyed
  */
