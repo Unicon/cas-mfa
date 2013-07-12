@@ -75,7 +75,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
         final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
         final Service svc = WebUtils.getService(context);
 
-        if (!StringUtils.isBlank(tgt) && svc != null &&
+        if (StringUtils.isNotBlank(tgt) && svc != null &&
                 svc instanceof MultiFactorAuthenticationSupportingWebApplicationService) {
 
             final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
@@ -90,7 +90,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
                  * If the requested authentication method exists, but CAS cannot provide an
                  * authentication method, require mfa.
                  */
-                if (!StringUtils.isBlank(mfaSvc.getAuthenticationMethod()) && StringUtils.isBlank(authnMethod)) {
+                if (StringUtils.isNotBlank(mfaSvc.getAuthenticationMethod()) && StringUtils.isBlank(authnMethod)) {
                     return new Event(this, EVENT_ID_REQUIRE_MFA);
                 }
 
