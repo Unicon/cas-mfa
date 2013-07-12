@@ -73,40 +73,69 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
     protected Event doExecute(final RequestContext context) throws Exception {
 
         final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
+
+
+        /*
+         * If the TGT is blank i.e. there is no existing SSO session, proceed with normal login flow
+         * (Note that flow may need interrupted later if the CAS-using service requires an authentication method
+         *  not fulfilled by the normal login flow)
+         */
+        if (StringUtils.isBlank(tgt)) {
+            return new Event(this, EVENT_ID_REQUIRE_TGT);
+        }
+
         final Service svc = WebUtils.getService(context);
 
-        if (StringUtils.isNotBlank(tgt) && svc != null &&
-                svc instanceof MultiFactorAuthenticationSupportingWebApplicationService) {
+        /*
+         * If the service is null
+         * or does not implement the interface indicating what authentication method it requires
+         * proceed with normal login flow.
+         */
+        if (svc == null || !(svc instanceof MultiFactorAuthenticationSupportingWebApplicationService)) {
+            return new Event(this, EVENT_ID_REQUIRE_TGT);
+        }
 
-            final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
-                    (MultiFactorAuthenticationSupportingWebApplicationService) svc;
-            final Authentication authentication = this.authenticationSupport.getAuthenticationFrom(tgt);
+        final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
+                (MultiFactorAuthenticationSupportingWebApplicationService) svc;
 
-            if (authentication != null) {
-                final String authnMethod = (String) authentication.getAttributes().get(
-                        MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
+        String requiredAuthenticationMethod = mfaSvc.getAuthenticationMethod();
 
-                /**
-                 * If the requested authentication method exists, but CAS cannot provide an
-                 * authentication method, require mfa.
-                 */
-                if (StringUtils.isNotBlank(mfaSvc.getAuthenticationMethod()) && StringUtils.isBlank(authnMethod)) {
-                    return new Event(this, EVENT_ID_REQUIRE_MFA);
-                }
+        /*
+         * If the authentication method the CAS-using service has specified is blank,
+         * proceed with the normal login flow.
+         */
+        if (StringUtils.isBlank(requiredAuthenticationMethod)) {
+            return new Event(this, EVENT_ID_REQUIRE_TGT);
+        }
 
-                /**
-                 * If we have established an MFA session, and this is an Mfa authentication request,
-                 * and if the authentication method remembered by the CAS server matches the
-                 * authentication method requested by the service match, proceed normally.
-                 */
-                if (!StringUtils.isBlank(authnMethod) && !StringUtils.isBlank(mfaSvc.getAuthenticationMethod())
-                        && authnMethod.equals(mfaSvc.getAuthenticationMethod())) {
-                    return new Event(this, EVENT_ID_REQUIRE_TGT);
-                }
 
-            }
+        final Authentication authentication = this.authenticationSupport.getAuthenticationFrom(tgt);
+
+        /*
+         * If somehow the TGT were to have no authentication, then interpret as an existing SSO session insufficient
+         * to fulfill the requirements of this service, and branch to fulfill the authentication requirement.
+         */
+        if (authentication == null) {
             return new Event(this, EVENT_ID_REQUIRE_MFA);
         }
-        return new Event(this, EVENT_ID_REQUIRE_TGT);
+
+
+        final String previouslyAchievedAuthenticationMethod = (String) authentication.getAttributes().get(
+                MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
+
+        /*
+         * If the recorded authentication method from the prior Authentication matches the authentication method
+         * required to access the CAS-using service, proceed with the normal authentication flow.
+         */
+        if (StringUtils.equals(previouslyAchievedAuthenticationMethod, requiredAuthenticationMethod)) {
+            return new Event(this, EVENT_ID_REQUIRE_TGT);
+        }
+
+        /*
+         * The recorded authentication method does not match the authentication method required to access the
+         * CAS-using service.  Branch the flow to prompt for the required authentication method.
+         */
+        return new Event(this, EVENT_ID_REQUIRE_MFA);
+
     }
 }
