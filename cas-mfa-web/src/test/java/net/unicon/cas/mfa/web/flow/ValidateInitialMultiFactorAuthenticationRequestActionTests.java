@@ -95,7 +95,6 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
     public void testValidRequest() throws Exception {
         setMockTgtContextWith(TGT_ID);
         setMockServiceContextWith(mock(MultiFactorAuthenticationSupportingWebApplicationService.class));
-        when(this.requestContext.getRequestParameters().isEmpty()).thenReturn(false);
         when(
                 this.requestContext.getRequestParameters().get(
                         MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD)).thenReturn(
@@ -117,7 +116,6 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         when(mfaSvc.getAuthenticationMethod()).thenReturn(AUTHN_METHOD);
         setMockServiceContextWith(mfaSvc);
 
-        when(this.requestContext.getRequestParameters().isEmpty()).thenReturn(false);
         when(
                 this.requestContext.getRequestParameters().get(
                         MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
@@ -145,7 +143,6 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         when(mfaSvc.getAuthenticationMethod()).thenReturn(AUTHN_METHOD);
         setMockServiceContextWith(mfaSvc);
 
-        when(this.requestContext.getRequestParameters().isEmpty()).thenReturn(false);
         when(
                 this.requestContext.getRequestParameters().get(
                         MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
