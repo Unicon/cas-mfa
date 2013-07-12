@@ -13,18 +13,31 @@ import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
 /**
- * Attempts to validate an incoming multifactor authentication request. If the incoming
- * service is an instance of {@link MultiFactorAuthenticationSupportingWebApplicationService}
- * then the following validation rules are activated:
+ * Determines whether the login flow needs to branch to honor the authentication method requirements of
+ * {@link MultiFactorAuthenticationSupportingWebApplicationService}.
+ *
+ * If the Service expresses a requirement for how the user must authenticate, and there is not a record in the user's
+ * single sign-on session of having already fulfilled that requirement, then fires the `requireMfa` event indicating
+ * that exceptional handling is required.  Otherwise (i.e., if no exceptional authentication method is required,
+ * or that exceptional authentication method is already fulfilled) then fire the `requireTgt` event indicating
+ * that the login flow should proceed as per normal.
+ *
+ * More explicitly:
  *
  * <p>
  * <ol>
- *  <li>If an authentication context does not exist, proceed to #4.</li>
- *  <li>If an authentication context exists without any MFA decorations, require MFA.</li>
- *  <li>If an authentication context provided by MFA exists, yet the authentication method does not
- *  match that of requested, require MFA.</li>
- *  <li>Otherwise, proceed to require/verify the existence of the TGT as usual.</li>
+ *  <li>If an authentication context does not exist
+ *  (i.e., the user does not have an existing single sign-on session with a record of a prior authentication),
+ *  continue the login flow as usual by firing the `requireTgt` event.</li>
+ *  <li>If an authentication context exists without any authentication method decoration, fire the
+ *  `requireMfa` event indicating that an exceptional flow is required to fulfill the service's authentication
+ *  requirements</li>
+ *  <li>If an authentication context exists with an authentication method decoration indicating an authentication
+ *  method other than that required by the service, fire the `requireMfa` event indicating that an exceptional flow
+ *  is required to fulfill the service's authentication requirements.</li>
+ *  <li>Otherwise, fire the `requireTgt` event to continue the login flow as per usual.</li>
  * </ol>
+ *
  * @author Misagh Moayyed
  */
 public final class ValidateInitialMultiFactorAuthenticationRequestAction extends AbstractAction {
