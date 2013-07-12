@@ -41,7 +41,7 @@ import org.springframework.webflow.execution.RequestContext;
  * </ol>
  *
  * This means that in the case where there is not an existing single sign-on session, this Action will continue
- * the login flow as per normal <strong></strong>even though additional authentication will be required
+ * the login flow as per normal <strong>even though additional authentication will be required
  * later in the flow to fulfill the authentication requirements of the CAS-using service</strong>.
  *
  * @author Misagh Moayyed
