@@ -1,5 +1,11 @@
 WORK IN PROGRESS.  NOT YET COMPLETE.
 
+# Target audience
+
+The target audience for this page is CAS community members seeking to understand the architecture and makeup of this CAS server extension.
+
+This is not the guide for locally implementing.
+
 
 # Scope
 
