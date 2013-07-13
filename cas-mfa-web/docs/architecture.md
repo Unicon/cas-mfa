@@ -57,11 +57,11 @@ The `validateInitialMfaRequestAction` is defined in `mfa-servlet.xml` as
 
 This custom action considers the authentication method required by the CAS-using service the user is attempting to log in to, if any, and compares this to the recorded method of how the user authenticated previously in the active single sign-on session, if any, and makes a binary decision about whether the login flow should proceeed as per normal (the `requireTgt` event) or whether the flow should branch (the `requireMfa` event) to enforce an as-yet unfulfilled authentication method requirement expressed by the CAS-using service.
 
-The `requireTgt` case is uninteresting: the CAS login flow proceeds as normal.
+This Action branches to `requireMfa` only if the user has an existing single sign-on session that does not yet meet the authentication method requirements.  If the requirements are already met *or if the user hasn't logged in at all* the Action signals to proceed the flow.  This is so that the user will first complete the normal user and password login process before (later, through another flow action) branching to then experience and fulfill the additional authentication factor requirement.
 
 ### multiFactorAuthentication login flow state
 
-The `requireMfa` case is interesting: the flow proceeds to the `multiFactorAuthentication` state.  This is a Spring Web Flow subflow-state:
+In the `requireMfa` case, the flow proceeds to the `multiFactorAuthentication` state.  This is a Spring Web Flow subflow-state:
 
     <subflow-state id="multiFactorAuthentication" subflow="mfa">
         <on-entry>
@@ -76,24 +76,154 @@ The `requireMfa` case is interesting: the flow proceeds to the `multiFactorAuthe
 
 On entering the state, the flow invokes `generateMfaCredentialsAction.createCredentials()`.
 
+`generateMfaCredentialsAction` is defined in `mfa-servlet.xml`
+
+    <!-- Generate and chain multifactor credentials based on current authenticated credentials. -->
+    <bean id="generateMfaCredentialsAction" class="net.unicon.cas.mfa.web.flow.GenerateMultiFactorCredentialsAction"
+        p:authenticationSupport-ref="authenticationSupport"/>
+
+This simply reads or instantiates a MultiFactoCredentials instance to back the one-time-password form.
+
+This is a sub-flow action with `subflow="mfa"`, so it branches control to the `mfa-webflow.xml` subflow.
+
+### mfa-webflow.xml subflow
+
+This sub-flow is a typical Spring Web Flow rendering and handling the submission of a form, here to collect the additional one-time password credentials making up the additional authentication factor to achieve multi (two) factor authentication.
+
+It uses the `loginTicket` technique of the typical CAS username and password login form to discourage form replay and it follows the standard CAS login flow pattern separating the form rendering and submit-processing flow states.
+
+The additional credential is currently modeled as an additional username and password credential.
+
+Submitting the form actuates `terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)`
+
+Like other flow actions, this is defined in `mfa-servlet.xml`:
+
+    <bean id="terminatingTwoFactorAuthenticationViaFormAction"
+        class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction"
+        p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
+        p:multiFactorAuthenticationManager-ref="terminatingAuthenticationManager" />
+
+`TerminatingMultiFactorAuthenticationViaFormAction` `doBind()` "binds" the submitted form to CAS concepts of Credentials.
+
+Subsequently, `submit()` actually authenticates the credentials.
+
+The flow can end in successful authentication of the additional credential or in error.
+
+### Returning from the sub-flow
+
+Back in the main login-webflow, completing the mfa subflow yields
+
+    <subflow-state id="multiFactorAuthentication" subflow="mfa">
+        <on-entry>
+            <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
+        </on-entry>
+
+        <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
+               type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
+        <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
+        <transition on="mfaError" to="generateLoginTicket" />
+    </subflow-state>
 
 
+Success in fulfilling the authentication method requirement modeled in the sub-flow leads to sending the ticket granting ticket down to the browser.
 
-TODO: and models this as a specification.
+Error in the sub-flow sends the user back to the generate login ticket step in the flow.
 
-Of course this just amounts to a UI hint, since a nefarious end-user could edit the login URL to adjust the parameter so as to not require the alternative login path.
 
-TODO: new sessions vs existing sessions
+### Branching to multi-factor authentication after traditional authentication
+
+Recall that back in `mfaTicketGrantingTicketExistsCheck` there were two options: `requireMfa` and `requireTgt`.  The above treated in some detail the `requireMfa` case arising when an existing single sign-on session is insufficient.  Howver, the `requireTgt` normal login flow path proceeded in *both* the case where no particular unfulfilled authentication method is required *and* in the case where a particular authentication method is required but the branching needs deferred to later after the traditional login form.
+
+Therefore, the processing of the regular username and password login form needs to include an additional check after the form to determine if branching to the sub-flow is then appropriate.
+
+This happens in the main login flow's `realSubmit`
+
+    <action-state id="realSubmit">
+      <evaluate expression="initiatingAuthenticationViaFormAction.submit(flowRequestContext,
+         flowScope.credentials, messageContext, flowScope.credentials.username)" />
+         <transition on="warn" to="warn" />
+         <transition on="success" to="sendTicketGrantingTicket" />
+         <transition on="error" to="generateLoginTicket" />
+         <transition on="mfaSuccess" to="multiFactorAuthentication" />
+    	</action-state>
+
+Note that `mfaSuccess` leads to that same `multiFactorAuthentication` sub-flow.
 
 
 ## Remembering how users authenticated
 
 In order to appropriately handle existing sessions and in order to be able to include the authentication method in the validation response, the CAS server needs to remember how the user authenticated.
 
-TODO: how is this implemented?
+This is implemented as metadata on the Authentication.
+
+The Terminating... Action chains the new Multifactor authentication onto the prior Authentication and packages this into a new Ticket Granting Ticket.
+
+    private Event createTicketGrantingTicket(final Authentication authentication, final RequestContext context,
+            final Credentials credentials, final MessageContext messageContext, final String id) {
+        ...
+            final MultiFactorCredentials mfa = MultiFactorRequestContextUtils.getMfaCredentials(context);
+
+            mfa.getChainedAuthentications().add(authentication);
+            mfa.getChainedCredentials().put(id, credentials);
+
+            MultiFactorRequestContextUtils.setMfaCredentials(context, mfa);
+            WebUtils.putTicketGrantingTicketInRequestScope(context, this.cas.createTicketGrantingTicket(mfa));
+            return getSuccessEvent();
+        ...
+    }
+
 
 
 ## Including Authentication Method in the Validation Response and Enforcing
+
+This project customizes the traditional CAS server XML ticket validation responses to include the authentication method.  This allows CAS-using sevices to predicate behavior on or apply access control rules on how the user authenticated.
+
+CAS-using applications can also communicate their authentication method requirement to the CAS server on their ticket validation request and rely on the CAS server to enforce the expressed authentication method requirements.
+
+### Including the authentication method in the ticket validation response
+
+The `casServiceValidate.jsp` is customized to include
+
+        <c:if test="${not empty authn_method}">
+          <cas:authn_method>${authn_method}</cas:authn_method>
+        </c:if>
+      </c:if>
+    </cas:authenticationSuccess>
+
+A customized `MultiFactorServiceValidateController` places the `authn_method` attribute into the model available to the JSP for rendering:
+
+    ...
+    final int index = assertion.getChainedAuthentications().size() - 1;
+    final Authentication authToUse = assertion.getChainedAuthentications().get(index);
+
+    final String authnMethodUsed = (String) authToUse.getAttributes()
+      .get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
+    if (authnMethodUsed != null) {
+      success.addObject(MODEL_AUTHN_METHOD, authnMethodUsed);
+    }
+    ...
+
+
+
+### Enforcing a CAS-using-service-indicated required authentication method
+
+In CAS, criteria as to whether a given ticket meets a given service's validation requirements are modeled as Specifications.
+
+Traditionally, CAS-using applications can specifiy "renew=true" on a validation request, which causes the Specification to require that the ticket include a fresh underlying Authentication.  Likewise, CAS-using applications can and should use the `/serviceValidate` rather than `/proxyValidate` ticket validation endpoint whenever possible, with the `/serviceValidate` endpoint rejecting all proxy tickets.  That `/serviceValidate` requirement against proxy chains is also modeled as a Specification.
+
+A service's epxressed requirement for a particular authentication method is likewise modeled as a Specification, with the customized MultiFactorServiceValidateController manually binding the "authn_method" request parameter into a `MultiFactorAuthenticationProtocolValidationSpecification` and then asking that specification whether the available Assertion fulfills it.
+
+The Specifiation implementation is a little goofy in using runtime exceptions to characterize how the assertion does not match since the API would have afforded only true or false.
+
+
+
+
+### `/proxyValidate` unmofified
+
+These customizations do not modify proxy ticket validation.
+
+TODO: modify proxy ticket validation
+
 
 
 # Functional analysis
