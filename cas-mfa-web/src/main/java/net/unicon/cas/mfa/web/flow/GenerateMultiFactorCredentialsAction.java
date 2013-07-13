@@ -41,7 +41,7 @@ public final class GenerateMultiFactorCredentialsAction {
      * @param context the request context
      * @param upCredentials the credentials to authenticate
      * @param id the identifier for the credentials used.
-     * @return an instance of {@link MultiFactorCredentials}
+     * @return an instance of {@link MultiFactorCredentials} or null if no authentication context available
      */
     public Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials, @NotNull final String id) {
         final Authentication authentication = getCasAuthentication(context);
