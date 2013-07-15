@@ -267,11 +267,13 @@ The `authn_method` parameter on login is merely advisory, a hint to allow CAS to
 
 # Guidance for extension
 
+This architecture is intended for extensibility in at least a couple of directions: adopters and others who work from this code should be able to add additinoal authentication methods and should be able to change the strategy for how CAS understands what authentication method is required for which services.
+
 ## Adding an additional authentication method
 
-TODO
-
+Currently, adding an additional authentication method would involve modification to `mfaTicketGrantingTicketExistsCheck` and both at the web flow and the Java layer, to add handling for additional `authn_method` values, modification to the customized handling of the traditional username and password login form submission to appropriately branch to the multiple authentication-method-specific sub-flows.
 
 ## Modeling service authentication method requirements in the services registry rather than as a request parameter
 
-TODO
+The shortest path to modeling service authentication method requirements in the service registry rather than or in addition to indication of these requirements via request parameter would be through adjustment of the
+
