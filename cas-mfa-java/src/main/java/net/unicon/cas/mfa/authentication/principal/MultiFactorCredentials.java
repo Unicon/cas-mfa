@@ -69,8 +69,8 @@ public class MultiFactorCredentials implements Credentials {
     }
 
     /**
-     * Returns the first authentication object constructed
-     * that is taken as the primary source of authentication
+     * Returns the authentication object indicated by {@link #getPrimaryAuthenticationContextIndex()}
+     * in the authentication chain hat is taken as the primary source of authentication
      * and resolved principal.
      * @return the primary authentication context
      * @see #getPrimaryAuthenticationContextIndex()
@@ -103,7 +103,8 @@ public class MultiFactorCredentials implements Credentials {
      * would decide which context should be considered as the
      * primary authentication, based on which principals are taken
      * into account.
-     * @return the primary authentication context
+     * @see #getAuthentication()
+     * @return the primary authentication context index
      */
     private int getPrimaryAuthenticationContextIndex() {
         return 0;

@@ -13,4 +13,13 @@ This is kind of complicated and may not be the final answer here.
 
 ## How do I build it?
 
-*Good question*.  To be defined and documented.
+In this directory, run
+
+    mvn package
+
+This will yield a `target` directory containing, among other artifacts, a `cas-mfa-java-{VERSION}.jar`, where {VERSION} is, as of this writing, "0.0.1-SNAPSHOT".  As in, `cas-mfa-java-0.0.1-SNAPSHOT.jar`.
+
+You'd then include that .jar in an application, e.g. by declaring it as a Maven dependency in a `pom.xml`.
+
+The `cas-mfa-web` project does this, and the top level (up one directory) `pom.xml` automates first building this .jar and then making use of it in the other (i.e., .war) artifacts it builds.
+
