@@ -277,3 +277,18 @@ Currently, adding an additional authentication method would involve modification
 
 The shortest path to modeling service authentication method requirements in the service registry rather than or in addition to indication of these requirements via request parameter would be through adjustment of the
 
+# Design Decisions and Tradeoffs
+
+## Authentication methods are sub-flows
+
+Authentication methods are, concretely, required nonstandard sub-flows within the login web flow.  A custom `authn_method` value could be associated with any behavior that can be expressed as a sub-flow.  This is essentially un-limited as regards the sub-flow (sub-flows can include pretty much any behavior Web applications are capable of) and importantly limiting as regards the main flow (branching to the sub-flow happens at specific points, and the behavior of the main flow is otherwise unmodified.)
+
+In practice this means that authentication methods that amount to *additional* behavior above and beyond the traditional behavior are enabled and methods that would outright replace the traditional username and password prompt are not enabled in this architecture.
+
+Of course, particular adopters are free to adjust the main web flow further to introduce other behavior at that layer, thereby enabling authentication method behaviors not supported by the "additional behavior modeled in the sub-flow" architecture.
+
+## Authentication methods are unordered identifiers
+
+There is no ordering, hierarchy, dependency, or other relationship among custom authn_methods.  While conceptually "really_strong_two_factor" might fulfill "strong_two_factor", the architecture has no direct way of modeling and reflecting that conceptual relationship, though interestingly a "strong_two_factor" sub-flow could in its implementation consider evidence of a prior "really_strong_two_factor" authentication and return control to the main flow without requiring user interaction.
+
+The short version of this is that interesting relationships among authentication methods are feasible to implement, but are not modeled in metadata or handled by the infrastructure.
