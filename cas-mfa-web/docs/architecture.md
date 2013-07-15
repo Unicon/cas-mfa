@@ -232,15 +232,37 @@ Another way to think through this code is to consider the use cases and how they
 
 ## Service specifies no particular authentication method
 
+When a service specifies no particular authentication method on /cas/login, the CAS server behaves exactly as per normal, as if it weren't customized.
+
+The `mfaTicketGrantingTicketExistsCheck` continues the flow as per normal when there's no particular authentication method requirement specified, regardless of whether there's an existing ticket granting ticket or not.
+
+If the normal flow involves prompting for the normal username and password, the Action handling that form submission
+returns the normal `success` transition continuing the flow per normal.
+
+The only thing different between customized CAS and un-customized CAS in this case is that on `/cas/serviceValidate`, if the service doesn't specify a required `authn_method`, CAS will require no particular such method, but it will communicate the method fulfilled in the ticket validation response.
+
+
 ## Service specifies an authentication method; new session
+
+When an `authn_method` parameter on `/cas/login` advises a required authentication method and the user does not yet have a valid single sign-on session, customized CAS proceeds the login flow per normal in the `mfaTicketGrantingTicketExistsCheck` but branches the flow to provide the additional authentication method prompt in the customized handling of the normal username and password form submission.
+
+The result of this flow is to require both authentication factors: the traditional username and password, and the additional factor reqiuired in the sub-flow.
+
 
 ## Service specifies an authentication method; existing sufficient session
 
+When an `authn_method` parameter on `/cas/login` advises a required authentication method and the user already has a valid single sign-on session fulfilling that authentication method requirement, customized CAS proceeds the login flow per normal in the `mfaTicketGrantingTicketExistsCheck` which leads to exercising the existing valid ticket granting ticket to issue a service ticket as per normal without user interaction.
+
+
 ## Service specifies an authentication method; existing insufficient session
+
+When an `authn_method` parameter on `/cas/login` advises a required authentication method and the user already has a valid single sign-on session that does not fulfill this particular authentication method requirement, customized CAS branches the login flow in the `mfaTicketGrantingTicketExistsCheck` to provide the additional authentication method prompt.
+
+The result of this flow is to consider the prior completion of the normal username and password prompt sufficient but to require require augmentation by providing the additional factor reqiuired in the sub-flow.
 
 ## Validation doesn't match login
 
-
+The `authn_method` parameter on login is merely advisory, a hint to allow CAS to provide an appropriate login experience.  Enforcement of the authentication method requirement happens entirely on the `/cas/serviceValidate` ticket validation, optionally enforced in a coarse-grained way at the CAS server by CAS's requiring fulfillment of an `authn_method` expressed via request parameter, and in any case including the authentication method in the ticket validation response.
 
 
 # Guidance for extension
