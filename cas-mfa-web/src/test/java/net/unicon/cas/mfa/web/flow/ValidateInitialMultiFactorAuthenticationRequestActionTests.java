@@ -1,5 +1,7 @@
 package net.unicon.cas.mfa.web.flow;
 
+import java.util.Map;
+
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
@@ -61,55 +63,153 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         when(requestContext.getFlowScope().get("service")).thenReturn(svc);
     }
 
+    /**
+     * When there is no particular Service to log into (the user is just establishing a generic
+     * single sign-on session), the Action should return the Event indicating the flow should proceed
+     * as per normal.
+     */
     @Test
-    public void testMissingService() throws Exception {
+    public void testMissingServiceProceedsFlowAsNormal() throws Exception {
         setMockTgtContextWith(TGT_ID);
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_INVALID, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
     }
 
+    /**
+     * When there is no existing TGT (no existing single sign-on session), the Action should return the Event
+     * indicating the flow should proceed as per normal.
+     * @throws Exception would indicate test failure
+     */
     @Test
-    public void testMissingTgtId() throws Exception {
+    public void testMissingTgtProceedsFlowAsNormal() throws Exception {
         setMockTgtContextWith(null);
         setMockServiceContextWith(mock(MultiFactorAuthenticationSupportingWebApplicationService.class));
 
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_INVALID, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
     }
 
+    /**
+     * When the Service does not implement the interface for indicating what authentication method it requires,
+     * it requires no particular authentication method and the Action should return the Event indicating the flow
+     * should proceed as per normal.
+     * @throws Exception would indicate test failure
+     */
     @Test
-    public void testWrongServiceType() throws Exception {
+    public void testServiceDoesNotIndicateRequiredAuthenticationMethod() throws Exception {
         setMockTgtContextWith(TGT_ID);
         setMockServiceContextWith(mock(WebApplicationService.class));
 
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_INVALID, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
     }
 
+    /**
+     * When the service implements the interface for indicating what authentication method it requires,
+     * but indicates null as its required authentication method,
+     * it requires no particular authentication method and the Action should return
+     * the Event indicating the flow should proceed as per normal.
+     * @throws Exception would indicate test failure
+     */
     @Test
-    public void testInvalidEmptyRequestParams() throws Exception {
+    public void testMfaServiceSpecifyingNullRequiredAuthenticationMethod() throws Exception {
         setMockTgtContextWith(TGT_ID);
-        setMockServiceContextWith(mock(MultiFactorAuthenticationSupportingWebApplicationService.class));
-        when(this.requestContext.getRequestParameters().isEmpty()).thenReturn(true);
+
+        // the service implements the interface but doesn't provide a value
+        MultiFactorAuthenticationSupportingWebApplicationService nullReturningMockService =
+                mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
+
+        when(nullReturningMockService.getAuthenticationMethod()).thenReturn(null);
+
+        setMockServiceContextWith(nullReturningMockService);
 
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_INVALID, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
     }
 
+    /**
+     * When the service implements the interface for indicating what authentication method it requires,
+     * but indicates " " as its required authentication method,
+     * it requires no particular authentication method and the Action should return
+     * the Event indicating the flow should proceed as per normal.
+     * @throws Exception would indicate test failure
+     */
     @Test
-    public void testValidRequest() throws Exception {
+    public void testMfaServiceSpecifyingBlankRequiredAuthenticationMethod() throws Exception {
         setMockTgtContextWith(TGT_ID);
-        setMockServiceContextWith(mock(MultiFactorAuthenticationSupportingWebApplicationService.class));
-        when(this.requestContext.getRequestParameters().isEmpty()).thenReturn(false);
-        when(this.requestContext.getRequestParameters().get(
-             MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD)).thenReturn("authn_method");
+
+        // the service implements the interface but doesn't provide a value
+        MultiFactorAuthenticationSupportingWebApplicationService nullReturningMockService =
+                mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
+
+        when(nullReturningMockService.getAuthenticationMethod()).thenReturn(" ");
+
+        setMockServiceContextWith(nullReturningMockService);
 
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_VALID, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
+    }
+
+    /**
+     * When a prior Authentication was via the authentication method required by the service, consider the
+     * service's authentication requirement fulfilled and proceed the login flow as per normal.
+     * @throws Exception would indicate test failure
+     */
+    @Test
+    public void testPriorAuthenticationMatchingCurrentlyRequiredAuthenticationMethodProceedsFlow() throws Exception {
+        final String AUTHN_METHOD = "strong_two_factor";
+
+        setMockTgtContextWith(TGT_ID);
+        final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
+                mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
+
+        when(mfaSvc.getAuthenticationMethod()).thenReturn(AUTHN_METHOD);
+        setMockServiceContextWith(mfaSvc);
+
+        final Map map = mock(Map.class);
+        when(map.get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+            .thenReturn(AUTHN_METHOD);
+
+        when(authentication.getAttributes()).thenReturn(map);
+
+        final Event ev = this.action.doExecute(this.requestContext);
+        assertNotNull(ev);
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
+    }
+
+    /**
+     * Prior authentication specifying an authentication method *not* matching the currently
+     * required authentication method should return the Event indicating the flow should branch to require the
+     * now-relevant authentication method.
+     * @throws Exception would indicate test failure
+     */
+    @Test
+    public void testMismatchedAuthenticationMethodsBranchesFlow() throws Exception {
+
+        setMockTgtContextWith(TGT_ID);
+        final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
+                mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
+
+        // let's say this service requires 'strong_two_factor' authentication
+        when(mfaSvc.getAuthenticationMethod()).thenReturn("strong_two_factor");
+        setMockServiceContextWith(mfaSvc);
+
+
+        final Map map = mock(Map.class);
+        when(map.get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+            .thenReturn("just_take_the_user_at_his_word");
+
+        // whereas the Authentication has a record of previously authenticating via
+        // the 'just_take_the_user_at_his_word' authentication method
+        when(authentication.getAttributes()).thenReturn(map);
+
+        final Event ev = this.action.doExecute(this.requestContext);
+        assertNotNull(ev);
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_MFA, ev.getId());
     }
 }

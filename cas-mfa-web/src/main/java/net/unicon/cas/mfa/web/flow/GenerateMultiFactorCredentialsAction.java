@@ -41,7 +41,7 @@ public final class GenerateMultiFactorCredentialsAction {
      * @param context the request context
      * @param upCredentials the credentials to authenticate
      * @param id the identifier for the credentials used.
-     * @return an instance of {@link MultiFactorCredentials}
+     * @return an instance of {@link MultiFactorCredentials} or null if no authentication context available
      */
     public Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials, @NotNull final String id) {
         final Authentication authentication = getCasAuthentication(context);
@@ -77,7 +77,7 @@ public final class GenerateMultiFactorCredentialsAction {
         final Authentication authentication = MultiFactorRequestContextUtils.getAuthentication(context);
 
         if (authentication == null) {
-            LOGGER.debug("Request is misssing authentication context. Examining TGT...");
+            LOGGER.debug("Request is missing authentication context. Examining TGT...");
             final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
             if (!StringUtils.isBlank(tgt)) {
                 LOGGER.debug("Retrieving authentication context from TGT [{}]", tgt);

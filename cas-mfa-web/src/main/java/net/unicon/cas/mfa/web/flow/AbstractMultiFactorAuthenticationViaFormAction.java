@@ -104,14 +104,15 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
                 cas.destroyTicketGrantingTicket(tgt);
             }
             final Authentication auth = this.authenticationManager.authenticate(credentials);
-
+            final Event result = multiFactorAuthenticationSuccessful(auth, context, credentials, messageContext, id);
             MultiFactorRequestContextUtils.setAuthentication(context, auth);
-            return multiFactorAuthenticationSuccessful(auth, context, credentials, messageContext, id);
+            return result;
         } catch (final AuthenticationException e) {
             logger.error(e.getMessage(), e);
         }
         return getErrorEvent();
     }
+
 
     /**
      * In the event of a non-MFA request, return the result of {@link #getErrorEvent()} by default.
@@ -125,8 +126,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * @throws Exception the exception
      */
     protected abstract Event doAuthentication(final RequestContext context, final Credentials credentials,
-            final MessageContext messageContext)
-            throws Exception;
+            final MessageContext messageContext) throws Exception;
 
     /**
      * Checks if is valid login ticket.
@@ -157,9 +157,8 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * @return the event
      * @throws Exception the exception
      */
-    public final Event submit(final RequestContext context, final Credentials credentials,
-            final MessageContext messageContext, final String id)
-            throws Exception {
+    public final Event submit(final RequestContext context, final Credentials credentials, final MessageContext messageContext,
+            final String id) throws Exception {
 
         if (isMultiFactorAuthenticationRequest(context)) {
             if (isValidLoginTicket(context, messageContext)) {
