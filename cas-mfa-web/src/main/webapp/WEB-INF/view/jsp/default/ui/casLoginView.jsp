@@ -29,12 +29,6 @@
   </div>
 </c:if>
 
-<c:if test="${service.getClass().simpleName == 'DefaultMultiFactorAuthenticationSupportingWebApplicationService'}">
-  <div id="msg" class="info">
-      <h2>This service requires multifactor authentication!</h2>
-      <h4>The required authentication method specified is: [${service.authenticationMethod}] </h4>
-  </div>
-</c:if>
   
 <div class="box fl-panel" id="login">
   <form:form method="post" id="fm1" cssClass="fm-v clearfix"
