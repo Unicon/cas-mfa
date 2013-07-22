@@ -69,15 +69,15 @@ public class MultiFactorCredentials implements Credentials {
     }
 
     /**
-     * Returns the authentication object indicated by {@link #getPrimaryAuthenticationContextIndex()}
-     * in the authentication chain hat is taken as the primary source of authentication
-     * and resolved principal.
+     * Returns the authentication object in the authentication chain
+     * that is taken as the primary source of authentication
+     * and resolved principal. The chain is configured in such a way
+     * that the last authentication object is considered as primary.
      * @return the primary authentication context
-     * @see #getPrimaryAuthenticationContextIndex()
      */
     public final Authentication getAuthentication() {
-        if (!isEmpty() && getPrimaryAuthenticationContextIndex() <= this.chainedAuthentication.size()) {
-            return this.chainedAuthentication.get(getPrimaryAuthenticationContextIndex());
+        if (!isEmpty()) {
+            return this.chainedAuthentication.get(this.chainedAuthentication.size() - 1);
         }
         return null;
     }
@@ -96,17 +96,5 @@ public class MultiFactorCredentials implements Credentials {
 
     public final Credentials getCredentials() {
         return getChainedCredentials().values().iterator().next();
-    }
-
-    /**
-     * The index in the authentication chain that
-     * would decide which context should be considered as the
-     * primary authentication, based on which principals are taken
-     * into account.
-     * @see #getAuthentication()
-     * @return the primary authentication context index
-     */
-    private int getPrimaryAuthenticationContextIndex() {
-        return 0;
     }
 }

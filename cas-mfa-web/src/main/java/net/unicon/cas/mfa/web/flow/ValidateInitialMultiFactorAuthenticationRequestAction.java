@@ -58,7 +58,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
     private final AuthenticationSupport authenticationSupport;
 
     /**
-     * Instantiates a new validate initial multi factor authentication request action.
+     * Instantiates a new validate initial multifactor authentication request action.
      *
      * @param authSupport the authN support
      */
@@ -89,7 +89,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
 
         final String requiredAuthenticationMethod = mfaSvc.getAuthenticationMethod();
 
-        // place the authentication method in the flow scope
+        // place the authentication method in the appropriate scope
         MultiFactorRequestContextUtils.setRequiredAuthenticationMethod(context, requiredAuthenticationMethod);
         logger.trace("Service [" + mfaSvc.getId() + "] requires authentication method ["
                 + requiredAuthenticationMethod + "]");
