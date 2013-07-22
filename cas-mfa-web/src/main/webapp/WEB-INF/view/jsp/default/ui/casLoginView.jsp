@@ -29,7 +29,15 @@
   </div>
 </c:if>
 
-  
+<c:if test="${not empty flowScope.requiredAuthenticationMethod }">
+    <div id="msg" class="info">
+        <h2>This service requires a specific authentication method in addition to username and password.</h2>
+        <strong>The additional required authentication method is [${flowScope.requiredAuthenticationMethod}].
+        After successfully providing username and password, you will be prompted for this additional authentication
+            factor.</strong>
+    </div>
+</c:if>
+
 <div class="box fl-panel" id="login">
   <form:form method="post" id="fm1" cssClass="fm-v clearfix"
     commandName="${commandName}" htmlEscape="true">

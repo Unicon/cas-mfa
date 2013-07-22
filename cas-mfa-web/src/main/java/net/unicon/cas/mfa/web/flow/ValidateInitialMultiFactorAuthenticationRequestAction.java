@@ -72,18 +72,6 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
     @Override
     protected Event doExecute(final RequestContext context) throws Exception {
 
-        final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
-
-
-        /*
-         * If the TGT is blank i.e. there is no existing SSO session, proceed with normal login flow
-         * (Note that flow may need interrupted later if the CAS-using service requires an authentication method
-         *  not fulfilled by the normal login flow)
-         */
-        if (StringUtils.isBlank(tgt)) {
-            return new Event(this, EVENT_ID_REQUIRE_TGT);
-        }
-
         final Service svc = WebUtils.getService(context);
 
         /*
@@ -100,6 +88,26 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
                 (MultiFactorAuthenticationSupportingWebApplicationService) svc;
 
         String requiredAuthenticationMethod = mfaSvc.getAuthenticationMethod();
+
+        // place the authentication method in the flow scope
+        context.getFlowScope().put("requiredAuthenticationMethod", requiredAuthenticationMethod);
+        logger.trace("Service [" + mfaSvc.getId() + "] requires authentication method ["
+                + requiredAuthenticationMethod + "]");
+
+        final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
+
+
+        /*
+         * If the TGT is blank i.e. there is no existing SSO session, proceed with normal login flow
+         * (Note that flow may need interrupted later if the CAS-using service requires an authentication method
+         *  not fulfilled by the normal login flow)
+         */
+        if (StringUtils.isBlank(tgt)) {
+            logger.trace("TGT is blank; proceed flow normally.");
+            return new Event(this, EVENT_ID_REQUIRE_TGT);
+        }
+
+
 
         /*
          * If the authentication method the CAS-using service has specified is blank,
