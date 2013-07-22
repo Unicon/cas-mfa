@@ -87,10 +87,10 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
         final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
                 (MultiFactorAuthenticationSupportingWebApplicationService) svc;
 
-        String requiredAuthenticationMethod = mfaSvc.getAuthenticationMethod();
+        final String requiredAuthenticationMethod = mfaSvc.getAuthenticationMethod();
 
         // place the authentication method in the flow scope
-        context.getFlowScope().put("requiredAuthenticationMethod", requiredAuthenticationMethod);
+        MultiFactorRequestContextUtils.setRequiredAuthenticationMethod(context, requiredAuthenticationMethod);
         logger.trace("Service [" + mfaSvc.getId() + "] requires authentication method ["
                 + requiredAuthenticationMethod + "]");
 
