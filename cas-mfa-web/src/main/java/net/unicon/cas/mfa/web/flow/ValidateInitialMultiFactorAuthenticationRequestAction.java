@@ -131,10 +131,9 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
-        /*
-         * The recorded authentication method does not match the authentication method required to access the
-         * CAS-using service.  Branch the flow to prompt for the required authentication method.
-         */
+        logger.trace("Recorded authentication method [" + previouslyAchievedAuthenticationMethod + "] does not match "
+                + "now-required authentication method [" + requiredAuthenticationMethod + "]; "
+                + "branching to prompt for required authentication method.");
         return new Event(this, EVENT_ID_REQUIRE_MFA);
 
     }
