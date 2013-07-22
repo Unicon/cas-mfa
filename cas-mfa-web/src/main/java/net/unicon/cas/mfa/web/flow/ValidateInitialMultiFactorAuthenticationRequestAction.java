@@ -92,6 +92,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
          * proceed with normal login flow.
          */
         if (svc == null || !(svc instanceof MultiFactorAuthenticationSupportingWebApplicationService)) {
+            logger.trace("Service null or does not implement authentication method requiring interface");
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
@@ -105,6 +106,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
          * proceed with the normal login flow.
          */
         if (StringUtils.isBlank(requiredAuthenticationMethod)) {
+            logger.trace("Since required authentication method is blank, proceed flow normally.");
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
@@ -116,6 +118,8 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
          * to fulfill the requirements of this service, and branch to fulfill the authentication requirement.
          */
         if (authentication == null) {
+            logger.warn("TGT had no Authentication, which is odd.  "
+                    + "Proceeding as if additional authentication required.");
             return new Event(this, EVENT_ID_REQUIRE_MFA);
         }
 
@@ -128,6 +132,8 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
          * required to access the CAS-using service, proceed with the normal authentication flow.
          */
         if (StringUtils.equals(previouslyAchievedAuthenticationMethod, requiredAuthenticationMethod)) {
+            logger.trace("Authentication method [" + requiredAuthenticationMethod + "] previously fulfilled; "
+                    + "proceeding flow as per normal.");
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
