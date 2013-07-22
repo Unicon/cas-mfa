@@ -27,11 +27,11 @@ public abstract class MultiFactorAuthenticationBaseTicketValidationException ext
         this.authenticationMethod = authnMethod;
     }
 
-    public String getAuthenticationMethod() {
+    public final String getAuthenticationMethod() {
         return this.authenticationMethod;
     }
 
-    public String getCode() {
+    public final String getCode() {
         return this.code;
     }
 

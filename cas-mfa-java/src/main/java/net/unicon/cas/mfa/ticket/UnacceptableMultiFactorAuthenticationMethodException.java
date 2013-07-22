@@ -11,6 +11,12 @@ public class UnacceptableMultiFactorAuthenticationMethodException extends MultiF
 
     private static final long serialVersionUID = -8544747236126342213L;
 
+    /**
+     * Constructor to spin up the exception instance.
+     * @param code  error code
+     * @param msg error message
+     * @param authnMethod authentication method associated with the error
+     */
     public UnacceptableMultiFactorAuthenticationMethodException(final String code, final String msg, final String authnMethod) {
         super(code, msg, authnMethod);
     }
