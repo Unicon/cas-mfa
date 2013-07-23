@@ -47,7 +47,9 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
             mfa.getChainedCredentials().put(id, credentials);
 
             MultiFactorRequestContextUtils.setMfaCredentials(context, mfa);
-            WebUtils.putTicketGrantingTicketInRequestScope(context, this.cas.createTicketGrantingTicket(mfa));
+
+            final String tgt = this.cas.createTicketGrantingTicket(mfa);
+            WebUtils.putTicketGrantingTicketInRequestScope(context, tgt);
             return getSuccessEvent();
         } catch (final TicketException e) {
             populateErrorsInstance(e, messageContext);

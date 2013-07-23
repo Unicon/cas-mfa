@@ -36,6 +36,8 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
     @Mock
     private Authentication authentication;
 
+    private MutableAttributeMap mockFlowScope;
+
     public ValidateInitialMultiFactorAuthenticationRequestActionTests() {
         MockitoAnnotations.initMocks(this);
     }
@@ -47,8 +49,8 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
 
         this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support);
 
-        final MutableAttributeMap flowScope = mock(MutableAttributeMap.class);
-        when(requestContext.getFlowScope()).thenReturn(flowScope);
+        mockFlowScope = mock(MutableAttributeMap.class);
+        when(requestContext.getFlowScope()).thenReturn(mockFlowScope);
 
         final ParameterMap requestParams = mock(ParameterMap.class);
         when(requestContext.getRequestParameters()).thenReturn(requestParams);
@@ -89,6 +91,31 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
         assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
+    }
+
+    /**
+     * When there is no existing TGT, but the presenting service requires a particular authentication method,
+     * the Action should expose that required authentication method in flow scope.
+     * @throws Exception
+     */
+    @Test
+    public void testRequiredAuthenticationFactorExposedWhenNoTgt() throws Exception {
+        setMockTgtContextWith(null);
+        setMockServiceContextWith(mock(MultiFactorAuthenticationSupportingWebApplicationService.class));
+
+        final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
+                mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
+
+        // let's say this service requires 'real_time_sms_callback' authentication
+        when(mfaSvc.getAuthenticationMethod()).thenReturn("real_time_sms_callback");
+        setMockServiceContextWith(mfaSvc);
+
+        final Event ev = this.action.doExecute(this.requestContext);
+        assertNotNull(ev);
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
+
+        // verify that the Action put the authentication method into the flow scope
+        verify(mockFlowScope).put("requiredAuthenticationMethod", "real_time_sms_callback");
     }
 
     /**
@@ -153,6 +180,9 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
         assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
+
+        // verify that the Action put the authentication method into the flow scope
+        verify(mockFlowScope).put("requiredAuthenticationMethod", " ");
     }
 
     /**
@@ -180,6 +210,9 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
         assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT, ev.getId());
+
+        // verify that the Action put the authentication method into the flow scope
+        verify(mockFlowScope).put("requiredAuthenticationMethod", "strong_two_factor");
     }
 
     /**
@@ -211,5 +244,8 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
         assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_MFA, ev.getId());
+
+        // verify that the Action put the authentication method into the flow scope
+        verify(mockFlowScope).put("requiredAuthenticationMethod", "strong_two_factor");
     }
 }

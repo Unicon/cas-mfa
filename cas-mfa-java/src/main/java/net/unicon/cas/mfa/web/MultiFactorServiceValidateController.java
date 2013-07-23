@@ -19,6 +19,7 @@
 package net.unicon.cas.mfa.web;
 
 import java.net.URL;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
@@ -118,7 +119,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
      * @return the credentials or null if there was an error or no credentials
      * provided.
      */
-    protected Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) {
+    protected final Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) {
         final String pgtUrl = request.getParameter("pgtUrl");
         if (StringUtils.hasText(pgtUrl)) {
             try {
@@ -131,10 +132,24 @@ public class MultiFactorServiceValidateController extends DelegateController {
         return null;
     }
 
-    protected void initBinder(final HttpServletRequest request, final ServletRequestDataBinder binder) {
+    /**
+     * Initialize the binder with the required fields.
+     * @param request the request object
+     * @param binder  the binder instance
+     */
+    protected final void initBinder(final HttpServletRequest request, final ServletRequestDataBinder binder) {
         binder.setRequiredFields("renew");
     }
 
+    /**
+     * <p>Handle the request. Specially, abides by the default behavior specified in the {@link ServiceValidateController}
+     * and then, invokes the {@link #getCommandClass()} method to delegate the task of spec validation.
+     * @param request request object
+     * @param response response object
+     * @return A {@link ModelAndView} object pointing to either {@link #setSuccessView(String)} or {@link #setFailureView(String)}
+     * @throws Exception In case the authentication method cannot be retrieved by the binder from the incoming request.
+     */
+    @Override
     protected final ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response)
             throws Exception {
         final WebApplicationService service = this.argumentExtractor.extractService(request);
@@ -225,10 +240,22 @@ public class MultiFactorServiceValidateController extends DelegateController {
         }
     }
 
+    /**
+     * Template method to handle post successful validation event by extensions.
+     * @param serviceTicketId service ticket in validation
+     * @param assertion the assertion generated after validation
+     */
     protected void onSuccessfulValidation(final String serviceTicketId, final Assertion assertion) {
         // template method with nothing to do.
     }
 
+    /**
+     * Generate the error view to indicate a failed validation event.
+     * @param code  the error code
+     * @param description error description
+     * @param args additional values associated with the error, passed down to the message source
+     * @return A {@link ModelAndView} based on {@link #setFailureView(String)}
+     */
     private ModelAndView generateErrorView(final String code, final String description, final Object[] args) {
         final ModelAndView modelAndView = new ModelAndView(this.failureView);
         final String convertedDescription = getMessageSourceAccessor().getMessage(code, args, description);
@@ -238,6 +265,11 @@ public class MultiFactorServiceValidateController extends DelegateController {
         return modelAndView;
     }
 
+    /**
+     * Returns the instance of {@link MultiFactorAuthenticationProtocolValidationSpecification} that is responsible
+     * to validate the incoming validation request based on the augmented spec for MFA.
+     * @return the instance of {@link MultiFactorAuthenticationProtocolValidationSpecification}
+     */
     private MultiFactorAuthenticationProtocolValidationSpecification getCommandClass() {
         try {
             return this.validationSpecificationClass;
@@ -250,7 +282,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
      * {@inheritDoc}
      */
     @Override
-    public boolean canHandle(final HttpServletRequest request, final HttpServletResponse response) {
+    public final boolean canHandle(final HttpServletRequest request, final HttpServletResponse response) {
         return true;
     }
 
