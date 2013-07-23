@@ -58,7 +58,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
     private final AuthenticationSupport authenticationSupport;
 
     /**
-     * Instantiates a new validate initial multi factor authentication request action.
+     * Instantiates a new validate initial multifactor authentication request action.
      *
      * @param authSupport the authN support
      */
@@ -72,6 +72,28 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
     @Override
     protected Event doExecute(final RequestContext context) throws Exception {
 
+        final Service svc = WebUtils.getService(context);
+
+        /*
+         * If the service is null
+         * or does not implement the interface indicating what authentication method it requires
+         * proceed with normal login flow.
+         */
+        if (svc == null || !(svc instanceof MultiFactorAuthenticationSupportingWebApplicationService)) {
+            logger.trace("Service null or does not implement authentication method requiring interface");
+            return new Event(this, EVENT_ID_REQUIRE_TGT);
+        }
+
+        final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
+                (MultiFactorAuthenticationSupportingWebApplicationService) svc;
+
+        final String requiredAuthenticationMethod = mfaSvc.getAuthenticationMethod();
+
+        // place the authentication method in the appropriate scope
+        MultiFactorRequestContextUtils.setRequiredAuthenticationMethod(context, requiredAuthenticationMethod);
+        logger.trace("Service [" + mfaSvc.getId() + "] requires authentication method ["
+                + requiredAuthenticationMethod + "]");
+
         final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
 
 
@@ -81,30 +103,18 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
          *  not fulfilled by the normal login flow)
          */
         if (StringUtils.isBlank(tgt)) {
+            logger.trace("TGT is blank; proceed flow normally.");
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
-        final Service svc = WebUtils.getService(context);
 
-        /*
-         * If the service is null
-         * or does not implement the interface indicating what authentication method it requires
-         * proceed with normal login flow.
-         */
-        if (svc == null || !(svc instanceof MultiFactorAuthenticationSupportingWebApplicationService)) {
-            return new Event(this, EVENT_ID_REQUIRE_TGT);
-        }
-
-        final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
-                (MultiFactorAuthenticationSupportingWebApplicationService) svc;
-
-        String requiredAuthenticationMethod = mfaSvc.getAuthenticationMethod();
 
         /*
          * If the authentication method the CAS-using service has specified is blank,
          * proceed with the normal login flow.
          */
         if (StringUtils.isBlank(requiredAuthenticationMethod)) {
+            logger.trace("Since required authentication method is blank, proceed flow normally.");
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
@@ -116,6 +126,8 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
          * to fulfill the requirements of this service, and branch to fulfill the authentication requirement.
          */
         if (authentication == null) {
+            logger.warn("TGT had no Authentication, which is odd.  "
+                    + "Proceeding as if additional authentication required.");
             return new Event(this, EVENT_ID_REQUIRE_MFA);
         }
 
@@ -128,13 +140,14 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
          * required to access the CAS-using service, proceed with the normal authentication flow.
          */
         if (StringUtils.equals(previouslyAchievedAuthenticationMethod, requiredAuthenticationMethod)) {
+            logger.trace("Authentication method [" + requiredAuthenticationMethod + "] previously fulfilled; "
+                    + "proceeding flow as per normal.");
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
-        /*
-         * The recorded authentication method does not match the authentication method required to access the
-         * CAS-using service.  Branch the flow to prompt for the required authentication method.
-         */
+        logger.trace("Recorded authentication method [" + previouslyAchievedAuthenticationMethod + "] does not match "
+                + "now-required authentication method [" + requiredAuthenticationMethod + "]; "
+                + "branching to prompt for required authentication method.");
         return new Event(this, EVENT_ID_REQUIRE_MFA);
 
     }

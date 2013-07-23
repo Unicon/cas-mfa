@@ -14,11 +14,14 @@ public final class MultiFactorRequestContextUtils {
     /** Attribute name by which the authentication context can be retrieved/placed in the flow.**/
     public static final String CAS_AUTHENTICATION_ATTR_NAME = "casAuthentication";
 
-    /** Attribute name by which the TGT can be retrieve/placed in the flow.**/
+    /** Attribute name by which the TGT can be retrieved/placed in the flow.**/
     public static final String CAS_TICKET_GRANTING_TICKET_ATTR_NAME = "ticketGrantingTicketId";
 
-    /** Attribute name by which the MFA credentials can be retrieve/placed in the flow.**/
+    /** Attribute name by which the MFA credentials can be retrieved/placed in the flow.**/
     public static final String CAS_MFA_CREDENTIALS_ATTR_NAME = "mfaCredentials";
+
+    /** Attribute name by which the required authentication method can be retrieved/placed in the flow.**/
+    public static final String CAS_MFA_REQ_AUTHN_METHOD = "requiredAuthenticationMethod";
 
     /**
      * Instantiates a new multi factor request context utils.
@@ -84,5 +87,15 @@ public final class MultiFactorRequestContextUtils {
      */
     public static void setTicketGrantingTicketId(final RequestContext context, final String tgtId) {
         context.getFlowScope().put(CAS_TICKET_GRANTING_TICKET_ATTR_NAME, tgtId);
+    }
+
+    /**
+     * Sets the required authentication method.
+     *
+     * @param context the context
+     * @param requiredAuthenticationMethod the required authentication method
+     */
+    public static void setRequiredAuthenticationMethod(final RequestContext context, final String requiredAuthenticationMethod) {
+        context.getFlowScope().put("requiredAuthenticationMethod", requiredAuthenticationMethod);
     }
 }

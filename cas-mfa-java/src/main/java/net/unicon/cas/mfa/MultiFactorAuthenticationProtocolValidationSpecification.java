@@ -22,10 +22,19 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
 
     private String authenticationMethod = null;
 
+    /**
+     * Constructor to spin up the validation spec instance.
+     * No restrictions on the requested authentication method.
+     */
     public MultiFactorAuthenticationProtocolValidationSpecification() {
         super();
     }
 
+    /**
+     * Constructor to spin up the validation spec instance, requiring a particular
+     * authentication method.
+     * @param authnMethod required authentication method to match against.
+     */
     public MultiFactorAuthenticationProtocolValidationSpecification(final String authnMethod) {
         this.authenticationMethod = authnMethod;
     }
@@ -61,7 +70,7 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
      * @see UnrecognizedMultiFactorAuthenticationMethodException
      */
     @Override
-    protected boolean isSatisfiedByInternal(final Assertion assertion) {
+    protected final boolean isSatisfiedByInternal(final Assertion assertion) {
         if (assertion.getChainedAuthentications().size() > 0) {
             final int index = assertion.getChainedAuthentications().size() - 1;
             final Authentication authentication = assertion.getChainedAuthentications().get(index);
