@@ -49,7 +49,7 @@
   -->
   <webflow:flow-registry id="flowRegistry" flow-builder-services="builder">
     <webflow:flow-location path="/WEB-INF/login-webflow.xml" id="login"/>
-    <webflow:flow-location path="/WEB-INF/mfa-strong-two-factor-webflow.xml" id="mfa-strong-two-factor"/>
+    <webflow:flow-location path="/WEB-INF/mfa_strong_two_factor_webflow.xml" id="mfa_strong_two_factor"/>
   </webflow:flow-registry>
   
   <cas:default-authentication-support/>
