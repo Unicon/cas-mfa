@@ -16,8 +16,13 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTests {
 
+    /**
+     * Test that an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}
+     * properly implements getAuthenticationMethod() and ability to get a Response to direct the user to redirect to
+     * the service with a ticket.
+     */
     @Test
-    public void createNewMFAService() {
+    public void testServiceness() {
         final DefaultMultiFactorAuthenticationSupportingWebApplicationService svc =
                 new DefaultMultiFactorAuthenticationSupportingWebApplicationService("https://www.github.com",
                 "https://www.github.com", null, null, "test_authn_method");
