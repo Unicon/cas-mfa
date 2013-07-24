@@ -109,7 +109,6 @@
         <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
                type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
         <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
-        <transition on="mfaError" to="generateLoginTicket" />
     </subflow-state>
     
 	<action-state id="generateServiceTicket">

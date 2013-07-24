@@ -5,9 +5,7 @@ import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
-import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.web.support.WebUtils;
-import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
@@ -23,7 +21,7 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
     /* {@inheritDoc} */
     @Override
     protected final Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
-            final Credentials credentials, final MessageContext messageContext, final String id) {
+            final Credentials credentials, final MessageContext messageContext, final String id) throws Exception {
 
         return createTicketGrantingTicket(authentication, context, credentials, messageContext, id);
     }
@@ -39,38 +37,21 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
      * @return the event
      */
     private Event createTicketGrantingTicket(final Authentication authentication, final RequestContext context,
-            final Credentials credentials, final MessageContext messageContext, final String id) {
-        try {
-            final MultiFactorCredentials mfa = MultiFactorRequestContextUtils.getMfaCredentials(context);
+            final Credentials credentials, final MessageContext messageContext, final String id) throws Exception {
 
-            mfa.getChainedAuthentications().add(authentication);
-            mfa.getChainedCredentials().put(id, credentials);
+        final MultiFactorCredentials mfa = MultiFactorRequestContextUtils.getMfaCredentials(context);
 
-            MultiFactorRequestContextUtils.setMfaCredentials(context, mfa);
+        mfa.getChainedAuthentications().add(authentication);
+        mfa.getChainedCredentials().put(id, credentials);
 
-            final String tgt = this.cas.createTicketGrantingTicket(mfa);
-            WebUtils.putTicketGrantingTicketInRequestScope(context, tgt);
-            return getSuccessEvent();
-        } catch (final TicketException e) {
-            populateErrorsInstance(e, messageContext);
-            logger.error(e.getMessage(), e);
-            return getErrorEvent();
-        }
+        MultiFactorRequestContextUtils.setMfaCredentials(context, mfa);
+
+        final String tgt = this.cas.createTicketGrantingTicket(mfa);
+        WebUtils.putTicketGrantingTicketInRequestScope(context, tgt);
+        return getSuccessEvent();
+ 
     }
 
-    /**
-     * Populate errors instance.
-     *
-     * @param e the e
-     * @param messageContext the message context
-     */
-    private void populateErrorsInstance(final TicketException e, final MessageContext messageContext) {
-        try {
-            messageContext.addMessage(new MessageBuilder().error().code(e.getCode()).defaultText(e.getCode()).build());
-        } catch (final Exception fe) {
-            logger.error(fe.getMessage(), fe);
-        }
-    }
 
     /* {@inheritDoc} */
     @Override
