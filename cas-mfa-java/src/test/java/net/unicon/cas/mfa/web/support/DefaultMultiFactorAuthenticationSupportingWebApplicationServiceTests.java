@@ -28,18 +28,4 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
         assertEquals(res.getUrl(), "https://www.github.com?ticket=testTicketId");
     }
 
-    @Test
-    public void createMFAServiceByRequestSupportedAuthnMethod() {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
-                Arrays.asList("test_authn_method"));
-
-        when(request.getParameter("service")).thenReturn("https://www.github.com");
-        when(request.getParameter("authn_method")).thenReturn("test_authn_method");
-        final WebApplicationService svc = extractor.extractService(request);
-        assertNotNull(svc);
-        final DefaultMultiFactorAuthenticationSupportingWebApplicationService mfa =
-                (DefaultMultiFactorAuthenticationSupportingWebApplicationService) svc;
-        assertEquals(mfa.getAuthenticationMethod(), "test_authn_method");
-    }
 }
