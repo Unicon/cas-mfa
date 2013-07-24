@@ -111,4 +111,27 @@ public class MultiFactorAuthenticationArgumentExtractorTests {
 
         assertEquals("personal_attestation", authenticationMethodRequiringService.getAuthenticationMethod());
     }
+
+    /**
+     * When login presents no service parameter, extractor extracts a null service.
+     */
+    @Test
+    public void testMissingServiceParameterYieldsNullService() {
+
+        // this is a bit of testing paranoia, but always want to check that one item isn't an edge case
+        final List<String> validAuthenticationMethods =
+                Arrays.asList("fingerprint", "strong_two_factor", "personal_attestation", "retina_scan");
+
+        final MultiFactorAuthenticationArgumentExtractor extractor =
+                new MultiFactorAuthenticationArgumentExtractor(validAuthenticationMethods);
+
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+
+        when(request.getParameter("service")).thenReturn(null);
+        when(request.getParameter(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+                .thenReturn("personal_attestation");
+
+        assertNull(extractor.extractService(request));
+
+    }
 }
