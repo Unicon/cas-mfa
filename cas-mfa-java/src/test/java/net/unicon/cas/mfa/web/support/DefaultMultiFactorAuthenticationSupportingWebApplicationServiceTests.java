@@ -29,15 +29,6 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
     }
 
     @Test
-    public void createMFAServiceByRequestNoService() {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
-                Arrays.asList("test_authn_method"));
-        final WebApplicationService svc = extractor.extractService(request);
-        assertNull(svc);
-    }
-
-    @Test
     public void createMFAServiceByRequestNoAuthnMethod() {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
