@@ -74,6 +74,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
      * @param httpClient the http client
      * @param supportedLevelsOfAuthentication levels of mfa authentication supported by this service
      * @return An instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}
+     * @throws UnrecognizedAuthenticationMethodException if requested authentication method is not recognized
      */
     public static MultiFactorAuthenticationSupportingWebApplicationService createServiceFrom(final HttpServletRequest request,
             final HttpClient httpClient, final List<String> supportedLevelsOfAuthentication) {
@@ -95,6 +96,18 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
         if (!supportedLevelsOfAuthentication.contains(authenticationMethod)) {
             LOGGER.debug("Multifactor authentication service does not support [{}] parameter value [{}].",
                     CONST_PARAM_AUTHN_METHOD, authenticationMethod);
+            /**
+             * Argument extractors are still going to be invoked, if the flow
+             * decides to move the user experience to an error-view JSP. As such,
+             * and since we are unable to touch request parameters removing the invalid
+             * authn_method before that navigation takes place, there's a chance that an inifinite
+             * redirect loop might occur. The compromise here to is to "remember" that the exception
+             * was handled once via a request attribute.
+             */
+            if (request.getAttribute(UnrecognizedAuthenticationMethodException.class.getName()) == null) {
+                request.setAttribute(UnrecognizedAuthenticationMethodException.class.getName(), Boolean.TRUE.toString());
+                throw new UnrecognizedAuthenticationMethodException(authenticationMethod);
+            }
             return null;
         }
 

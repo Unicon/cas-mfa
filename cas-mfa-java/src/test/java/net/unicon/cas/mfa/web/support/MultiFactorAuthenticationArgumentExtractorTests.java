@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class MultiFactorAuthenticationArgumentExtractorTests {
 
-    @Test
+    @Test(expected=UnrecognizedAuthenticationMethodException.class)
     public void testUnidentifiedMfaService() {
         final List<String> emptyList = Collections.emptyList();
         final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(emptyList);

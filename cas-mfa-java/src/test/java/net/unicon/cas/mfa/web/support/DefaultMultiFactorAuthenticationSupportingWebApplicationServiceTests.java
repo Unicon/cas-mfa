@@ -48,7 +48,7 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
         assertNull(svc);
     }
 
-    @Test
+    @Test(expected=UnrecognizedAuthenticationMethodException.class)
     public void createMFAServiceByRequestBadAuthnMethod() {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
