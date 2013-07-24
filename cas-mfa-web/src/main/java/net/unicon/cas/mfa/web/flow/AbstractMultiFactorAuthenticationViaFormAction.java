@@ -108,6 +108,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
             MultiFactorRequestContextUtils.setAuthentication(context, auth);
             return result;
         } catch (final AuthenticationException e) {
+            populateErrorsInstance(e.getCode(), messageContext);
             logger.error(e.getMessage(), e);
         }
         return getErrorEvent();
@@ -180,13 +181,14 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * @return the event
      */
     protected abstract Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
-            final Credentials credentials, final MessageContext messageContext, final String id);
+            final Credentials credentials, final MessageContext messageContext, final String id)
+                throws Exception;
 
     /**
      * Set the binder instance.
      * @param credentialsBinder the binder instance
      */
-    public final void setCredentialsBinder(@SuppressWarnings("hiding") final CredentialsBinder credentialsBinder) {
+    public final void setCredentialsBinder(final CredentialsBinder credentialsBinder) {
         this.credentialsBinder = credentialsBinder;
     }
 
@@ -203,7 +205,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * Authentication manager instance to authenticate the user by its configured
      * handlers as the first leg of an multifactor authentication sequence.
      *
-     * @param manager the new multi factor authentication manager
+     * @param manager the new multifactor authentication manager
      */
     public final void setMultiFactorAuthenticationManager(final AuthenticationManager manager) {
         this.authenticationManager = manager;
@@ -232,5 +234,19 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      */
     @Override
     public void afterPropertiesSet() throws Exception {
+    }
+
+    /**
+     * Populate errors instance.
+     *
+     * @param e the e
+     * @param messageContext the message context
+     */
+    protected void populateErrorsInstance(final String code, final MessageContext messageContext) {
+        try {
+            messageContext.addMessage(new MessageBuilder().error().code(code).defaultText(code).build());
+        } catch (final Exception fe) {
+            logger.error(fe.getMessage(), fe);
+        }
     }
 }
