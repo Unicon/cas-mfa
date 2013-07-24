@@ -25,7 +25,7 @@ public class MultiFactorAuthenticationArgumentExtractorTests {
 
         when(request.getParameter("service")).thenReturn("https://www.github.com");
         when(request.getParameter(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
-                .thenReturn("test_loa");
+                .thenReturn("unrecognized_authentication_method");
 
         assertNull(extractor.extractService(request));
     }
