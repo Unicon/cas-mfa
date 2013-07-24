@@ -16,8 +16,11 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class MultiFactorAuthenticationArgumentExtractorTests {
 
+    /**
+     * When login presents an unrecognized authentication method, the extractor extracts a null service.
+     */
     @Test
-    public void testUnidentifiedMfaService() {
+    public void testUnrecognizedAuthenticationMethodParameterYieldsNullService() {
         final List<String> emptyList = Collections.emptyList();
         final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(emptyList);
 
@@ -30,8 +33,12 @@ public class MultiFactorAuthenticationArgumentExtractorTests {
         assertNull(extractor.extractService(request));
     }
 
+    /**
+     * When login presents a recognized authentication method, extractor extracts a service conveying the
+     * required authentication method.
+     */
     @Test
-    public void testValidMfaService() {
+    public void testRecognizedAuthenticationMethodParameterYieldsAuthenticationMethodRequiringService() {
         final List<String> validAuthenticationMethods = Arrays.asList("strong_two_factor");
         final MultiFactorAuthenticationArgumentExtractor extractor =
                 new MultiFactorAuthenticationArgumentExtractor(validAuthenticationMethods);
