@@ -130,7 +130,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         final MultiFactorAuthenticationSupportingWebApplicationService svc =
                 (MultiFactorAuthenticationSupportingWebApplicationService) WebUtils.getService(this.ctx);
         assertNotNull(svc);
-        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_SUCCESS_EVENT_ID + svc.getAuthenticationMethod());
+        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_SUCCESS_EVENT_ID_PREFIX + svc.getAuthenticationMethod());
     }
 
     private Credentials getCredentials() {
