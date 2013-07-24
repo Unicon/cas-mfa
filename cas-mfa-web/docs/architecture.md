@@ -44,7 +44,7 @@ The `login-webflow.xml` is customized to start with a new inserted action state,
 
     <action-state id="mfaTicketGrantingTicketExistsCheck">
         <evaluate expression="validateInitialMfaRequestAction" />
-        <transition on="mfa_strong_two_factor" to="mfa-strong-two-factor" />
+        <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
         <transition on="requireTgt" to="ticketGrantingTicketExistsCheck" />
     </action-state>
 
@@ -61,9 +61,9 @@ This Action branches to `mfa_strong_two_factor` only if the user has an existing
 
 ### multiFactorAuthentication login flow state
 
-In the `mfa_strong_two_factor` case, the flow proceeds to the `mfa-strong-two-factor` state.  This is a Spring Web Flow subflow-state:
+In the `mfa_strong_two_factor` case, the flow proceeds to the `mfa_strong_two_factor` state.  This is a Spring Web Flow subflow-state:
 
-    <subflow-state id="mfa-strong-two-factor" subflow="mfa-strong-two-factor">
+    <subflow-state id="mfa-strong-two-factor" subflow="mfa_strong_two_factor">
         <on-entry>
             <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
         </on-entry>
@@ -84,9 +84,9 @@ On entering the state, the flow invokes `generateMfaCredentialsAction.createCred
 
 This simply reads or instantiates a MultiFactoCredentials instance to back the one-time-password form.
 
-This is a sub-flow action with `subflow="mfa-strong-two-factor"`, so it branches control to the `mfa-strong-two-factor-webflow.xml` subflow.
+This is a sub-flow action with `subflow="mfa_strong_two_factor"`, so it branches control to the `mfa-strong-two-factor-webflow.xml` subflow.
 
-### mfa-strong-two-factor-webflow.xml subflow
+### mfa_strong_two_factor_webflow.xml subflow
 
 This sub-flow is a typical Spring Web Flow rendering and handling the submission of a form, here to collect the additional one-time password credentials making up the additional authentication factor to achieve multi (two) factor authentication.
 
@@ -113,7 +113,7 @@ The flow can end in successful authentication of the additional credential or in
 
 Back in the main login-webflow, completing the mfa subflow returns control to transition out of:
 
-    <subflow-state id="mfa-strong-two-factor" subflow="mfa-strong-two-factor">
+    <subflow-state id="mfa_strong_two_factor" subflow="mfa_strong_two_factor">
         <on-entry>
             <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
         </on-entry>
@@ -144,10 +144,10 @@ This happens in the main login flow's `realSubmit`
 		<transition on="warn" to="warn" />
 		<transition on="success" to="sendTicketGrantingTicket" />
 		<transition on="error" to="generateLoginTicket" />
-        <transition on="mfa_strong_two_factor" to="mfa-strong-two-factor" />
+        <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
 	</action-state>
 
-Note that `mfaSuccess` leads to that same `mfa-strong-two-factor` sub-flow state.
+Note that `mfaSuccess` leads to that same `mfa_strong_two_factor` sub-flow state.
 
 
 ## Remembering how users authenticated
