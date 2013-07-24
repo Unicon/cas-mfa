@@ -44,7 +44,7 @@ The `login-webflow.xml` is customized to start with a new inserted action state,
 
     <action-state id="mfaTicketGrantingTicketExistsCheck">
         <evaluate expression="validateInitialMfaRequestAction" />
-        <transition on="requireMfa" to="multiFactorAuthentication" />
+        <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
         <transition on="requireTgt" to="ticketGrantingTicketExistsCheck" />
     </action-state>
 
@@ -55,15 +55,15 @@ The `validateInitialMfaRequestAction` is defined in `mfa-servlet.xml` as
         c:authSupport-ref="authenticationSupport" />
 
 
-This custom action considers the authentication method required by the CAS-using service the user is attempting to log in to, if any, and compares this to the recorded method of how the user authenticated previously in the active single sign-on session, if any, and makes a binary decision about whether the login flow should proceeed as per normal (the `requireTgt` event) or whether the flow should branch (the `requireMfa` event) to enforce an as-yet unfulfilled authentication method requirement expressed by the CAS-using service.
+This custom action considers the authentication method required by the CAS-using service the user is attempting to log in to, if any, and compares this to the recorded method of how the user authenticated previously in the active single sign-on session, if any, and makes a decision about whether the login flow should proceeed as per normal (the `requireTgt` event) or whether the flow should branch (here represented as the `mfa_strong_two_factor` event) to enforce an as-yet unfulfilled authentication method requirement expressed by the CAS-using service.  The branching event name is computed from the prefix `mfa_` plus the valid value of the `authn_method` request parameter to `/cas/login`.
 
-This Action branches to `requireMfa` only if the user has an existing single sign-on session that does not yet meet the authentication method requirements.  If the requirements are already met *or if the user hasn't logged in at all* the Action signals to proceed the flow.  This is so that the user will first complete the normal user and password login process before (later, through another flow action) branching to then experience and fulfill the additional authentication factor requirement.
+This Action branches to `mfa_strong_two_factor` only if the user has an existing single sign-on session that does not yet meet the authentication method requirements.  If the requirements are already met *or if the user hasn't logged in at all* the Action signals to proceed the flow.  This is so that the user will first complete the normal user and password login process before (later, through another flow action) branching to then experience and fulfill the additional authentication factor requirement.
 
 ### multiFactorAuthentication login flow state
 
-In the `requireMfa` case, the flow proceeds to the `multiFactorAuthentication` state.  This is a Spring Web Flow subflow-state:
+In the `mfa_strong_two_factor` case, the flow proceeds to the `mfa_strong_two_factor` state.  This is a Spring Web Flow subflow-state:
 
-    <subflow-state id="multiFactorAuthentication" subflow="mfa">
+    <subflow-state id="mfa-strong-two-factor" subflow="mfa_strong_two_factor">
         <on-entry>
             <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
         </on-entry>
@@ -84,9 +84,9 @@ On entering the state, the flow invokes `generateMfaCredentialsAction.createCred
 
 This simply reads or instantiates a MultiFactoCredentials instance to back the one-time-password form.
 
-This is a sub-flow action with `subflow="mfa"`, so it branches control to the `mfa-webflow.xml` subflow.
+This is a sub-flow action with `subflow="mfa_strong_two_factor"`, so it branches control to the `mfa-strong-two-factor-webflow.xml` subflow.
 
-### mfa-webflow.xml subflow
+### mfa_strong_two_factor_webflow.xml subflow
 
 This sub-flow is a typical Spring Web Flow rendering and handling the submission of a form, here to collect the additional one-time password credentials making up the additional authentication factor to achieve multi (two) factor authentication.
 
@@ -111,9 +111,9 @@ The flow can end in successful authentication of the additional credential or in
 
 ### Returning from the sub-flow
 
-Back in the main login-webflow, completing the mfa subflow yields
+Back in the main login-webflow, completing the mfa subflow returns control to transition out of:
 
-    <subflow-state id="multiFactorAuthentication" subflow="mfa">
+    <subflow-state id="mfa_strong_two_factor" subflow="mfa_strong_two_factor">
         <on-entry>
             <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
         </on-entry>
@@ -132,22 +132,22 @@ Error in the sub-flow sends the user back to the generate login ticket step in t
 
 ### Branching to multi-factor authentication after traditional authentication
 
-Recall that back in `mfaTicketGrantingTicketExistsCheck` there were two options: `requireMfa` and `requireTgt`.  The above treated in some detail the `requireMfa` case arising when an existing single sign-on session is insufficient.  Howver, the `requireTgt` normal login flow path proceeded in *both* the case where no particular unfulfilled authentication method is required *and* in the case where a particular authentication method is required but the branching needs deferred to later after the traditional login form.
+Recall that back in `mfaTicketGrantingTicketExistsCheck` there were two options: `mfa_strong_two_factor` and `requireTgt`.  The above treated in some detail the `mfa_strong_two_factor` case arising when an existing single sign-on session is insufficient.  Howver, the `requireTgt` normal login flow path proceeded in *both* the case where no particular unfulfilled authentication method is required *and* in the case where a particular authentication method is required but the branching needs deferred to later after the traditional login form.
 
 Therefore, the processing of the regular username and password login form needs to include an additional check after the form to determine if branching to the sub-flow is then appropriate.
 
 This happens in the main login flow's `realSubmit`
 
-    <action-state id="realSubmit">
-      <evaluate expression="initiatingAuthenticationViaFormAction.submit(flowRequestContext,
-         flowScope.credentials, messageContext, flowScope.credentials.username)" />
-         <transition on="warn" to="warn" />
-         <transition on="success" to="sendTicketGrantingTicket" />
-         <transition on="error" to="generateLoginTicket" />
-         <transition on="mfaSuccess" to="multiFactorAuthentication" />
-    	</action-state>
+  	<action-state id="realSubmit">
+        <evaluate expression="initiatingAuthenticationViaFormAction.submit(flowRequestContext,
+                              flowScope.credentials, messageContext, flowScope.credentials.username)" />
+		<transition on="warn" to="warn" />
+		<transition on="success" to="sendTicketGrantingTicket" />
+		<transition on="error" to="generateLoginTicket" />
+        <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
+	</action-state>
 
-Note that `mfaSuccess` leads to that same `multiFactorAuthentication` sub-flow.
+Note that `mfaSuccess` leads to that same `mfa_strong_two_factor` sub-flow state.
 
 
 ## Remembering how users authenticated
@@ -271,7 +271,7 @@ This architecture is intended for extensibility in at least a couple of directio
 
 ## Adding an additional authentication method
 
-Currently, adding an additional authentication method would involve modification to `mfaTicketGrantingTicketExistsCheck` and both at the web flow and the Java layer, to add handling for additional `authn_method` values, modification to the customized handling of the traditional username and password login form submission to appropriately branch to the multiple authentication-method-specific sub-flows.
+Adding an additional authentication method would involves modification to `mfaTicketGrantingTicketExistsCheck` only at the web flow layer to define transitions for generated `mfa_something` events (where "something" is the value of the `authn_method` parameter) and to define sub-flows implementing the additional authentication methods (named as `mfa-something-webflow.xml`.
 
 ## Modeling service authentication method requirements in the services registry rather than as a request parameter
 

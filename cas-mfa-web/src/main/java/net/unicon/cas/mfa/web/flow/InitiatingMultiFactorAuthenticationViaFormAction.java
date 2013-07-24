@@ -54,7 +54,7 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
     @Override
     protected final Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
             final Credentials credentials, final MessageContext messageContext, final String id) {
-        return super.getSuccessEvent();
+        return super.getSuccessEvent(context);
     }
 
 }

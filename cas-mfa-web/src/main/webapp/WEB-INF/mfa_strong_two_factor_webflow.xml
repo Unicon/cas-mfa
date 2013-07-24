@@ -58,7 +58,7 @@
         </on-entry>
         <evaluate expression="terminatingTwoFactorAuthenticationViaFormAction.submit(flowRequestContext, flowScope.credentials, 
                               messageContext, flowScope.credentials.username)" />
-        <transition on="mfaSuccess" to="mfaSuccess" />
+        <transition on="mfa_strong_two_factor" to="mfaSuccess" />
         <transition on="error" to="generateLoginTicket" />
     </action-state>
  
