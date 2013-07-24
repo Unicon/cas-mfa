@@ -46,6 +46,7 @@
     
     <util:list id="listOfAuthenticationMethods">
         <value>strong_two_factor</value>
+        <value>sample_two_factor</value>
     </util:list>
         
  	<util:list id="argumentExtractors">

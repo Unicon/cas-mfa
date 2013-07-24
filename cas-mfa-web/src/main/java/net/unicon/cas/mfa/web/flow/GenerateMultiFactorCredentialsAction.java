@@ -42,12 +42,13 @@ public final class GenerateMultiFactorCredentialsAction {
      * @param upCredentials the credentials to authenticate
      * @param id the identifier for the credentials used.
      * @return an instance of {@link MultiFactorCredentials} or null if no authentication context available
+     * @throws NoAuthenticationContextAvailable if the authentication cannot be established from the flow context
      */
     public Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials, @NotNull final String id) {
         final Authentication authentication = getCasAuthentication(context);
         if (authentication == null) {
             LOGGER.debug("No authentication context is available.");
-            return null;
+            throw new NoAuthenticationContextAvailable();
         }
 
         LOGGER.debug("Retrieved authentication context. Building multifactor credentials...");
