@@ -50,7 +50,7 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
 
             final String tgt = this.cas.createTicketGrantingTicket(mfa);
             WebUtils.putTicketGrantingTicketInRequestScope(context, tgt);
-            return getSuccessEvent();
+            return getSuccessEvent(context);
         } catch (final TicketException e) {
             populateErrorsInstance(e, messageContext);
             logger.error(e.getMessage(), e);
