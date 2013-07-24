@@ -78,6 +78,12 @@ public class MultiFactorAuthenticationArgumentExtractorTests {
 
         assertTrue(extractor.extractService(request) instanceof MultiFactorAuthenticationSupportingWebApplicationService);
 
+        MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
+                (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(request);
+
+        assertEquals("strong_two_factor", authenticationMethodRequiringService.getAuthenticationMethod());
+    }
+
     /**
      * When login presents a recognized authentication method among several supported methods,
      * extractor extracts a service conveying the required authentication method.
