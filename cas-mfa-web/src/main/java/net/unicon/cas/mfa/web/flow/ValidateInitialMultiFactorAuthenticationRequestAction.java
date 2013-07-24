@@ -49,7 +49,7 @@ import org.springframework.webflow.execution.RequestContext;
 public final class ValidateInitialMultiFactorAuthenticationRequestAction extends AbstractAction {
 
     /** The Constant EVENT_ID_REQUIRE_MFA. */
-    public static final String EVENT_ID_REQUIRE_MFA = "requireMfa";
+    public static final String EVENT_ID_REQUIRE_MFA = "mfa_";
 
     /** The Constant EVENT_ID_REQUIRE_TGT. */
     public static final String EVENT_ID_REQUIRE_TGT = "requireTgt";
@@ -96,7 +96,6 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
 
         final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
 
-
         /*
          * If the TGT is blank i.e. there is no existing SSO session, proceed with normal login flow
          * (Note that flow may need interrupted later if the CAS-using service requires an authentication method
@@ -107,8 +106,6 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
-
-
         /*
          * If the authentication method the CAS-using service has specified is blank,
          * proceed with the normal login flow.
@@ -117,7 +114,6 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
             logger.trace("Since required authentication method is blank, proceed flow normally.");
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
-
 
         final Authentication authentication = this.authenticationSupport.getAuthenticationFrom(tgt);
 
@@ -128,9 +124,8 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
         if (authentication == null) {
             logger.warn("TGT had no Authentication, which is odd.  "
                     + "Proceeding as if additional authentication required.");
-            return new Event(this, EVENT_ID_REQUIRE_MFA);
+            return new Event(this, getMultiFactorEventIdByAuthenticationMethod(requiredAuthenticationMethod));
         }
-
 
         final String previouslyAchievedAuthenticationMethod = (String) authentication.getAttributes().get(
                 MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
@@ -148,7 +143,11 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
         logger.trace("Recorded authentication method [" + previouslyAchievedAuthenticationMethod + "] does not match "
                 + "now-required authentication method [" + requiredAuthenticationMethod + "]; "
                 + "branching to prompt for required authentication method.");
-        return new Event(this, EVENT_ID_REQUIRE_MFA);
+        return new Event(this, getMultiFactorEventIdByAuthenticationMethod(requiredAuthenticationMethod));
 
+    }
+
+    private String getMultiFactorEventIdByAuthenticationMethod(final String authnMethod) {
+        return EVENT_ID_REQUIRE_MFA + authnMethod;
     }
 }
