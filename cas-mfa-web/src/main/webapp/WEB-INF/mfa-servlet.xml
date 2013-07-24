@@ -56,4 +56,46 @@
     <webflow:flow-location path="/WEB-INF/mfa_sample_two_factor_webflow.xml" id="mfa_sample_two_factor"/>
   </webflow:flow-registry>
   
+  <cas:default-authentication-support/>
+  
+  <bean id="validateInitialMfaRequestAction" 
+        class="net.unicon.cas.mfa.web.flow.ValidateInitialMultiFactorAuthenticationRequestAction"
+        c:authSupport-ref="authenticationSupport" />
+  
+  <!-- Generate and chain multifactor credentials based on current authenticated credentials. -->
+  <bean id="generateMfaCredentialsAction" class="net.unicon.cas.mfa.web.flow.GenerateMultiFactorCredentialsAction"
+        p:authenticationSupport-ref="authenticationSupport"/>
+  
+  <!--  CAS instance responsible for creating the final authenticated principal. -->      
+  <bean id="mfaAwareCentralAuthenticationService" 
+        class="net.unicon.cas.mfa.MultiFactorAwareCentralAuthenticationService"
+        p:ticketRegistry-ref="ticketRegistry" p:ticketGrantingTicketExpirationPolicy-ref="grantingTicketExpirationPolicy" 
+        p:ticketGrantingTicketUniqueTicketIdGenerator-ref="ticketGrantingTicketUniqueIdGenerator"
+        p:centralAuthenticationServiceDelegate-ref="centralAuthenticationService" />
+   
+       
+  <bean id="serviceValidateController" class="net.unicon.cas.mfa.web.MultiFactorServiceValidateController"
+        p:validationSpecificationClass="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
+        p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
+        p:proxyHandler-ref="proxy20Handler"
+        p:argumentExtractor-ref="casArgumentExtractor"/>
+        
+    <bean id="mfaAuthenticationManager" parent="authenticationManager">
+    <property name="authenticationMetaDataPopulators">
+        <util:list>
+            <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator" />
+        </util:list>
+    </property>
+  </bean>
+        
+  <!-- 
+    Initiating the the multifactor authentication sequence. Validates credentials and
+    resolve principal, or authenticate and proceed to the second factor authentication flow.
+  -->                      
+  <bean id="initiatingAuthenticationViaFormAction"
+        class="net.unicon.cas.mfa.web.flow.InitiatingMultiFactorAuthenticationViaFormAction"
+        c:authenticationViaFormAction-ref="authenticationViaFormAction"
+        p:centralAuthenticationService-ref="centralAuthenticationService"
+        p:warnCookieGenerator-ref="warnCookieGenerator"
+        p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager" />    
 </beans>

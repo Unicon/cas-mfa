@@ -46,7 +46,7 @@
             <set name="viewScope.commandName" value="'credentials'" />
         </on-entry>
         <transition on="submit" bind="true" validate="true" to="realSubmit">
-            <evaluate expression="terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
+            <evaluate expression="sample_terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
     </view-state>
     
@@ -56,7 +56,7 @@
             <set name="flowScope.mfaCredentials" value="mfaCredentials" 
                  type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
         </on-entry>
-        <evaluate expression="terminatingTwoFactorAuthenticationViaFormAction.submit(flowRequestContext, flowScope.credentials, 
+        <evaluate expression="sample_terminatingTwoFactorAuthenticationViaFormAction.submit(flowRequestContext, flowScope.credentials, 
                               messageContext, flowScope.credentials.username)" />
         <transition on="mfa_sample_two_factor" to="mfaSuccess" />
         <transition on="error" to="generateLoginTicket" />

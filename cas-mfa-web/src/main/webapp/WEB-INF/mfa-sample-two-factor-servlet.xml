@@ -33,25 +33,25 @@
     
         
   <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->     
-  <bean id="terminatingTwoFactorAuthenticationViaFormAction"
+  <bean id="sample_terminatingTwoFactorAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction" 
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
-        p:multiFactorAuthenticationManager-ref="terminatingAuthenticationManager" />
+        p:multiFactorAuthenticationManager-ref="sample_terminatingAuthenticationManager" />
  
   <!-- 
     This is the authentication manager responsible to validate the second factor credentials.
     Will use a second set of authentication handlers to verify credentials.
   -->
-  <bean id="terminatingAuthenticationManager" parent="mfaAuthenticationManager" 
-        p:authenticationHandlers-ref="listOfTwoFactorStrongAuthenticationHandlers" />
+  <bean id="sample_terminatingAuthenticationManager" parent="mfaAuthenticationManager" 
+        p:authenticationHandlers-ref="sample_listOfTwoFactorStrongAuthenticationHandlers" />
     
   <!-- Custom set of authentication handlers for the second factor authentication. -->
-  <util:list id="listOfTwoFactorStrongAuthenticationHandlers">
+  <util:list id="sample_listOfTwoFactorStrongAuthenticationHandlers">
     <bean class="org.jasig.cas.adaptors.generic.AcceptUsersAuthenticationHandler"
-        p:users-ref="casUsers" />
+        p:users-ref="sample_casUsers" />
   </util:list>
   
-  <util:map id="casUsers">
-    <entry key="casuser" value="Mellon" />
+  <util:map id="sample_casUsers">
+    <entry key="casuser" value="Sesame" />
   </util:map>
 </beans>
