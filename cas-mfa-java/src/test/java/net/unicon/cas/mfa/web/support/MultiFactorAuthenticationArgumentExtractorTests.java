@@ -16,6 +16,33 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class MultiFactorAuthenticationArgumentExtractorTests {
 
+
+    /**
+     * When login presents no authentication method, the extractor extracts a null service.
+     */
+    @Test
+    public void testMissingAuthenticationMethodParameterYieldsNullService() {
+
+        // let's say we support all sorts of interesting authentication methods,
+        // but this login request isn't going to require any of these
+        final List<String> supportedAuthenticationMethods =
+                Arrays.asList("fingerprint", "strong_two_factor", "personal_attestation", "retina_scan");
+
+        final MultiFactorAuthenticationArgumentExtractor extractor =
+                new MultiFactorAuthenticationArgumentExtractor(supportedAuthenticationMethods);
+
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+
+        when(request.getParameter("service")).thenReturn("https://www.github.com");
+
+        // let's say the authn_method request parameter is missing outright
+        when(request.getParameter(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+                .thenReturn(null);
+
+        assertNull(extractor.extractService(request));
+    }
+
+
     /**
      * When login presents an unrecognized authentication method, the extractor extracts a null service.
      */
