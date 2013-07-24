@@ -32,8 +32,9 @@ public class MultiFactorAuthenticationArgumentExtractorTests {
 
     @Test
     public void testValidMfaService() {
-        final List<String> emptyList = Arrays.asList("strong_two_factor");
-        final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(emptyList);
+        final List<String> validAuthenticationMethods = Arrays.asList("strong_two_factor");
+        final MultiFactorAuthenticationArgumentExtractor extractor =
+                new MultiFactorAuthenticationArgumentExtractor(validAuthenticationMethods);
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
