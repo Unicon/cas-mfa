@@ -243,7 +243,8 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
 
         final Event ev = this.action.doExecute(this.requestContext);
         assertNotNull(ev);
-        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_MFA, ev.getId());
+        assertEquals(ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_MFA
+                + mfaSvc.getAuthenticationMethod(), ev.getId());
 
         // verify that the Action put the authentication method into the flow scope
         verify(mockFlowScope).put("requiredAuthenticationMethod", "strong_two_factor");

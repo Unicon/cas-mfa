@@ -10,6 +10,7 @@ import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.web.bind.CredentialsBinder;
 import org.jasig.cas.web.flow.AuthenticationViaFormAction;
+import org.jasig.cas.web.support.WebUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,6 +78,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         MultiFactorAuthenticationSupportingWebApplicationService svc = null;
         svc = mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
+        when(svc.getAuthenticationMethod()).thenReturn("strong_two_factor");
 
         when(ctx.getFlowScope().get("service")).thenReturn(svc);
         when(ctx.getFlowScope().remove("loginTicket")).thenReturn(LOGIN_TICKET);
@@ -125,7 +127,10 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         final Credentials credentials = getCredentials();
         final Event ev = this.action.submit(this.ctx, credentials, this.msgCtx, "id");
         assertNotNull(ev);
-        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_SUCCESS_EVENT_ID);
+        final MultiFactorAuthenticationSupportingWebApplicationService svc =
+                (MultiFactorAuthenticationSupportingWebApplicationService) WebUtils.getService(this.ctx);
+        assertNotNull(svc);
+        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_SUCCESS_EVENT_ID_PREFIX + svc.getAuthenticationMethod());
     }
 
     private Credentials getCredentials() {

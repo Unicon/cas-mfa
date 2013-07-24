@@ -40,7 +40,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
     public static final String MFA_ERROR_EVENT_ID = "error";
 
     /** The Constant MFA_SUCCESS_EVENT_ID. */
-    public static final String MFA_SUCCESS_EVENT_ID = "mfaSuccess";
+    public static final String MFA_SUCCESS_EVENT_ID_PREFIX = "mfa_";
 
     /** The logger. */
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -221,8 +221,10 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * Return the mfa webflow id.
      * @return the webflow id
      */
-    protected final Event getSuccessEvent() {
-        return new Event(this, MFA_SUCCESS_EVENT_ID);
+    protected final Event getSuccessEvent(final RequestContext context) {
+        final MultiFactorAuthenticationSupportingWebApplicationService service = (MultiFactorAuthenticationSupportingWebApplicationService)
+                WebUtils.getService(context);
+        return new Event(this, MFA_SUCCESS_EVENT_ID_PREFIX + service.getAuthenticationMethod());
     }
 
     /* (non-Javadoc)
