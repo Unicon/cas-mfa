@@ -32,6 +32,7 @@
     <action-state id="mfaTicketGrantingTicketExistsCheck">
         <evaluate expression="validateInitialMfaRequestAction" />
         <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
+        <transition on="mfa_sample_two_factor" to="mfa_sample_two_factor" />
         <transition on="requireTgt" to="ticketGrantingTicketExistsCheck" />
     </action-state>
          
@@ -90,6 +91,7 @@
 		<transition on="success" to="sendTicketGrantingTicket" />
 		<transition on="error" to="generateLoginTicket" />
         <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
+        <transition on="mfa_sample_two_factor" to="mfa_sample_two_factor" />
 	</action-state>
 	
 	<action-state id="sendTicketGrantingTicket">
@@ -102,6 +104,16 @@
 	</decision-state>
 	
     <subflow-state id="mfa_strong_two_factor" subflow="mfa_strong_two_factor">
+        <on-entry>
+            <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
+        </on-entry>
+        
+        <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
+               type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
+        <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
+    </subflow-state>
+    
+    <subflow-state id="mfa_sample_two_factor" subflow="mfa_sample_two_factor">
         <on-entry>
             <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
         </on-entry>
@@ -168,7 +180,8 @@
              instead of showing an intermediate unauthorized view with a link to login page -->
         <transition to="viewLoginForm" on-exception="org.jasig.cas.services.UnauthorizedSsoServiceException"/>
         <transition to="viewServiceErrorView" on-exception="org.springframework.webflow.execution.repository.NoSuchFlowExecutionException" />
-		<transition to="viewServiceErrorView" on-exception="org.jasig.cas.services.UnauthorizedServiceException" />
+	<transition to="viewServiceErrorView" on-exception="org.jasig.cas.services.UnauthorizedServiceException" />
+        <transition to="ticketGrantingTicketExistsCheck" on-exception="net.unicon.cas.mfa.web.flow.NoAuthenticationContextAvailable" />
         <transition to="viewMfaUnrecognizedAuthnMethodErrorView" on-exception="net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException" />
         
 	</global-transitions>
