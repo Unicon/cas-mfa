@@ -78,7 +78,7 @@ This Action branches to `mfa_strong_two_factor` only if the user has an existing
 
 In the `mfa_strong_two_factor` case, the flow proceeds to the `mfa_strong_two_factor` state.  This is a Spring Web Flow subflow-state:
 
-    <subflow-state id="mfa-strong-two-factor" subflow="mfa_strong_two_factor">
+    <subflow-state id="mfa_strong_two_factor" subflow="mfa_strong_two_factor">
         <on-entry>
             <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
         </on-entry>
