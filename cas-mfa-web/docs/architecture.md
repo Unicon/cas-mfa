@@ -60,6 +60,7 @@ The `login-webflow.xml` is customized to start with a new inserted action state,
     <action-state id="mfaTicketGrantingTicketExistsCheck">
         <evaluate expression="validateInitialMfaRequestAction" />
         <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
+        <transition on="mfa_sample_two_factor" to="mfa_sample_two_factor" />
         <transition on="requireTgt" to="ticketGrantingTicketExistsCheck" />
     </action-state>
 
@@ -70,9 +71,11 @@ The `validateInitialMfaRequestAction` is defined in `mfa-servlet.xml` as
         c:authSupport-ref="authenticationSupport" />
 
 
-This custom action considers the authentication method required by the CAS-using service the user is attempting to log in to, if any, and compares this to the recorded method of how the user authenticated previously in the active single sign-on session, if any, and makes a decision about whether the login flow should proceeed as per normal (the `requireTgt` event) or whether the flow should branch (here represented as the `mfa_strong_two_factor` event) to enforce an as-yet unfulfilled authentication method requirement expressed by the CAS-using service.  The branching event name is computed from the prefix `mfa_` plus the valid value of the `authn_method` request parameter to `/cas/login`.
+This custom action considers the authentication method required by the CAS-using service the user is attempting to log in to, if any, and compares this to the recorded method of how the user authenticated previously in the active single sign-on session, if any, and makes a decision about whether the login flow should proceeed as per normal (the `requireTgt` event) or whether the flow should branch to enforce an as-yet unfulfilled authentication method requirement expressed by the CAS-using service.  The specific as-yet-unfulfilled authentication method is represented by a transition event with a name conveying the identifier for the required authentication method.  The branching event name is computed from the prefix `mfa_` plus the valid value of the `authn_method` request parameter to `/cas/login`.
 
-This Action branches to `mfa_strong_two_factor` only if the user has an existing single sign-on session that does not yet meet the authentication method requirements.  If the requirements are already met *or if the user hasn't logged in at all* the Action signals to proceed the flow.  This is so that the user will first complete the normal user and password login process before (later, through another flow action) branching to then experience and fulfill the additional authentication factor requirement.
+This Action branches to `mfa_strong_two_factor` only if the user has an existing single sign-on session that does not yet meet an authentication method requirement specifying `strong_two_factor`.  If the requirements are already met *or if the user hasn't logged in at all* the Action signals to proceed the flow.  This is so that the user will first complete the normal user and password login process before (later, through another flow action) branching to then experience and fulfill the additional authentication factor requirement.
+
+Likewise, this Action branches to `mfa_sample_two_factor` only if the user has an existing single sign-on session that does not yet meet an authentication method requirement specifying `sample_two_factor`.  If the requirements are already met *or if the user hasn't logged in at all* the Action signals to proceed the flow.
 
 ### multiFactorAuthentication login flow state
 
@@ -100,6 +103,8 @@ On entering the state, the flow invokes `generateMfaCredentialsAction.createCred
 This simply reads or instantiates a MultiFactoCredentials instance to back the one-time-password form.
 
 This is a sub-flow action with `subflow="mfa_strong_two_factor"`, so it branches control to the `mfa-strong-two-factor-webflow.xml` subflow.
+
+The `mfa_sample_two_factor" subflow-state similarly branches to a `mfa_sample_two_factor` sub-flow.
 
 ### mfa_strong_two_factor_webflow.xml subflow
 
