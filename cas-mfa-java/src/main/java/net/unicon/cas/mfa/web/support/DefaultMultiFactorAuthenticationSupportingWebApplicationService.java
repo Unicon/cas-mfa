@@ -37,8 +37,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
 
     /**
      * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}.
-     * Expects the request parameter {@link #CONST_PARAM_AUTHN_METHOD} is
-     * present and its value is supported by the corresponding argument extractor.
+     *
      * @param id the service id
      * @param originalUrl the service url
      * @param artifactId the artifact id
