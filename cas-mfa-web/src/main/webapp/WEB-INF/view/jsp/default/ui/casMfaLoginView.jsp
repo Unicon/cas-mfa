@@ -20,9 +20,8 @@
 <jsp:directive.include file="includes/top.jsp" />
 
 <div id="msg" class="info">
-  <h2>Multifactor Authentication In Progress</h2>
-  <h4>Authentication method is set to [${service.authenticationMethod}].</h4>
-  <h4>Authentication is requested by [${service}].</h4>
+  <h2><spring:message code="service.mfa.service.mfa.inprogress.header" /></h2>
+  <h4><spring:message code="service.mfa.service.mfa.inprogress.message" arguments="${service.authenticationMethod},${service}" /></h4>
 </div>
 
 <div class="box fl-panel" id="login">
