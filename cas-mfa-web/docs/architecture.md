@@ -36,6 +36,21 @@ In CAS server architecture terms, the parameter on login is an "argument" to CAS
 
 The fundamental purpose of argument extractors are to generate Service objects representing the CAS-using service the end user is trying to log in to.  The `MultiFactorAuthenticationArgumentExtractor` generates a `MultiFactorAuthenticationSupportingWebApplicationService` .  These are like regular CAS `WebApplicationService`s except they know what authentication method the service has required.
 
+This is configured in `/WEB-INF/spring-configuration/argumentExtractorsConfiguration.xml`:
+
+    <bean id="mfaArgumentExtractor"
+      class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationArgumentExtractor"
+      parent="baseArgumentExtractor"
+      c:authnMethods-ref="listOfAuthenticationMethods">
+    </bean>
+
+    <util:list id="listOfAuthenticationMethods">
+      <value>strong_two_factor</value>
+      <value>sample_two_factor</value>
+    </util:list>
+
+Note that recognized authentication methods are explicitly declared; CAS will present appropriate errors when unknown authentication methods are requested at runtime.
+
 ## Honoring alternative authentication requirements in the login experience
 
 ### mfaTicketGrantingTicketExistsCheck login flow state
