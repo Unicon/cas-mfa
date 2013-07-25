@@ -59,17 +59,17 @@ public class GenerateMultiFactorCredentialsActionTests {
 
     @Test(expected=NoAuthenticationContextAvailable.class)
     public void testNoAuthentication() {
-        assertNull(this.action.createCredentials(requestContext, getCredentials(), "usrPsw"));
+        this.action.createCredentials(requestContext, getCredentials(), "usrPsw");
     }
 
     @Test(expected=NoAuthenticationContextAvailable.class)
     public void testNoCredentialId() {
-        assertNull(this.action.createCredentials(requestContext, getCredentials(), null));
+        this.action.createCredentials(requestContext, getCredentials(), null);
     }
 
     @Test(expected=NoAuthenticationContextAvailable.class)
     public void testNoCredentials() {
-        assertNull(this.action.createCredentials(requestContext, null, "helloWorld"));
+        this.action.createCredentials(requestContext, null, "helloWorld");
     }
 
     @Test
