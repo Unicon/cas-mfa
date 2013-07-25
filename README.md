@@ -8,12 +8,9 @@ This is a project to develop free and open source compatibly licensed extensions
 Unicon is undertaking this project under contract for Evergreen State College as an outcome of a successful response to a lovely RFP requisitioning this software development and thoughtfully insisting that the work product be free and open source software.
 
 The intention is to develop a solution that can be adopted by current CAS adopters.
-
 #Documentation
 Please review [the project wiki](https://github.com/Unicon/cas-mfa/wiki) for additional information on scope, functionality and how-to walkthroughs. 
-
 # Build Status
-
 * [![Build Status](https://secure.travis-ci.org/Unicon/cas-mfa.png)](http://travis-ci.org/Unicon/cas-mfa)
 * [ ![Codeship Status for Unicon/cas-mfa](https://www.codeship.io/projects/0bbd72d0-b74c-0130-d193-1eff452fc99e/status?branch=master)](https://www.codeship.io/projects/4315)
 
