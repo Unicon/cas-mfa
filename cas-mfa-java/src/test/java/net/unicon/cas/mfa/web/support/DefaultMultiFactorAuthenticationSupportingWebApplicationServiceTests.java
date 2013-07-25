@@ -16,8 +16,13 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTests {
 
+    /**
+     * Test that an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}
+     * properly implements getAuthenticationMethod() and ability to get a Response to direct the user to redirect to
+     * the service with a ticket.
+     */
     @Test
-    public void createNewMFAService() {
+    public void testServiceness() {
         final DefaultMultiFactorAuthenticationSupportingWebApplicationService svc =
                 new DefaultMultiFactorAuthenticationSupportingWebApplicationService("https://www.github.com",
                 "https://www.github.com", null, null, "test_authn_method");
@@ -28,50 +33,4 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
         assertEquals(res.getUrl(), "https://www.github.com?ticket=testTicketId");
     }
 
-    @Test
-    public void createMFAServiceByRequestNoService() {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
-                Arrays.asList("test_authn_method"));
-        final WebApplicationService svc = extractor.extractService(request);
-        assertNull(svc);
-    }
-
-    @Test
-    public void createMFAServiceByRequestNoAuthnMethod() {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
-                Arrays.asList("test_authn_method"));
-
-        when(request.getParameter("service")).thenReturn("https://www.github.com");
-        final WebApplicationService svc = extractor.extractService(request);
-        assertNull(svc);
-    }
-
-    @Test
-    public void createMFAServiceByRequestBadAuthnMethod() {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
-                Arrays.asList("test_authn_method"));
-
-        when(request.getParameter("service")).thenReturn("https://www.github.com");
-        when(request.getParameter("authn_method")).thenReturn("bad_authn_method");
-        final WebApplicationService svc = extractor.extractService(request);
-        assertNull(svc);
-    }
-
-    @Test
-    public void createMFAServiceByRequestSupportedAuthnMethod() {
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(
-                Arrays.asList("test_authn_method"));
-
-        when(request.getParameter("service")).thenReturn("https://www.github.com");
-        when(request.getParameter("authn_method")).thenReturn("test_authn_method");
-        final WebApplicationService svc = extractor.extractService(request);
-        assertNotNull(svc);
-        final DefaultMultiFactorAuthenticationSupportingWebApplicationService mfa =
-                (DefaultMultiFactorAuthenticationSupportingWebApplicationService) svc;
-        assertEquals(mfa.getAuthenticationMethod(), "test_authn_method");
-    }
 }
