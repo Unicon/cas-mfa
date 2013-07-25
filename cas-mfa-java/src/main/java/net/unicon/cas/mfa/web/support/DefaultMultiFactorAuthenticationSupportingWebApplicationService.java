@@ -38,7 +38,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
     /**
      * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}.
      *
-     * @param id the service id
+     * @param id the service id, potentially with a jsessionid; still needing excised
      * @param originalUrl the service url
      * @param artifactId the artifact id
      * @param httpClient http client to process requests
@@ -46,7 +46,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
      */
     public DefaultMultiFactorAuthenticationSupportingWebApplicationService(final String id, final String originalUrl,
             final String artifactId, final HttpClient httpClient, @NotNull final String authnMethod) {
-        super(id, originalUrl, artifactId, httpClient);
+        super(cleanupUrl(id), originalUrl, artifactId, httpClient);
         this.wrapperService = new SimpleWebApplicationServiceImpl(id, httpClient);
         this.authenticationMethod = authnMethod;
     }

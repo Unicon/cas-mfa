@@ -76,42 +76,17 @@ public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSi
             return null;
         }
 
-        final String id = exciseJsessionFromUrl(serviceToUse);
         final String artifactId = request.getParameter(CONST_PARAM_TICKET);
 
         final MultiFactorAuthenticationSupportingWebApplicationService svc =
                 new DefaultMultiFactorAuthenticationSupportingWebApplicationService(
-                        id, serviceToUse, artifactId, getHttpClientIfSingleSignOutEnabled(), authenticationMethod);
+                        serviceToUse, serviceToUse, artifactId, getHttpClientIfSingleSignOutEnabled(),
+                        authenticationMethod);
         logger.debug("Created multifactor authentication request for [{}] with [{}] as [{}].",
                 svc.getId(), MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
                 svc.getAuthenticationMethod());
         return svc;
     }
 
-    /**
-     * Duplicate of AbstractWebApplicationService.cleanupUrl(), which wasn't accessible to this extractor class.
-     * Excises out a jsession identifier from the service URL, if any.
-     * @param url String representation of URL potentially needing cleanup
-     * @return Cleaned up String representation of URL, or null
-     */
-    protected static String exciseJsessionFromUrl(final String url) {
-        if (url == null) {
-            return null;
-        }
 
-        final int jsessionPosition = url.indexOf(";jsession");
-
-        if (jsessionPosition == -1) {
-            return url;
-        }
-
-        final int questionMarkPosition = url.indexOf("?");
-
-        if (questionMarkPosition < jsessionPosition) {
-            return url.substring(0, url.indexOf(";jsession"));
-        }
-
-        return url.substring(0, jsessionPosition)
-                + url.substring(questionMarkPosition);
-    }
 }
