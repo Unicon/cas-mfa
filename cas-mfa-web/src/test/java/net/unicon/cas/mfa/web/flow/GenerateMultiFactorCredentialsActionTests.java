@@ -57,19 +57,19 @@ public class GenerateMultiFactorCredentialsActionTests {
         when(requestContext.getFlowScope().get(MultiFactorRequestContextUtils.CAS_TICKET_GRANTING_TICKET_ATTR_NAME)).thenReturn(tgt);
     }
 
-    @Test
+    @Test(expected=NoAuthenticationContextAvailable.class)
     public void testNoAuthentication() {
-        assertNull(this.action.createCredentials(requestContext, getCredentials(), "usrPsw"));
+        this.action.createCredentials(requestContext, getCredentials(), "usrPsw");
     }
 
-    @Test
+    @Test(expected=NoAuthenticationContextAvailable.class)
     public void testNoCredentialId() {
-        assertNull(this.action.createCredentials(requestContext, getCredentials(), null));
+        this.action.createCredentials(requestContext, getCredentials(), null);
     }
 
-    @Test
+    @Test(expected=NoAuthenticationContextAvailable.class)
     public void testNoCredentials() {
-        assertNull(this.action.createCredentials(requestContext, null, "helloWorld"));
+        this.action.createCredentials(requestContext, null, "helloWorld");
     }
 
     @Test
