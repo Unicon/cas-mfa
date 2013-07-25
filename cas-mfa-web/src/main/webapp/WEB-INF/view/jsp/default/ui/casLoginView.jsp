@@ -31,10 +31,8 @@
 
 <c:if test="${not empty requiredAuthenticationMethod }">
     <div id="msg" class="info">
-        <h2>This service requires a specific authentication method in addition to username and password.</h2>
-        <strong>The additional required authentication method is [${requiredAuthenticationMethod}].
-        After successfully providing username and password, you will be prompted for this additional authentication
-            factor.</strong>
+        <h2><spring:message code="service.mfa.service.requires.mfa.header" /></h2>
+        <strong><spring:message code="service.mfa.service.requires.mfa.message" arguments="${requiredAuthenticationMethod}"/> </strong>
     </div>
 </c:if>
 
