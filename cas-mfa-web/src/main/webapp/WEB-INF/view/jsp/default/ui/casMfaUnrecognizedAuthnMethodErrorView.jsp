@@ -20,7 +20,8 @@
 --%>
 <jsp:directive.include file="includes/top.jsp" />
   <div id="msg" class="errors">
-    <h2>Unrecognized Authentication Method</h2>
-    <p>The specified authentication method is not recognized. Please review and reconfigure the authentication request.</p>
+    <h2><spring:message code="service.mfa.unrecognized.authn.method.header" /></h2>
+    <p><spring:message code="service.mfa.unrecognized.authn.method.message" 
+             arguments="${rootCauseException.service},${rootCauseException.authenticationMethod}" /></p>
   </div>
 <jsp:directive.include file="includes/bottom.jsp" />

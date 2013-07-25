@@ -106,7 +106,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
              */
             if (request.getAttribute(UnrecognizedAuthenticationMethodException.class.getName()) == null) {
                 request.setAttribute(UnrecognizedAuthenticationMethodException.class.getName(), Boolean.TRUE.toString());
-                throw new UnrecognizedAuthenticationMethodException(authenticationMethod);
+                throw new UnrecognizedAuthenticationMethodException(authenticationMethod, serviceToUse);
             }
             return null;
         }
