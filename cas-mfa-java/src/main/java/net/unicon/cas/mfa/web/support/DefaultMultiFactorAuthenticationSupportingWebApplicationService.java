@@ -59,5 +59,4 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
     public String getAuthenticationMethod() {
         return this.authenticationMethod;
     }
-
 }

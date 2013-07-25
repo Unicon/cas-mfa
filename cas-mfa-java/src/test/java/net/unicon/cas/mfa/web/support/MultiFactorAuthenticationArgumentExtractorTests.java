@@ -46,7 +46,7 @@ public class MultiFactorAuthenticationArgumentExtractorTests {
     /**
      * When login presents an unrecognized authentication method, the extractor extracts a null service.
      */
-    @Test
+    @Test(expected=UnrecognizedAuthenticationMethodException.class)
     public void testUnrecognizedAuthenticationMethodParameterYieldsNullService() {
         final List<String> emptyList = Collections.emptyList();
         final MultiFactorAuthenticationArgumentExtractor extractor = new MultiFactorAuthenticationArgumentExtractor(emptyList);
@@ -57,7 +57,7 @@ public class MultiFactorAuthenticationArgumentExtractorTests {
         when(request.getParameter(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
                 .thenReturn("unrecognized_authentication_method");
 
-        assertNull(extractor.extractService(request));
+        extractor.extractService(request);
     }
 
     /**
