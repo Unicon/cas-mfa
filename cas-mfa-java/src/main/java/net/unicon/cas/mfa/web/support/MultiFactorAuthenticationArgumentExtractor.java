@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.web.support.AbstractSingleSignOutEnabledArgumentExtractor;
 import org.springframework.util.StringUtils;
@@ -73,7 +72,18 @@ public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSi
             logger.debug("CAS is not configured to support [{}] parameter value [{}].",
                     MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
                     authenticationMethod);
-            return null;
+            /**
+             * Argument extractors are still going to be invoked, if the flow
+             * decides to move the user experience to an error-view JSP. As such,
+             * and since we are unable to touch request parameters removing the invalid
+             * authn_method before that navigation takes place, there's a chance that an inifinite
+             * redirect loop might occur. The compromise here to is to "remember" that the exception
+             * was handled once via a request attribute.
+             */
+            if (request.getAttribute(UnrecognizedAuthenticationMethodException.class.getName()) == null) {
+                request.setAttribute(UnrecognizedAuthenticationMethodException.class.getName(), Boolean.TRUE.toString());
+                throw new UnrecognizedAuthenticationMethodException(authenticationMethod, serviceToUse);
+            }
         }
 
         final String artifactId = request.getParameter(CONST_PARAM_TICKET);
