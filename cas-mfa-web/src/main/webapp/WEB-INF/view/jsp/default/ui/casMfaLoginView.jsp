@@ -44,14 +44,15 @@
       <c:if test="${empty sessionScope.openIdLocalId}">
         <spring:message code="screen.welcome.label.netid.accesskey"
           var="userNameAccessKey" />
-        <form:input cssClass="required" cssErrorClass="error" id="username" size="25" tabindex="1"
-          accesskey="${userNameAccessKey}" path="username" autocomplete="false" htmlEscape="true" />
+         <form:input cssClass="required" cssErrorClass="error" id="username" size="25" tabindex="2"
+          accesskey="${userNameAccessKey}" path="username" autocomplete="false" htmlEscape="true" 
+          readonly="true" value="${mfaCredentials.principal}" />
       </c:if>
     </div>
     <div class="row fl-controls-left">
       <label for="password" class="fl-label"><spring:message code="screen.welcome.label.password" /></label>
       <spring:message code="screen.welcome.label.password.accesskey" var="passwordAccessKey" />
-      <form:password cssClass="required" cssErrorClass="error" id="password" size="25" tabindex="2" path="password"
+      <form:password cssClass="required" cssErrorClass="error" id="password" size="25" tabindex="1" path="password"
                      accesskey="${passwordAccessKey}" htmlEscape="true" autocomplete="off" />
     </div>
     <div class="row btn-row">
@@ -66,3 +67,9 @@
   </form:form>
 </div>
 <jsp:directive.include file="includes/bottom.jsp" />
+
+<script>
+$(document).ready(function(){
+    $("input#password").focus();
+});
+</script>
