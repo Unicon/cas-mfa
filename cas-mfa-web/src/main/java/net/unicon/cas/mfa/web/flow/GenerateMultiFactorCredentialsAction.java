@@ -43,8 +43,11 @@ public final class GenerateMultiFactorCredentialsAction {
      * @param id the identifier for the credentials used.
      * @return an instance of {@link MultiFactorCredentials}
      * @throws NoAuthenticationContextAvailable if the authentication cannot be established from the flow context
+     * @throws net.unicon.cas.mfa.authentication.principal.UnknownPrincipalMatchException if the newly resolved principal is different
+     * from what has already been authenticated as the principal
      */
-    public Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials, @NotNull final String id) {
+    public Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials,
+            @NotNull final String id) {
         final Authentication authentication = getCasAuthentication(context);
         if (authentication == null) {
             LOGGER.debug("No authentication context is available.");
@@ -55,7 +58,7 @@ public final class GenerateMultiFactorCredentialsAction {
         final MultiFactorCredentials credentials = getMfaCredentialsInstanceFromContext(context);
 
         LOGGER.debug("Added authentication to the chain");
-        credentials.getChainedAuthentications().add(authentication);
+        credentials.addAuthenticationToChain(authentication);
 
         if (id != null && upCredentials != null) {
             LOGGER.debug("Added credentials to the chain by id [{}]", id);

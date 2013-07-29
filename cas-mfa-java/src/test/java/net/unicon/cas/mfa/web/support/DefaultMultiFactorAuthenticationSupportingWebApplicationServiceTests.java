@@ -2,16 +2,10 @@ package net.unicon.cas.mfa.web.support;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.jasig.cas.authentication.principal.Response;
-import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
 public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTests {

@@ -160,6 +160,7 @@
         <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
                type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
         <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
+        <transition on="unknownPrincipalError" to="viewUnknownPrincipalErrorView" />
     </subflow-state>
     
     <subflow-state id="mfa_sample_two_factor" subflow="mfa_sample_two_factor">
@@ -170,6 +171,7 @@
         <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
                type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
         <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
+        <transition on="unknownPrincipalError" to="viewUnknownPrincipalErrorView" />
     </subflow-state>
     
 	<action-state id="generateServiceTicket">
@@ -224,6 +226,8 @@
 
     <end-state id="viewMfaUnrecognizedAuthnMethodErrorView" view="casMfaUnrecognizedAuthnMethodErrorView" />
     
+    <end-state id="viewUnknownPrincipalErrorView" view="casUnknownPrincipalErrorView" />
+              
 	<global-transitions>
         <!-- CAS-1023 This one is simple - redirects to a login page (same as renew) when 'ssoEnabled' flag is unchecked
              instead of showing an intermediate unauthorized view with a link to login page -->
