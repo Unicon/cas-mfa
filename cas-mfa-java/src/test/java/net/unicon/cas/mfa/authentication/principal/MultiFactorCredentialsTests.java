@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
-public class UnknownPrincipalMatchExceptionTests {
+public class MultiFactorCredentialsTests {
 
     @Test(expected = UnknownPrincipalMatchException.class)
     public void testMultifactorMismatchedPrincipals() {
