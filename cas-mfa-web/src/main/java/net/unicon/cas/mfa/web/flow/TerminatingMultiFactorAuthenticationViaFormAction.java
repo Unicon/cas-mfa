@@ -41,7 +41,7 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
 
         final MultiFactorCredentials mfa = MultiFactorRequestContextUtils.getMfaCredentials(context);
 
-        mfa.getChainedAuthentications().add(authentication);
+        mfa.addAuthenticationToChain(authentication);
         mfa.getChainedCredentials().put(id, credentials);
 
         MultiFactorRequestContextUtils.setMfaCredentials(context, mfa);
