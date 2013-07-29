@@ -160,6 +160,7 @@
         <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
                type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
         <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
+        <transition on="mfaCancel" to="mfaTicketGrantingTicketExistsCheck"/>
     </subflow-state>
     
     <subflow-state id="mfa_sample_two_factor" subflow="mfa_sample_two_factor">
@@ -170,6 +171,7 @@
         <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
                type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
         <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
+        <transition on="mfaCancel" to="mfaTicketGrantingTicketExistsCheck" />
     </subflow-state>
     
 	<action-state id="generateServiceTicket">
