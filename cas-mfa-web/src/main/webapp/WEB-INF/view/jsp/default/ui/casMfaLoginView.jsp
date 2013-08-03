@@ -63,7 +63,7 @@
               tabindex="4" type="submit" /> 
  
       <input class="btn-submit" name="_eventId_cancel" value="<spring:message code="screen.mfa.button.cancel" />" 
-              tabindex="5" type="submit" />    
+              tabindex="5" type="button" onclick="redirectToLoginViewAndEndTheFlow();">    
     </div>
   </form:form>
 </div>
@@ -73,4 +73,9 @@
 $(document).ready(function(){
     $("input#password").focus();
 });
+
+function redirectToLoginViewAndEndTheFlow() {
+    var loginViewUrl = window.location.href;
+    window.location.replace(loginViewUrl);       
+}
 </script>

@@ -48,7 +48,6 @@
         <transition on="submit" bind="true" validate="true" to="realSubmit">
             <evaluate expression="sample_terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
-        <transition on="cancel" validate="false" to="mfaCancel" bind="false"  history="invalidate" />
     </view-state>
     
 
@@ -64,5 +63,4 @@
     </action-state>
  
     <end-state id="mfaSuccess" />
-    <end-state id="mfaCancel"/>
 </flow>
