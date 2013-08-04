@@ -30,7 +30,7 @@ public final class MultiFactorUtils {
         final Collection<Object> c = new HashSet<Object>();
 
         if (obj instanceof Collection) {
-          c.addAll((Collection<Object>) obj);
+            c.addAll((Collection<Object>) obj);
         } else if (obj instanceof Map) {
             final Map<?, Object> map = (Map<?, Object>) obj;
             c.addAll(map.values());
