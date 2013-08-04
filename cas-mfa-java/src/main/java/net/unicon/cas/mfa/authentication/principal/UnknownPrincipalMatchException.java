@@ -13,11 +13,15 @@ import org.jasig.cas.authentication.Authentication;
  * @author Misagh Moayyed
  * @see MultiFactorCredentials
  */
-public class UnknownPrincipalMatchException extends RuntimeException {
+public final class UnknownPrincipalMatchException extends RuntimeException {
     private static final long serialVersionUID = -6572930326804074536L;
 
     private final Authentication authentication;
 
+    /**
+     * Initialize the exception with the authentication given.
+     * @param authentication the authentication context associated with this error.
+     */
     public UnknownPrincipalMatchException(final Authentication authentication) {
         this.authentication = authentication;
     }

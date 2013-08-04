@@ -5,6 +5,7 @@ import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
+import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.web.support.WebUtils;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.webflow.execution.Event;
@@ -21,8 +22,7 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
     /* {@inheritDoc} */
     @Override
     protected final Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
-            final Credentials credentials, final MessageContext messageContext, final String id) throws Exception {
-
+            final Credentials credentials, final MessageContext messageContext, final String id) throws TicketException {
         return createTicketGrantingTicket(authentication, context, credentials, messageContext, id);
     }
 
@@ -35,9 +35,10 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
      * @param messageContext the message context
      * @param id the id
      * @return the event
+     * @throws TicketException if the TGT cannot be created
      */
     private Event createTicketGrantingTicket(final Authentication authentication, final RequestContext context,
-            final Credentials credentials, final MessageContext messageContext, final String id) throws Exception {
+            final Credentials credentials, final MessageContext messageContext, final String id) throws TicketException  {
 
         final MultiFactorCredentials mfa = MultiFactorRequestContextUtils.getMfaCredentials(context);
 
