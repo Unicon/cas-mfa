@@ -97,5 +97,10 @@
         c:authenticationViaFormAction-ref="authenticationViaFormAction"
         p:centralAuthenticationService-ref="centralAuthenticationService"
         p:warnCookieGenerator-ref="warnCookieGenerator"
-        p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager" />    
+        p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager" />
+   
+   <bean id="principalMismatchExceptionHandler" 
+         class="net.unicon.cas.mfa.web.flow.ConfigurableSpringWebflowExceptionHandler"
+         c:exceptionClass="net.unicon.cas.mfa.authentication.principal.UnknownPrincipalMatchException"
+         c:state="unknownPrincipalError" />     
 </beans>

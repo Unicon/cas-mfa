@@ -65,7 +65,9 @@
                               messageContext, flowScope.credentials.username)" />
         <transition on="mfa_strong_two_factor" to="mfaSuccess" />
         <transition on="error" to="generateLoginTicket" />
+        <exception-handler bean="principalMismatchExceptionHandler"/>
     </action-state>
- 
+      
     <end-state id="mfaSuccess" />
+    <end-state id="unknownPrincipalError" />
 </flow>

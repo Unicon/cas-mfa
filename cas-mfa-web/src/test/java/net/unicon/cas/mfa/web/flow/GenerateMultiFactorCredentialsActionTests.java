@@ -83,7 +83,7 @@ public class GenerateMultiFactorCredentialsActionTests {
         assertTrue(creds instanceof MultiFactorCredentials);
         final MultiFactorCredentials mfaCreds = (MultiFactorCredentials) creds;
 
-        assertEquals(mfaCreds.getChainedAuthentications().size(), 1);
+        assertEquals(mfaCreds.countChainedAuthentications(), 1);
         assertEquals(mfaCreds.getChainedCredentials().size(), 1);
 
         assertEquals(mfaCreds.getAuthentication(), authentication);
@@ -101,7 +101,7 @@ public class GenerateMultiFactorCredentialsActionTests {
         assertTrue(creds instanceof MultiFactorCredentials);
         final MultiFactorCredentials mfaCreds = (MultiFactorCredentials) creds;
 
-        assertEquals(mfaCreds.getChainedAuthentications().size(), 1);
+        assertEquals(mfaCreds.countChainedAuthentications(), 1);
         assertEquals(mfaCreds.getChainedCredentials().size(), 1);
 
         assertEquals(mfaCreds.getAuthentication(), authentication);
