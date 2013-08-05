@@ -1,5 +1,6 @@
 package net.unicon.cas.mfa.web.flow;
 
+import java.util.Collections;
 import java.util.Map;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
@@ -202,8 +203,10 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         setMockServiceContextWith(mfaSvc);
 
         final Map map = mock(Map.class);
+        when(map.containsKey(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
+            .thenReturn(true);
         when(map.get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
-            .thenReturn(AUTHN_METHOD);
+            .thenReturn(Collections.singleton(AUTHN_METHOD));
 
         when(authentication.getAttributes()).thenReturn(map);
 

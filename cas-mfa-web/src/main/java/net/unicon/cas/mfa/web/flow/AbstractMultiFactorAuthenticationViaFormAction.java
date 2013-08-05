@@ -13,6 +13,7 @@ import org.jasig.cas.authentication.AuthenticationManager;
 import org.jasig.cas.authentication.handler.AuthenticationException;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.Service;
+import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.web.bind.CredentialsBinder;
 import org.jasig.cas.web.support.WebUtils;
 import org.slf4j.Logger;
@@ -171,7 +172,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
     }
 
     /**
-     * Multi factor authentication successful.
+     * Multifactor authentication successful.
      *
      * @param authentication the authentication
      * @param context the context
@@ -179,10 +180,10 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * @param messageContext the message context
      * @param id the id
      * @return the event
+     * @throws TicketException in the event that granting the TGT fails.
      */
     protected abstract Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
-            final Credentials credentials, final MessageContext messageContext, final String id)
-                throws Exception;
+            final Credentials credentials, final MessageContext messageContext, final String id) throws TicketException;
 
     /**
      * Set the binder instance.
@@ -221,6 +222,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
 
     /**
      * Return the mfa webflow id.
+     * @param context the request context
      * @return the webflow id
      */
     protected final Event getSuccessEvent(final RequestContext context) {
@@ -239,10 +241,10 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
     /**
      * Populate errors instance.
      *
-     * @param e the e
+     * @param code the error code
      * @param messageContext the message context
      */
-    protected void populateErrorsInstance(final String code, final MessageContext messageContext) {
+    protected final void populateErrorsInstance(final String code, final MessageContext messageContext) {
         try {
             messageContext.addMessage(new MessageBuilder().error().code(code).defaultText(code).build());
         } catch (final Exception fe) {

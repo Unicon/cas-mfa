@@ -38,6 +38,7 @@ public class MultiFactorAuthenticationProtocolValidationSpecificationTests {
         when(this.assertion.getChainedAuthentications()).thenReturn(list);
         when(list.get(anyInt())).thenReturn(this.authentication);
         final Map<String, Object> map = mock(Map.class);
+        when(map.containsKey((any(Object.class)))).thenReturn(true);
         when(authentication.getAttributes()).thenReturn(map);
 
         this.spec = new MultiFactorAuthenticationProtocolValidationSpecification();
