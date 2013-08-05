@@ -28,7 +28,7 @@
   <form:form method="post" id="fm1" cssClass="fm-v clearfix"
     commandName="${commandName}" htmlEscape="true">
     <form:errors path="*" id="msg" cssClass="errors" element="div" />
-    <!-- <spring:message code="screen.welcome.welcome" /> -->
+    
     <h2>
       <spring:message code="screen.welcome.instructions" />
     </h2>
@@ -39,6 +39,7 @@
         <strong>${sessionScope.openIdLocalId}</strong>
         <input type="hidden" id="username" name="username"
           value="${sessionScope.openIdLocalId}" />
+        
       </c:if>
 
       <c:if test="${empty sessionScope.openIdLocalId}">
@@ -58,11 +59,11 @@
     <div class="row btn-row">
       <input type="hidden" name="lt" value="${loginTicket}" />
       <input type="hidden" name="execution" value="${flowExecutionKey}" /> 
-      <input type="hidden" name="_eventId" value="submit" /> 
-      <input  class="btn-submit" name="submit" accesskey="l" value="<spring:message code="screen.welcome.button.login" />"
+      <input  class="btn-submit" name="_eventId_submit" accesskey="l" value="<spring:message code="screen.welcome.button.login" />"
               tabindex="4" type="submit" /> 
-      <input class="btn-reset" name="reset" accesskey="c" value="<spring:message code="screen.welcome.button.clear" />"
-              tabindex="5" type="reset" />    
+ 
+      <input class="btn-submit" name="_eventId_cancel" value="<spring:message code="screen.mfa.button.cancel" />" 
+              tabindex="5" type="button" onclick="redirectToLoginViewAndEndTheFlow();">    
     </div>
   </form:form>
 </div>
@@ -72,4 +73,9 @@
 $(document).ready(function(){
     $("input#password").focus();
 });
+
+function redirectToLoginViewAndEndTheFlow() {
+    var loginViewUrl = window.location.href;
+    window.location.replace(loginViewUrl);       
+}
 </script>
