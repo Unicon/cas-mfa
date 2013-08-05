@@ -30,11 +30,10 @@
     <form:errors path="*" id="msg" cssClass="errors" element="div" />
     
     <h2>
-      <spring:message code="screen.welcome.instructions" />
+      <spring:message code="screen.mfa.welcome.instructions" />
     </h2>
     <div class="row fl-controls-left">
-      <label for="username" class="fl-label"><spring:message
-          code="screen.welcome.label.netid" /></label>
+      <!-- <label for="username" class="fl-label"><spring:message code="screen.welcome.label.netid" /></label> -->
       <c:if test="${not empty sessionScope.openIdLocalId}">
         <strong>${sessionScope.openIdLocalId}</strong>
         <input type="hidden" id="username" name="username"
@@ -43,11 +42,8 @@
       </c:if>
 
       <c:if test="${empty sessionScope.openIdLocalId}">
-        <spring:message code="screen.welcome.label.netid.accesskey"
-          var="userNameAccessKey" />
-         <form:input cssClass="required" cssErrorClass="error" id="username" size="25" tabindex="2"
-          accesskey="${userNameAccessKey}" path="username" autocomplete="false" htmlEscape="true" 
-          readonly="true" value="${mfaCredentials.principal}" />
+        <!-- <spring:message code="screen.welcome.label.netid.accesskey" var="userNameAccessKey" /> -->
+        <form:hidden path="username" value="${mfaCredentials.principal}" />
       </c:if>
     </div>
     <div class="row fl-controls-left">
