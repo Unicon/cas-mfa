@@ -48,6 +48,11 @@
         <transition on="submit" bind="true" validate="true" to="realSubmit">
             <evaluate expression="terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
+        <!-- 
+            Handling "cancel" events in the event that the user wishes to return to the original
+            login screen, reset and present the initial set of credentials all over again is handled
+            by the JSP itself, that is responsible to make the redirection happen.
+        -->
     </view-state>
     
 
