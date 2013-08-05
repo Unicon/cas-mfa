@@ -19,6 +19,7 @@
 package net.unicon.cas.mfa.web;
 
 import java.net.URL;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,9 +28,11 @@ import javax.validation.constraints.NotNull;
 import net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification;
 import net.unicon.cas.mfa.ticket.UnacceptableMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodException;
+import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
 import org.jasig.cas.CentralAuthenticationService;
+import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.HttpBasedServiceCredentials;
 import org.jasig.cas.authentication.principal.WebApplicationService;
@@ -219,14 +222,8 @@ public class MultiFactorServiceValidateController extends DelegateController {
                 success.addObject(MODEL_PROXY_GRANTING_TICKET_IOU, proxyIou);
             }
 
-            /**
-             * Only the requested authentication method fulfilled is returned back to the model as an attribute.
-             * Not the list of all satisfied authentication methods.
-             */
-            if (authnMethod != null) {
-                logger.debug("Added attribute [{}] with value [{}] to the validation model", MODEL_AUTHN_METHOD, authnMethod);
-                success.addObject(MODEL_AUTHN_METHOD, authnMethod);
-            }
+            putFulfilledAuthenticationsMethodsIntoTheModel(success, assertion);
+
             logger.debug(String.format("Successfully validated service ticket: %s", serviceTicketId));
 
             return success;
@@ -237,6 +234,30 @@ public class MultiFactorServiceValidateController extends DelegateController {
             return generateErrorView(te.getCode(), te.getCode(), new Object[] {serviceTicketId});
         } catch (final UnauthorizedServiceException e) {
             return generateErrorView(e.getMessage(), e.getMessage(), null);
+        }
+    }
+
+    /**
+     * Stuff the satisfied authentication methods into the validation model.
+     * @param success the model
+     * @param assertion the assertion carrying the methods.
+     */
+    private void putFulfilledAuthenticationsMethodsIntoTheModel(final ModelAndView success, final Assertion assertion) {
+        final int index = assertion.getChainedAuthentications().size() - 1;
+        final Authentication authentication = assertion.getChainedAuthentications().get(index);
+
+        final Set<String> previouslyAchievedAuthenticationMethods =
+                MultiFactorUtils.getSatisfiedAuthenticationMethods(authentication);
+
+        if (previouslyAchievedAuthenticationMethods.size() > 0) {
+            final StringBuilder bldr = new StringBuilder();
+            for (final String method : previouslyAchievedAuthenticationMethods) {
+                logger.debug("Added attribute [{}] with value [{}] to the validation model", MODEL_AUTHN_METHOD, method);
+                bldr.append(method);
+                bldr.append(" ");
+            }
+            final String authnMethods = bldr.toString().trim();
+            success.addObject(MODEL_AUTHN_METHOD, authnMethods);
         }
     }
 
