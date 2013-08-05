@@ -133,26 +133,26 @@ public class MultiFactorCredentials implements Credentials {
             final String principalId = this.chainedAuthentication.get(0).getPrincipal().getId();
             final MutablePrincipal compositePrincipal = new MutablePrincipal(principalId);
 
-            final Map<String, Object> authenticationAttribues = new Hashtable<String, Object>();
+            final Map<String, Object> authenticationAttributes = new Hashtable<String, Object>();
 
             for (final Authentication authn : this.chainedAuthentication) {
                 final Principal authenticatedPrincipal = authn.getPrincipal();
                 compositePrincipal.getAttributes().putAll(authenticatedPrincipal.getAttributes());
 
                 for (final String attrName : authn.getAttributes().keySet()) {
-                    if (!authenticationAttribues.containsKey(attrName)) {
-                        authenticationAttribues.put(attrName, authn.getAttributes().get(attrName));
+                    if (!authenticationAttributes.containsKey(attrName)) {
+                        authenticationAttributes.put(attrName, authn.getAttributes().get(attrName));
                     } else {
-                        final Object oldValue = authenticationAttribues.remove(attrName);
+                        final Object oldValue = authenticationAttributes.remove(attrName);
                         final Collection<Object> listOfValues = MultiFactorUtils.convertValueToCollection(oldValue);
 
                         listOfValues.add(authn.getAttributes().get(attrName));
-                        authenticationAttribues.put(attrName, listOfValues);
+                        authenticationAttributes.put(attrName, listOfValues);
                     }
                 }
             }
 
-            return new DefaultCompositeAuthentication(compositePrincipal, authenticationAttribues);
+            return new DefaultCompositeAuthentication(compositePrincipal, authenticationAttributes);
         }
         return null;
     }
