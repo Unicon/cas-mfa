@@ -1,9 +1,11 @@
 package net.unicon.cas.mfa.util;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
@@ -26,14 +28,17 @@ public final class MultiFactorUtils {
      * @return The collection instance containing the object provided
      */
     @SuppressWarnings("unchecked")
-    public static Collection<Object> convertValueToCollection(final Object obj) {
-        final Collection<Object> c = new HashSet<Object>();
+    public static Set<Object> convertValueToCollection(final Object obj) {
+        final Set<Object> c = new HashSet<Object>();
 
         if (obj instanceof Collection) {
             c.addAll((Collection<Object>) obj);
         } else if (obj instanceof Map) {
-            final Map<?, Object> map = (Map<?, Object>) obj;
-            c.addAll(map.values());
+            throw new UnsupportedOperationException(Map.class.getCanonicalName() + " is not supoorted");
+        } else if (obj.getClass().isArray()) {
+            for (final Object object : (Object[]) obj) {
+                c.add(object);
+            }
         } else {
             c.add(obj);
         }
@@ -48,14 +53,15 @@ public final class MultiFactorUtils {
      * @param authentication the authentication that houses the methods.
      * @return collection of fulfilled authentication methods
      */
-    public static Collection<Object> getSatisfiedAuthenticationMethods(final Authentication authentication) {
+    public static Set<String> getSatisfiedAuthenticationMethods(final Authentication authentication) {
         if (authentication.getAttributes().containsKey(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD)) {
             final Object methods = authentication.getAttributes().get(
                     MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
             if (methods != null) {
-                return MultiFactorUtils.convertValueToCollection(methods);
+                final Set<Object> valuesAsACollection = convertValueToCollection(methods);
+                return new HashSet<String>(Arrays.asList(valuesAsACollection.toArray(new String[] {})));
             }
         }
-        return Collections.emptyList();
+        return Collections.emptySet();
     }
 }

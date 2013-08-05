@@ -1,9 +1,9 @@
 package net.unicon.cas.mfa.authentication;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 
 import net.unicon.cas.mfa.authentication.principal.MutablePrincipal;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
@@ -60,7 +60,7 @@ public class DefaultCompositeAuthentication implements CompositeAuthentication {
     }
 
     @Override
-    public Collection<Object> getSatisfiedAuthenticationMethods() {
+    public Set<String> getSatisfiedAuthenticationMethods() {
         return MultiFactorUtils.getSatisfiedAuthenticationMethods(this);
     }
 }

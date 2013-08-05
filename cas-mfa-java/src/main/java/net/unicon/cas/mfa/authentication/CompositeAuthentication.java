@@ -1,6 +1,6 @@
 package net.unicon.cas.mfa.authentication;
 
-import java.util.Collection;
+import java.util.Set;
 
 import org.jasig.cas.authentication.Authentication;
 
@@ -16,5 +16,5 @@ public interface CompositeAuthentication extends Authentication {
      * of authentication attributes.
      * @return collection of authentication methods
      */
-    Collection<Object> getSatisfiedAuthenticationMethods();
+    Set<String> getSatisfiedAuthenticationMethods();
 }

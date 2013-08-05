@@ -1,6 +1,6 @@
 package net.unicon.cas.mfa.web.flow;
 
-import java.util.Collection;
+import java.util.Set;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
@@ -134,7 +134,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
             return new Event(this, getMultiFactorEventIdByAuthenticationMethod(requiredAuthenticationMethod));
         }
 
-        final Collection<Object> previouslyAchievedAuthenticationMethods =
+        final Set<String> previouslyAchievedAuthenticationMethods =
                 MultiFactorUtils.getSatisfiedAuthenticationMethods(authentication);
         /*
          * If the recorded authentication method from the prior Authentication matches the authentication method

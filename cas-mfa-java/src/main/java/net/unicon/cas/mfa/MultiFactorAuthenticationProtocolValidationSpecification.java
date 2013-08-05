@@ -1,6 +1,6 @@
 package net.unicon.cas.mfa;
 
-import java.util.Collection;
+import java.util.Set;
 
 import net.unicon.cas.mfa.ticket.UnacceptableMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodException;
@@ -77,7 +77,7 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
             final int index = assertion.getChainedAuthentications().size() - 1;
             final Authentication authentication = assertion.getChainedAuthentications().get(index);
 
-            final Collection<Object> previouslyAchievedAuthenticationMethods =
+            final Set<String> previouslyAchievedAuthenticationMethods =
                     MultiFactorUtils.getSatisfiedAuthenticationMethods(authentication);
 
             if (!StringUtils.isBlank(getAuthenticationMethod())) {
