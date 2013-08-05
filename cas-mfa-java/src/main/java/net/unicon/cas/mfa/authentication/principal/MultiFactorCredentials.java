@@ -1,9 +1,14 @@
 package net.unicon.cas.mfa.authentication.principal;
 
+import java.util.Collection;
+import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import net.unicon.cas.mfa.authentication.DefaultCompositeAuthentication;
+import net.unicon.cas.mfa.util.MultiFactorUtils;
 
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
@@ -12,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A {@link Credentials} implementation that is to ease multi-factor authentication.
+ * A {@link Credentials} implementation that is to ease multifactor authentication.
  * It primarily carries the following entities:
  * <p>
  * <ul>
@@ -57,7 +62,11 @@ public class MultiFactorCredentials implements Credentials {
         return this.chainedAuthentication.isEmpty();
     }
 
-    public int countChainedAuthentications() {
+    /**
+     * Count the number of authentication contexts in the chain.
+     * @return total number of authentications in the chain.
+     */
+    public final int countChainedAuthentications() {
         return this.chainedAuthentication.size();
     }
 
@@ -68,20 +77,33 @@ public class MultiFactorCredentials implements Credentials {
      * @param authentication authentication context to add to the chain
      * @throws UnknownPrincipalMatchException if principal of the authentication does not match the chain
      */
-    public void addAuthenticationToChain(final Authentication authentication) throws UnknownPrincipalMatchException {
+    public final void addAuthenticationToChain(final Authentication authentication) {
         if (!doesPrincipalMatchAuthenticationChain(authentication)) {
-            logger.warn("Something bad happened!");
+            logger.warn("The provided principal [{}] does not match the authentication chain. CAS has no record of "
+                    + "this principal ever having authenticated in the active authentication context.",
+                    authentication.getPrincipal());
             throw new UnknownPrincipalMatchException(authentication);
         }
         this.chainedAuthentication.add(authentication);
     }
 
+    /**
+     * Enumerates the list of available principals in the authentication chain
+     * and ensures that the newly given and provided principal is compliant
+     * and equals the rest of the principals in the chain. The match
+     * is explicitly controlled by {@link MutablePrincipal#equals(Object)}
+     * implementation.
+     *
+     * @param authentication the authentication object whose principal is compared against the chain
+     * @return true if no mismatch is found; false otherwise.
+     * @see MutablePrincipal
+     */
     private boolean doesPrincipalMatchAuthenticationChain(final Authentication authentication) {
         for (final Authentication authn : this.chainedAuthentication) {
             final Principal currentPrincipal = authn.getPrincipal();
             final Principal newPrincipal = authentication.getPrincipal();
 
-            if (!newPrincipal.equals(currentPrincipal)) {
+            if (!currentPrincipal.equals(newPrincipal)) {
                 return false;
             }
         }
@@ -89,15 +111,48 @@ public class MultiFactorCredentials implements Credentials {
     }
 
     /**
-     * Returns the authentication object in the authentication chain
-     * that is taken as the primary source of authentication
-     * and resolved principal. The chain is configured in such a way
-     * that the last authentication object is considered as primary.
-     * @return the primary authentication context
+     * Creates an instance of the {@link net.unicon.cas.mfa.authentication.CompositeAuthentication} object that collects
+     * and harmonizes all principal and authentication attributes into one context.
+     *
+     * <p>Principal attributes are merged from all principals that are already resolved in the authentication chain.
+     * Attributes with the same name that belong to the same principal are merged into one, with the latter value
+     * overwriting the first. The established principal will be one that is based of {@link MutablePrincipal}.</p>
+     *
+     * <p>Authentication attributes are merged from all authentications that make up the chain.
+     * The merging strategy is such that duplicate attribute names are grouped together into an instance of
+     * a {@link Collection} implementation and preserved.
+     * @return an instance of {@link net.unicon.cas.mfa.authentication.CompositeAuthentication}
      */
     public final Authentication getAuthentication() {
         if (!isEmpty()) {
-            return this.chainedAuthentication.get(this.chainedAuthentication.size() - 1);
+            /**
+             * Principal id is and must be enforced to be the same for all authentication contexts.
+             * Based on that restriction, it's safe to simply grab the first principal id in the chain
+             * when composing the authentication chain for the caller.
+             */
+            final String principalId = this.chainedAuthentication.get(0).getPrincipal().getId();
+            final MutablePrincipal compositePrincipal = new MutablePrincipal(principalId);
+
+            final Map<String, Object> authenticationAttributes = new Hashtable<String, Object>();
+
+            for (final Authentication authn : this.chainedAuthentication) {
+                final Principal authenticatedPrincipal = authn.getPrincipal();
+                compositePrincipal.getAttributes().putAll(authenticatedPrincipal.getAttributes());
+
+                for (final String attrName : authn.getAttributes().keySet()) {
+                    if (!authenticationAttributes.containsKey(attrName)) {
+                        authenticationAttributes.put(attrName, authn.getAttributes().get(attrName));
+                    } else {
+                        final Object oldValue = authenticationAttributes.remove(attrName);
+                        final Collection<Object> listOfValues = MultiFactorUtils.convertValueToCollection(oldValue);
+
+                        listOfValues.add(authn.getAttributes().get(attrName));
+                        authenticationAttributes.put(attrName, listOfValues);
+                    }
+                }
+            }
+
+            return new DefaultCompositeAuthentication(compositePrincipal, authenticationAttributes);
         }
         return null;
     }
@@ -108,8 +163,9 @@ public class MultiFactorCredentials implements Credentials {
      * @return the primary principal.
      */
     public final Principal getPrincipal() {
-        if (getAuthentication() != null) {
-            return getAuthentication().getPrincipal();
+        final Authentication auth = this.getAuthentication();
+        if (auth != null) {
+            return auth.getPrincipal();
         }
         return null;
     }

@@ -1,11 +1,13 @@
 package net.unicon.cas.mfa.web.flow;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
+import net.unicon.cas.mfa.authentication.CompositeAuthentication;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
+import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +32,10 @@ public class GenerateMultiFactorCredentialsActionTests {
     private RequestContext requestContext;
 
     @Mock
-    private Authentication authentication;
+    private CompositeAuthentication authentication;
+
+    @Mock
+    private Principal principal;
 
     public GenerateMultiFactorCredentialsActionTests() {
         MockitoAnnotations.initMocks(this);
@@ -47,6 +52,8 @@ public class GenerateMultiFactorCredentialsActionTests {
         final MutableAttributeMap flowScope = mock(MutableAttributeMap.class);
         when(requestContext.getFlowScope()).thenReturn(flowScope);
 
+        when(principal.getId()).thenReturn("user");
+        when(authentication.getPrincipal()).thenReturn(this.principal);
     }
 
     private void setMockAuthenticationContextWith(final Authentication auth) {
@@ -86,7 +93,7 @@ public class GenerateMultiFactorCredentialsActionTests {
         assertEquals(mfaCreds.countChainedAuthentications(), 1);
         assertEquals(mfaCreds.getChainedCredentials().size(), 1);
 
-        assertEquals(mfaCreds.getAuthentication(), authentication);
+        assertEquals(mfaCreds.getAuthentication().getPrincipal(), authentication.getPrincipal());
         assertEquals(mfaCreds.getCredentials(), c);
     }
 
@@ -104,7 +111,7 @@ public class GenerateMultiFactorCredentialsActionTests {
         assertEquals(mfaCreds.countChainedAuthentications(), 1);
         assertEquals(mfaCreds.getChainedCredentials().size(), 1);
 
-        assertEquals(mfaCreds.getAuthentication(), authentication);
+        assertEquals(mfaCreds.getAuthentication().getPrincipal(), authentication.getPrincipal());
         assertEquals(mfaCreds.getCredentials(), c);
     }
 

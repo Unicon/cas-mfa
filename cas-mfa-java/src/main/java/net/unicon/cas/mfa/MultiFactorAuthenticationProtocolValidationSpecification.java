@@ -1,8 +1,10 @@
 package net.unicon.cas.mfa;
 
+import java.util.Set;
+
 import net.unicon.cas.mfa.ticket.UnacceptableMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodException;
-import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
+import net.unicon.cas.mfa.util.MultiFactorUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
@@ -75,19 +77,21 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
             final int index = assertion.getChainedAuthentications().size() - 1;
             final Authentication authentication = assertion.getChainedAuthentications().get(index);
 
-            final String authnMethodUsed = (String) authentication.getAttributes()
-                    .get(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
+            final Set<String> previouslyAchievedAuthenticationMethods =
+                    MultiFactorUtils.getSatisfiedAuthenticationMethods(authentication);
+
             if (!StringUtils.isBlank(getAuthenticationMethod())) {
-                if (StringUtils.isBlank(authnMethodUsed)) {
+                if (previouslyAchievedAuthenticationMethods.size() == 0) {
                     final String msg = String.format("Requested authentication method [%s] is not available", getAuthenticationMethod());
                     logger.debug(msg);
                     throw new UnacceptableMultiFactorAuthenticationMethodException("UNACCEPTABLE_AUTHENTICATION_METHOD", msg,
                             getAuthenticationMethod());
                 }
 
-                if (!authnMethodUsed.equals(getAuthenticationMethod())) {
+                if (!previouslyAchievedAuthenticationMethods.contains(getAuthenticationMethod())) {
                     final String msg = String.format("Requested authentication method [%s] does not "
-                            + "match the authentication method used [%s]", getAuthenticationMethod(), authnMethodUsed);
+                            + "match the authentication method used [%s]", getAuthenticationMethod(),
+                            previouslyAchievedAuthenticationMethods);
                     logger.debug(msg);
                     throw new UnrecognizedMultiFactorAuthenticationMethodException("UNRECOGNIZED_AUTHENTICATION_METHOD", msg,
                             getAuthenticationMethod());
