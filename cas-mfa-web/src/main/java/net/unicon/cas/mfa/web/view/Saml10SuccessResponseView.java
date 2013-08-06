@@ -42,7 +42,7 @@ import org.opensaml.xml.schema.impl.XSStringBuilder;
  * is able to stuff the set of fulfilled authentication methods into the final
  * SAML assertion as attributes.
  * @author Misagh Moayyed
- * @see #putFulfilledAuthenticationsMethodsIntoTheModel(AttributeStatement, Set)
+ * @see #putFulfilledAuthenticationMethodsIntoTheModel(AttributeStatement, Set)
  */
 public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView {
 
@@ -173,7 +173,7 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
             attrStatement.getAttributes().add(attribute);
         }
 
-        putFulfilledAuthenticationsMethodsIntoTheModel(attrStatement, previouslyAchievedAuthenticationMethods);
+        putFulfilledAuthenticationMethodsIntoTheModel(attrStatement, previouslyAchievedAuthenticationMethods);
         return attrStatement;
     }
 
@@ -187,7 +187,7 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
         return stringValue;
     }
 
-    private void putFulfilledAuthenticationsMethodsIntoTheModel(final AttributeStatement attrStatement,
+    private void putFulfilledAuthenticationMethodsIntoTheModel(final AttributeStatement attrStatement,
             final Set<String> previouslyAchievedAuthenticationMethods) {
         if (previouslyAchievedAuthenticationMethods.size() > 0) {
             final StringBuilder bldr = new StringBuilder();
