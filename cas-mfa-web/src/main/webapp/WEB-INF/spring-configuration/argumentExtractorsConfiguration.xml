@@ -41,15 +41,21 @@
     <bean id="mfaArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationArgumentExtractor"
           parent="baseArgumentExtractor"
-          c:authnMethods-ref="listOfAuthenticationMethods">
+          c:authnMethods-ref="listOfAuthenticationMethods"
+          c:supportedProtocols-ref="listOfSupportedProtocolsForMultifactorAuthentication">
     </bean>
     
     <util:list id="listOfAuthenticationMethods">
         <value>strong_two_factor</value>
         <value>sample_two_factor</value>
     </util:list>
-        
- 	<util:list id="argumentExtractors">
+    
+    <util:list id="listOfSupportedProtocolsForMultifactorAuthentication">
+        <ref bean="casArgumentExtractor" />
+        <ref bean="samlArgumentExtractor" />
+    </util:list>   
+ 	
+  <util:list id="argumentExtractors">
         <ref bean="mfaArgumentExtractor" />
 		<ref bean="casArgumentExtractor" />
  		<ref bean="samlArgumentExtractor" />
