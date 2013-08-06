@@ -222,7 +222,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
                 success.addObject(MODEL_PROXY_GRANTING_TICKET_IOU, proxyIou);
             }
 
-            putFulfilledAuthenticationsMethodsIntoTheModel(success, assertion);
+            putFulfilledAuthenticationMethodsIntoTheModel(success, assertion);
 
             logger.debug(String.format("Successfully validated service ticket: %s", serviceTicketId));
 
@@ -242,7 +242,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
      * @param success the model
      * @param assertion the assertion carrying the methods.
      */
-    private void putFulfilledAuthenticationsMethodsIntoTheModel(final ModelAndView success, final Assertion assertion) {
+    private void putFulfilledAuthenticationMethodsIntoTheModel(final ModelAndView success, final Assertion assertion) {
         final int index = assertion.getChainedAuthentications().size() - 1;
         final Authentication authentication = assertion.getChainedAuthentications().get(index);
 
