@@ -37,7 +37,7 @@ import org.opensaml.xml.schema.impl.XSStringBuilder;
 
 
 /**
- * The successful SAML-based view, closing matching the original implementation
+ * The successful SAML-based view, closely matching the original implementation
  * at {@link org.jasig.cas.web.view.Saml10SuccessResponseView}. This extension
  * is able to stuff the set of fulfilled authentication methods into the final
  * SAML assertion as attributes.
