@@ -42,7 +42,6 @@ import org.opensaml.xml.schema.impl.XSStringBuilder;
  * is able to stuff the set of fulfilled authentication methods into the final
  * SAML assertion as attributes.
  * @author Misagh Moayyed
- * @see #putFulfilledAuthenticationMethodsIntoTheModel(AttributeStatement, Set)
  */
 public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView {
 
@@ -73,7 +72,8 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
 
     @Override
     protected void prepareResponse(final Response response, final Map<String, Object> model) {
-        final Authentication authentication = getAssertionFrom(model).getChainedAuthentications().get(0);
+        final org.jasig.cas.validation.Assertion casAssertion = getAssertionFrom(model);
+        final Authentication authentication = casAssertion.getChainedAuthentications().get(0);
         final DateTime issuedAt = response.getIssueInstant();
         final Service service = getAssertionFrom(model).getService();
         final boolean isRemembered = (
@@ -95,7 +95,7 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
         if (!attributes.isEmpty() || isRemembered || !previouslyAchievedAuthenticationMethods.isEmpty()) {
             final Subject subject = newSubject(authentication.getPrincipal().getId());
             final AttributeStatement attrStatement =
-                    newAttributeStatement(subject, attributes, isRemembered, previouslyAchievedAuthenticationMethods);
+                    newAttributeStatement(subject, attributes, isRemembered, casAssertion);
             assertion.getAttributeStatements().add(attrStatement);
         }
         response.setStatus(newStatus(StatusCode.SUCCESS, null));
@@ -142,7 +142,7 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
 
     private AttributeStatement newAttributeStatement(
             final Subject subject, final Map<String, Object> attributes,
-            final boolean isRemembered, final Set<String> previouslyAchievedAuthenticationMethods) {
+            final boolean isRemembered, final org.jasig.cas.validation.Assertion casAssertion) {
 
         final AttributeStatement attrStatement = newSamlObject(AttributeStatement.class);
         attrStatement.setSubject(subject);
@@ -173,7 +173,15 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
             attrStatement.getAttributes().add(attribute);
         }
 
-        putFulfilledAuthenticationMethodsIntoTheModel(attrStatement, previouslyAchievedAuthenticationMethods);
+        final String authnMethods = MultiFactorUtils.getFulfilledAuthenticationMethodsAsString(casAssertion);
+        if (!StringUtils.isBlank(authnMethods)) {
+            final Attribute attribute = newSamlObject(Attribute.class);
+            attribute.setAttributeName(MODEL_AUTHN_METHOD);
+            attribute.setAttributeNamespace(NAMESPACE);
+            attribute.getAttributeValues().add(newAttributeValue(authnMethods));
+            attrStatement.getAttributes().add(attribute);
+        }
+
         return attrStatement;
     }
 
@@ -185,25 +193,6 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
             stringValue.setValue(value.toString());
         }
         return stringValue;
-    }
-
-    private void putFulfilledAuthenticationMethodsIntoTheModel(final AttributeStatement attrStatement,
-            final Set<String> previouslyAchievedAuthenticationMethods) {
-        if (previouslyAchievedAuthenticationMethods.size() > 0) {
-            final StringBuilder bldr = new StringBuilder();
-            for (final String method : previouslyAchievedAuthenticationMethods) {
-                bldr.append(method);
-                bldr.append(" ");
-            }
-            final String authnMethods = bldr.toString().trim();
-            if (!StringUtils.isBlank(authnMethods)) {
-                final Attribute attribute = newSamlObject(Attribute.class);
-                attribute.setAttributeName(MODEL_AUTHN_METHOD);
-                attribute.setAttributeNamespace(NAMESPACE);
-                attribute.getAttributeValues().add(newAttributeValue(authnMethods));
-                attrStatement.getAttributes().add(attribute);
-            }
-        }
     }
 
     public void setIssueLength(final long issueLength) {
