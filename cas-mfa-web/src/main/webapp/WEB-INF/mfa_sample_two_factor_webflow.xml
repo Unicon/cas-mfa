@@ -44,6 +44,8 @@
         </binder>
         <on-entry>
             <set name="viewScope.commandName" value="'credentials'" />
+            <evaluate expression="mfaLoginViewPrincipalGreeter.getPersonToGreet(mfaCredentials.principal)"
+                      result="viewScope.greetingPrincipalAttribute" />
         </on-entry>
         <transition on="submit" bind="true" validate="true" to="realSubmit">
             <evaluate expression="sample_terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />

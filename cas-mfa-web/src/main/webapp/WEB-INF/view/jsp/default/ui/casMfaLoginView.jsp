@@ -42,7 +42,13 @@
       </c:if>
 
       <c:if test="${empty sessionScope.openIdLocalId}">
-        <!-- <spring:message code="screen.welcome.label.netid.accesskey" var="userNameAccessKey" /> -->
+        <strong>
+          <spring:message code="screen.mfa.welcome.back" arguments="${greetingPrincipalAttribute}" />
+          <a href="javascript:void" onclick="redirectToLoginViewAndEndTheFlow();">
+            <spring:message code="screen.mfa.button.cancel" />
+           </a>
+        </strong>
+        
         <form:hidden path="username" value="${mfaCredentials.principal}" />
       </c:if>
     </div>
@@ -51,15 +57,13 @@
       <spring:message code="screen.welcome.label.password.accesskey" var="passwordAccessKey" />
       <form:password cssClass="required" cssErrorClass="error" id="password" size="25" tabindex="1" path="password"
                      accesskey="${passwordAccessKey}" htmlEscape="true" autocomplete="off" />
+      <input  class="btn-submit" name="_eventId_submit" accesskey="l" value="<spring:message code="screen.welcome.button.login" />"
+              tabindex="4" type="submit" />   
     </div>
     <div class="row btn-row">
       <input type="hidden" name="lt" value="${loginTicket}" />
       <input type="hidden" name="execution" value="${flowExecutionKey}" /> 
-      <input  class="btn-submit" name="_eventId_submit" accesskey="l" value="<spring:message code="screen.welcome.button.login" />"
-              tabindex="4" type="submit" /> 
- 
-      <input class="btn-submit" name="_eventId_cancel" value="<spring:message code="screen.mfa.button.cancel" />" 
-              tabindex="5" type="button" onclick="redirectToLoginViewAndEndTheFlow();">    
+      
     </div>
   </form:form>
 </div>
