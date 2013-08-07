@@ -72,14 +72,18 @@
         p:ticketRegistry-ref="ticketRegistry" p:ticketGrantingTicketExpirationPolicy-ref="grantingTicketExpirationPolicy" 
         p:ticketGrantingTicketUniqueTicketIdGenerator-ref="ticketGrantingTicketUniqueIdGenerator"
         p:centralAuthenticationServiceDelegate-ref="centralAuthenticationService" />
-   
-       
+               
   <bean id="serviceValidateController" class="net.unicon.cas.mfa.web.MultiFactorServiceValidateController"
         p:validationSpecificationClass="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
         p:proxyHandler-ref="proxy20Handler"
         p:argumentExtractor-ref="casArgumentExtractor"/>
-        
+  
+  <bean id="samlValidateController" parent="serviceValidateController"
+        p:argumentExtractor-ref="samlArgumentExtractor"
+        p:successView="casSamlServiceSuccessView"
+        p:failureView="casSamlServiceFailureView"/>
+                       
   <bean id="mfaAuthenticationManager" parent="authenticationManager">
     <property name="authenticationMetaDataPopulators">
         <util:list>
