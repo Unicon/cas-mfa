@@ -106,5 +106,9 @@
    <bean id="principalMismatchExceptionHandler" 
          class="net.unicon.cas.mfa.web.flow.ConfigurableSpringWebflowExceptionHandler"
          c:exceptionClass="net.unicon.cas.mfa.authentication.principal.UnknownPrincipalMatchException"
-         c:state="unknownPrincipalError" />     
+         c:state="unknownPrincipalError" /> 
+         
+   <bean id="mfaLoginViewPrincipalGreeter"
+         class="net.unicon.cas.mfa.web.flow.view.MultifactorLoginViewPrincipalAttributeGreeter"
+         c:greetingAttrName="${screen.mfa.greeting.userAttribute:cn}" />    
 </beans>
