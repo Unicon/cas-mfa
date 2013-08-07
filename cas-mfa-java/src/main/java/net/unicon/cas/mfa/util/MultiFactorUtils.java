@@ -9,7 +9,9 @@ import java.util.Set;
 
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
+import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
+import org.jasig.cas.validation.Assertion;
 
 /**
  * Utility methods to ease implementation of multifactor behavior.
@@ -20,6 +22,24 @@ public final class MultiFactorUtils {
      * Private constructor.
      */
     private MultiFactorUtils() {
+    }
+
+    /**
+     * Generate the string the indicates the list of satisfied authentication methods.
+     * Methods are separated by a space.
+     * @param assertion the assertion carrying the methods.
+     * @return the space-delimited list of authentication methods, or null if none is available
+     */
+    public static String getFulfilledAuthenticationMethodsAsString(final Assertion assertion) {
+        final int index = assertion.getChainedAuthentications().size() - 1;
+        final Authentication authentication = assertion.getChainedAuthentications().get(index);
+
+        final Set<String> previouslyAchievedAuthenticationMethods = getSatisfiedAuthenticationMethods(authentication);
+        if (previouslyAchievedAuthenticationMethods.size() > 0) {
+            final String authnMethods = StringUtils.join(previouslyAchievedAuthenticationMethods, " ");
+            return authnMethods;
+        }
+        return null;
     }
 
     /**
