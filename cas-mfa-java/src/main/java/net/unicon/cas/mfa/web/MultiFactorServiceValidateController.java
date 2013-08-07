@@ -27,8 +27,10 @@ import javax.validation.constraints.NotNull;
 import net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification;
 import net.unicon.cas.mfa.ticket.UnacceptableMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodException;
+import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
+import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.HttpBasedServiceCredentials;
@@ -42,7 +44,6 @@ import org.jasig.cas.web.DelegateController;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -124,7 +125,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
      */
     protected final Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) {
         final String pgtUrl = request.getParameter("pgtUrl");
-        if (StringUtils.hasText(pgtUrl)) {
+        if (StringUtils.isNotBlank(pgtUrl)) {
             try {
                 return new HttpBasedServiceCredentials(new URL(pgtUrl));
             } catch (final Exception e) {
@@ -219,13 +220,9 @@ public class MultiFactorServiceValidateController extends DelegateController {
                 success.addObject(MODEL_PROXY_GRANTING_TICKET_IOU, proxyIou);
             }
 
-            /**
-             * Only the requested authentication method fulfilled is returned back to the model as an attribute.
-             * Not the list of all satisfied authentication methods.
-             */
-            if (authnMethod != null) {
-                logger.debug("Added attribute [{}] with value [{}] to the validation model", MODEL_AUTHN_METHOD, authnMethod);
-                success.addObject(MODEL_AUTHN_METHOD, authnMethod);
+            final String authnMethods = MultiFactorUtils.getFulfilledAuthenticationMethodsAsString(assertion);
+            if (StringUtils.isNotBlank(authnMethods)) {
+                success.addObject(MODEL_AUTHN_METHOD, authnMethods);
             }
             logger.debug(String.format("Successfully validated service ticket: %s", serviceTicketId));
 
