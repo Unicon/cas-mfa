@@ -1,5 +1,6 @@
 package net.unicon.cas.mfa.web.support;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,7 +20,7 @@ import org.springframework.util.StringUtils;
 public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSingleSignOutEnabledArgumentExtractor {
     private final List<String> supportedAuthenticationMethods;
 
-    private final List<ArgumentExtractor> supportedArgumentExtractors;
+    private final Set<ArgumentExtractor> supportedArgumentExtractors;
 
     /**
      * This log would be replaced by the superclass's log if CAS-1332 realized.
@@ -29,9 +30,9 @@ public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSi
     /**
      * Create an instance of {@link MultiFactorAuthenticationArgumentExtractor}.
      * @param authnMethods list of supported values for authentication method
-     * @param supportedProtocols list of argument extractors for each protocol that are to support MFA
+     * @param supportedProtocols set of argument extractors for each protocol that are to support MFA
      */
-    public MultiFactorAuthenticationArgumentExtractor(final List<String> authnMethods, final List<ArgumentExtractor> supportedProtocols) {
+    public MultiFactorAuthenticationArgumentExtractor(final List<String> authnMethods, final Set<ArgumentExtractor> supportedProtocols) {
         this.supportedAuthenticationMethods = authnMethods;
         this.supportedArgumentExtractors = supportedProtocols;
     }
@@ -45,7 +46,7 @@ public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSi
             targetService = extractor.extractService(request);
             if (targetService != null) {
                 logger.debug("[{}] intercepted the request successfully for multifactor authentication",
-                        extractor.getClass().getSimpleName());
+                        extractor);
                 break;
             }
         }
