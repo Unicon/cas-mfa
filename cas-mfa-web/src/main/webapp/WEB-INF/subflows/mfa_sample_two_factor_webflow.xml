@@ -44,7 +44,7 @@
         </binder>
         <on-entry>
             <set name="viewScope.commandName" value="'credentials'" />
-            <evaluate expression="mfaLoginViewPrincipalGreeter.getPersonToGreet(mfaCredentials.principal)"
+            <evaluate expression="mfaLoginViewPrincipalGreeter.getPersonToGreet(mfaCredentials.principal, messageContext))"
                       result="viewScope.greetingPrincipalAttribute" />
         </on-entry>
         <transition on="submit" bind="true" validate="true" to="realSubmit">
