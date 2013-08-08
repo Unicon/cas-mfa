@@ -27,16 +27,20 @@ public class RememberAuthenticationMethodMetaDataPopulator implements Authentica
     public final Authentication populateAttributes(final Authentication authentication, final Credentials credentials) {
 
         final RequestContext context = RequestContextHolder.getRequestContext();
-        final Service svc = WebUtils.getService(context);
+        if (context != null) {
+            final Service svc = WebUtils.getService(context);
 
-        if (svc instanceof MultiFactorAuthenticationSupportingWebApplicationService) {
-            final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
-                    (MultiFactorAuthenticationSupportingWebApplicationService) svc;
+            if (svc instanceof MultiFactorAuthenticationSupportingWebApplicationService) {
+                final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
+                        (MultiFactorAuthenticationSupportingWebApplicationService) svc;
 
-            authentication.getAttributes().put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
-                    mfaSvc.getAuthenticationMethod());
+                authentication.getAttributes().put(
+                        MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
+                        mfaSvc.getAuthenticationMethod());
 
-            LOGGER.debug("Captured authentication method [{}] into the authentation context", mfaSvc.getAuthenticationMethod());
+                LOGGER.debug("Captured authentication method [{}] into the authentation context",
+                        mfaSvc.getAuthenticationMethod());
+            }
         }
         return authentication;
     }

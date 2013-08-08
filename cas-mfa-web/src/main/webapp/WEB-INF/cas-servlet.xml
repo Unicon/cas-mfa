@@ -301,7 +301,8 @@
         class="net.unicon.cas.mfa.MultiFactorAwareCentralAuthenticationService"
         p:ticketRegistry-ref="ticketRegistry" p:ticketGrantingTicketExpirationPolicy-ref="grantingTicketExpirationPolicy" 
         p:ticketGrantingTicketUniqueTicketIdGenerator-ref="ticketGrantingTicketUniqueIdGenerator"
-        p:centralAuthenticationServiceDelegate-ref="centralAuthenticationService" />
+        p:centralAuthenticationServiceDelegate-ref="centralAuthenticationService"
+        p:authenticationManager-ref="mfaAuthenticationManager" />
                                       
   <bean id="mfaAuthenticationManager" parent="authenticationManager">
     <property name="authenticationMetaDataPopulators">
