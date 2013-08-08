@@ -7,6 +7,7 @@ import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.Service;
 import org.jasig.cas.ticket.ExpirationPolicy;
+import org.jasig.cas.ticket.ServiceTicket;
 import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.ticket.TicketGrantingTicketImpl;
@@ -72,7 +73,19 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
 
     @Override
     public String delegateTicketGrantingTicket(final String serviceTicketId, final Credentials credentials) throws TicketException {
-        return this.delegate.delegateTicketGrantingTicket(serviceTicketId, credentials);
+      final ServiceTicket serviceTicket;
+        serviceTicket = (ServiceTicket) this.ticketRegistry.getTicket(serviceTicketId, ServiceTicket.class);
+
+        final MultiFactorCredentials mfaCredentials = (MultiFactorCredentials) credentials;
+        final Authentication authentication = mfaCredentials.getAuthentication();
+
+        final TicketGrantingTicket ticketGrantingTicket = serviceTicket.grantTicketGrantingTicket(
+                this.ticketGrantingTicketUniqueTicketIdGenerator.getNewTicketId(TicketGrantingTicket.PREFIX),
+                authentication, this.ticketGrantingTicketExpirationPolicy);
+
+        this.ticketRegistry.addTicket(ticketGrantingTicket);
+
+        return ticketGrantingTicket.getId();
     }
 
     public void setTicketRegistry(final TicketRegistry ticketRegistry) {

@@ -97,7 +97,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
     /** The validation protocol we want to use. */
     @NotNull
     private MultiFactorAuthenticationProtocolValidationSpecification validationSpecificationClass
-            = new MultiFactorAuthenticationProtocolValidationSpecification();
+            = new MultiFactorAuthenticationProtocolValidationSpecification(false);
 
     /** The proxy handler we want to use with the controller. */
     @NotNull

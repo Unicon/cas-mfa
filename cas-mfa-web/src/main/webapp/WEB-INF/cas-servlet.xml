@@ -173,13 +173,21 @@
       </list>
     </property>
   </bean>
-  <bean id="proxyValidateController" class="org.jasig.cas.web.ServiceValidateController"
-        p:centralAuthenticationService-ref="centralAuthenticationService"
+  
+  <bean id="mfaValidationWithoutProxySupportSpec" class="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
+        c:validateProxyAuthenticationRequests="false" />
+        
+  <bean id="mfaValidationWithProxySupportSpec" class="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
+        c:validateProxyAuthenticationRequests="true" />
+  
+  <bean id="proxyValidateController" class="net.unicon.cas.mfa.web.MultiFactorServiceValidateController"
+        p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
         p:proxyHandler-ref="proxy20Handler"
+        p:validationSpecificationClass-ref="mfaValidationWithProxySupportSpec"
         p:argumentExtractor-ref="casArgumentExtractor"/>
 
   <bean id="serviceValidateController" class="net.unicon.cas.mfa.web.MultiFactorServiceValidateController"
-        p:validationSpecificationClass="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
+        p:validationSpecificationClass-ref="mfaValidationWithProxySupportSpec"
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
         p:proxyHandler-ref="proxy20Handler"
         p:argumentExtractor-ref="casArgumentExtractor"/>
