@@ -43,7 +43,8 @@
 
       <c:if test="${empty sessionScope.openIdLocalId}">
         <strong>
-          <spring:message code="screen.mfa.welcome.back" arguments="${greetingPrincipalAttribute}" />
+          <c:out value="${fn:escapeXml(greetingPrincipalAttribute)}" />
+          
           <a href="javascript:void" onclick="redirectToLoginViewAndEndTheFlow();">
             <spring:message code="screen.mfa.button.cancel" />
            </a>
