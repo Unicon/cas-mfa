@@ -4,9 +4,13 @@ import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.Authentication;
+import org.jasig.cas.authentication.AuthenticationManager;
+import org.jasig.cas.authentication.handler.AuthenticationException;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.Service;
 import org.jasig.cas.ticket.ExpirationPolicy;
+import org.jasig.cas.ticket.ServiceTicket;
+import org.jasig.cas.ticket.TicketCreationException;
 import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.ticket.TicketGrantingTicketImpl;
@@ -35,6 +39,8 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
     private TicketRegistry ticketRegistry;
     private ExpirationPolicy ticketGrantingTicketExpirationPolicy;
 
+    private AuthenticationManager authenticationManager;
+
     @Override
     public String createTicketGrantingTicket(final Credentials credentials) throws TicketException {
         final MultiFactorCredentials mfaCredentials = (MultiFactorCredentials) credentials;
@@ -61,8 +67,7 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
 
     @Override
     public Assertion validateServiceTicket(final String serviceTicketId, final Service service) throws TicketException {
-        final Assertion assertion = this.delegate.validateServiceTicket(serviceTicketId, service);
-        return assertion;
+        return this.delegate.validateServiceTicket(serviceTicketId, service);
     }
 
     @Override
@@ -72,7 +77,29 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
 
     @Override
     public String delegateTicketGrantingTicket(final String serviceTicketId, final Credentials credentials) throws TicketException {
-        return this.delegate.delegateTicketGrantingTicket(serviceTicketId, credentials);
+        try {
+            this.authenticationManager.authenticate(credentials);
+            final ServiceTicket serviceTicket = (ServiceTicket) this.ticketRegistry.getTicket(serviceTicketId, ServiceTicket.class);
+            final TicketGrantingTicket tgt = serviceTicket.getGrantingTicket();
+
+            final MultiFactorCredentials mfaCredentials = new MultiFactorCredentials();
+            mfaCredentials.addAuthenticationToChain(tgt.getAuthentication());
+
+            final Authentication authentication = mfaCredentials.getAuthentication();
+            final TicketGrantingTicket ticketGrantingTicket = serviceTicket.grantTicketGrantingTicket(
+                    this.ticketGrantingTicketUniqueTicketIdGenerator.getNewTicketId(TicketGrantingTicket.PREFIX),
+                    authentication, this.ticketGrantingTicketExpirationPolicy);
+
+            this.ticketRegistry.addTicket(ticketGrantingTicket);
+
+            return ticketGrantingTicket.getId();
+        } catch (final AuthenticationException e) {
+            throw new TicketCreationException(e);
+        }
+    }
+
+    public void setAuthenticationManager(final AuthenticationManager manager) {
+        this.authenticationManager = manager;
     }
 
     public void setTicketRegistry(final TicketRegistry ticketRegistry) {
