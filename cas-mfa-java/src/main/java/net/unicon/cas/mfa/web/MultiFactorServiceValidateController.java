@@ -42,8 +42,11 @@ import org.jasig.cas.ticket.proxy.ProxyHandler;
 import org.jasig.cas.validation.Assertion;
 import org.jasig.cas.web.DelegateController;
 import org.jasig.cas.web.support.ArgumentExtractor;
+import org.opensaml.util.URLBuilder;
+import org.opensaml.xml.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -97,7 +100,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
     /** The validation protocol we want to use. */
     @NotNull
     private MultiFactorAuthenticationProtocolValidationSpecification validationSpecificationClass
-            = new MultiFactorAuthenticationProtocolValidationSpecification();
+            = new MultiFactorAuthenticationProtocolValidationSpecification(false);
 
     /** The proxy handler we want to use with the controller. */
     @NotNull
@@ -123,16 +126,21 @@ public class MultiFactorServiceValidateController extends DelegateController {
      * @return the credentials or null if there was an error or no credentials
      * provided.
      */
-    protected final Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) {
+    protected final Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) throws ServletRequestBindingException {
         final String pgtUrl = request.getParameter("pgtUrl");
+        final String authnMethod = getAuthenticationMethodFromRequest(request);
+
         if (StringUtils.isNotBlank(pgtUrl)) {
             try {
-                return new HttpBasedServiceCredentials(new URL(pgtUrl));
+                final URLBuilder builder = new URLBuilder(pgtUrl);
+                if (StringUtils.isNotBlank(authnMethod)) {
+                    builder.getQueryParams().add(new Pair<String, String>(MODEL_AUTHN_METHOD, authnMethod));
+                }
+                return new HttpBasedServiceCredentials(new URL(builder.buildURL()));
             } catch (final Exception e) {
                 logger.error("Error constructing pgtUrl", e);
             }
         }
-
         return null;
     }
 
@@ -178,7 +186,6 @@ public class MultiFactorServiceValidateController extends DelegateController {
             }
 
             final Assertion assertion = this.centralAuthenticationService.validateServiceTicket(serviceTicketId, service);
-
             final MultiFactorAuthenticationProtocolValidationSpecification validationSpecification = this.getCommandClass();
             final ServletRequestDataBinder binder = new ServletRequestDataBinder(validationSpecification, "validationSpecification");
             initBinder(request, binder);
@@ -193,8 +200,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
              *
              * This implementation opts for the latter choice.
              */
-            final String authnMethod = ServletRequestUtils.getStringParameter(request,
-                    MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
+            final String authnMethod = getAuthenticationMethodFromRequest(request);
             validationSpecification.setAuthenticationMethod(authnMethod);
 
             try {
@@ -275,6 +281,20 @@ public class MultiFactorServiceValidateController extends DelegateController {
         }
     }
 
+    /**
+     * Get the authentication method parameter.
+     * @param request request object
+     * @return the value of the authentication method parameter, or null if it can't be obtained
+     */
+    private String getAuthenticationMethodFromRequest(final HttpServletRequest request) {
+        try {
+            return ServletRequestUtils.getStringParameter(request,
+                    MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
+        } catch (final ServletRequestBindingException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
     /**
      * {@inheritDoc}
      */

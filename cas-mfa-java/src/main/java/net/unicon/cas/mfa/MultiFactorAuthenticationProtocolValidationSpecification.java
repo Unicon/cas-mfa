@@ -1,5 +1,6 @@
 package net.unicon.cas.mfa;
 
+import java.util.List;
 import java.util.Set;
 
 import net.unicon.cas.mfa.ticket.UnacceptableMultiFactorAuthenticationMethodException;
@@ -24,12 +25,15 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
 
     private String authenticationMethod = null;
 
+    private boolean validateProxyAuthenticationRequests = false;
+
     /**
      * Constructor to spin up the validation spec instance.
      * No restrictions on the requested authentication method.
      */
-    public MultiFactorAuthenticationProtocolValidationSpecification() {
+    public MultiFactorAuthenticationProtocolValidationSpecification(final boolean validateProxyAuthenticationRequests) {
         super();
+        this.validateProxyAuthenticationRequests = validateProxyAuthenticationRequests;
     }
 
     /**
@@ -73,9 +77,10 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
      */
     @Override
     protected final boolean isSatisfiedByInternal(final Assertion assertion) {
-        if (assertion.getChainedAuthentications().size() > 0) {
-            final int index = assertion.getChainedAuthentications().size() - 1;
-            final Authentication authentication = assertion.getChainedAuthentications().get(index);
+        final List<Authentication> chainedAuthentications = assertion.getChainedAuthentications();
+        if (chainedAuthentications.size() > 0) {
+            final int index = chainedAuthentications.size() - 1;
+            final Authentication authentication = chainedAuthentications.get(index);
 
             final Set<String> previouslyAchievedAuthenticationMethods =
                     MultiFactorUtils.getSatisfiedAuthenticationMethods(authentication);
@@ -97,8 +102,7 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
                             getAuthenticationMethod());
                 }
             }
-
-            return true;
+            return validateProxyAuthenticationRequests ? true : chainedAuthentications.size() == 1;
         }
         logger.debug("No authentication context is available");
         return false;
