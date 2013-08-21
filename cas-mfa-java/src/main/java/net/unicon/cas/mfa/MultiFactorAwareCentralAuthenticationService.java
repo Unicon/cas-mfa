@@ -129,20 +129,34 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
     /**
      * The set TicketRegistry should be the same registry used by the CentralAuthenticationService instance
      * provided to setCentralAuthenticationServiceDelegate.
-     * @param ticketRegistry
+     * @param ticketRegistry non-null TicketRegistry shared with the delegate CAS
      */
     public void setTicketRegistry(final TicketRegistry ticketRegistry) {
         this.ticketRegistry = ticketRegistry;
     }
 
+    /**
+     * Inject a ticket granting ticket expiration policy.
+     * @param ticketGrantingTicketExpirationPolicy the non-null policy on TGT expiration.
+     */
     public void setTicketGrantingTicketExpirationPolicy(final ExpirationPolicy ticketGrantingTicketExpirationPolicy) {
         this.ticketGrantingTicketExpirationPolicy = ticketGrantingTicketExpirationPolicy;
     }
 
+    /**
+     * Inject a TGT unique ID generator.
+     * @param uniqueTicketIdGenerator the non-null TGT unique ID generator.
+     */
     public void setTicketGrantingTicketUniqueTicketIdGenerator(final UniqueTicketIdGenerator uniqueTicketIdGenerator) {
         this.ticketGrantingTicketUniqueTicketIdGenerator = uniqueTicketIdGenerator;
     }
 
+    /**
+     * Inject a delegate CAS implementation to fulfill the non-TGT-creating CAS API methods.
+     * The delegate CAS instance should share a TicketRegistry with this CAS instance otherwise this CAS will be
+     * granting TGTs that will not be honored by the delegate.
+     * @param cas the non-null delegate CAS
+     */
     public void setCentralAuthenticationServiceDelegate(final CentralAuthenticationService cas) {
         this.delegate = cas;
     }
