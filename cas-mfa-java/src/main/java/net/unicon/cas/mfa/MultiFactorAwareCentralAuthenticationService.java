@@ -30,9 +30,21 @@ import org.jasig.cas.validation.Assertion;
  * and again, assumes that the authentication context has been established by all other
  * authentication managers in the flow. The authentication context is carried within the
  * {@link MultiFactorCredentials} instance.
+ *
+ * Assumptions: the TicketRegistry wired into this CentralAuthenticationService instance is the same as that wired
+ * into the wrapped delegate.
+ * (That way when this implementation adds tickets directly to the registry in createTGT and delegateTGT
+ * those tickets will be available to the delegate in its fulfilling such methods as grantServiceTicket.)
+ *
+ *
  * @author Misagh Moayyed
  */
 public final class MultiFactorAwareCentralAuthenticationService implements CentralAuthenticationService {
+
+
+    /**
+     * The wrapped CentralAuthenticationService.
+     */
     private CentralAuthenticationService delegate;
 
     private UniqueTicketIdGenerator ticketGrantingTicketUniqueTicketIdGenerator;
@@ -54,22 +66,34 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
         return ticketGrantingTicket.getId();
     }
 
+    /*
+     * Implements Audit Trail participation by virtue of the delegate's audit trail participation.
+     */
     @Override
     public String grantServiceTicket(final String ticketGrantingTicketId, final Service service) throws TicketException {
         return this.delegate.grantServiceTicket(ticketGrantingTicketId, service);
     }
 
+    /*
+     * Implements Audit Trail participation by virtue of the delegate's audit trail participation.
+     */
     @Override
     public String grantServiceTicket(final String ticketGrantingTicketId, final Service service, final Credentials credentials)
             throws TicketException {
         return this.delegate.grantServiceTicket(ticketGrantingTicketId, service, credentials);
     }
 
+    /*
+     * Implements Audit Trail participation by virtue of the delegate's audit trail participation.
+     */
     @Override
     public Assertion validateServiceTicket(final String serviceTicketId, final Service service) throws TicketException {
         return this.delegate.validateServiceTicket(serviceTicketId, service);
     }
 
+    /*
+     * Implements Audit Trail participation by virtue of the delegate's audit trail participation.
+     */
     @Override
     public void destroyTicketGrantingTicket(final String ticketGrantingTicketId) {
         this.delegate.destroyTicketGrantingTicket(ticketGrantingTicketId);
@@ -102,18 +126,37 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
         this.authenticationManager = manager;
     }
 
+    /**
+     * The set TicketRegistry should be the same registry used by the CentralAuthenticationService instance
+     * provided to setCentralAuthenticationServiceDelegate.
+     * @param ticketRegistry non-null TicketRegistry shared with the delegate CAS
+     */
     public void setTicketRegistry(final TicketRegistry ticketRegistry) {
         this.ticketRegistry = ticketRegistry;
     }
 
+    /**
+     * Inject a ticket granting ticket expiration policy.
+     * @param ticketGrantingTicketExpirationPolicy the non-null policy on TGT expiration.
+     */
     public void setTicketGrantingTicketExpirationPolicy(final ExpirationPolicy ticketGrantingTicketExpirationPolicy) {
         this.ticketGrantingTicketExpirationPolicy = ticketGrantingTicketExpirationPolicy;
     }
 
+    /**
+     * Inject a TGT unique ID generator.
+     * @param uniqueTicketIdGenerator the non-null TGT unique ID generator.
+     */
     public void setTicketGrantingTicketUniqueTicketIdGenerator(final UniqueTicketIdGenerator uniqueTicketIdGenerator) {
         this.ticketGrantingTicketUniqueTicketIdGenerator = uniqueTicketIdGenerator;
     }
 
+    /**
+     * Inject a delegate CAS implementation to fulfill the non-TGT-creating CAS API methods.
+     * The delegate CAS instance should share a TicketRegistry with this CAS instance otherwise this CAS will be
+     * granting TGTs that will not be honored by the delegate.
+     * @param cas the non-null delegate CAS
+     */
     public void setCentralAuthenticationServiceDelegate(final CentralAuthenticationService cas) {
         this.delegate = cas;
     }
