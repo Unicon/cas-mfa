@@ -105,6 +105,10 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
     }
 
     @Override
+    @Audit(
+            action="PROXY_GRANTING_TICKET",
+            actionResolverName="GRANT_PROXY_GRANTING_TICKET_RESOLVER",
+            resourceResolverName="GRANT_PROXY_GRANTING_TICKET_RESOURCE_RESOLVER")
     public String delegateTicketGrantingTicket(final String serviceTicketId, final Credentials credentials) throws TicketException {
         try {
             this.authenticationManager.authenticate(credentials);
