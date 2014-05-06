@@ -485,10 +485,10 @@
   </modules>
 
   <properties>
-    <cas.version>3.5.2</cas.version>
-    <cas-addons.version>1.7</cas-addons.version>
+    <cas.version>3.5.2.1</cas.version>
+    <cas-addons.version>1.11.1</cas-addons.version>
     <spring.webflow.version>2.3.2.RELEASE</spring.webflow.version>
-    <spring.version>3.2.3.RELEASE</spring.version>
+    <spring.version>3.2.4.RELEASE</spring.version>
     <aspectj.version>1.7.2</aspectj.version>
     <javax.validation.version>1.0.0.GA</javax.validation.version>
     <hibernate.validator.version>4.2.0.Final</hibernate.validator.version>
@@ -501,7 +501,7 @@
     <commons.lang.version>3.1</commons.lang.version>
     <commons.io.version>2.4</commons.io.version>
     <mockito.version>1.9.5</mockito.version>
-    <joda-time.version>2.2</joda-time.version>
+    <joda-time.version>2.3</joda-time.version>
     <project.build.sourceVersion>1.6</project.build.sourceVersion>
     <project.build.targetVersion>1.6</project.build.targetVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
