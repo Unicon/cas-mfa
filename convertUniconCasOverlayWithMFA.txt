@@ -1,0 +1,183 @@
+1. Checkout and build the cas-mfa project (github url - https://github.com/Unicon/cas-mfa.git) using Maven. The cas-mfa project is listed with a version of 0.0.1-SNAPSHOT. If you do not build this locally, the Unicon CAS Overlay will not be able to find the mfa war artifact in steps below.
+
+(OPTIONAL)
+1a. Deploy the cas.war file from the overlay example directory and check using casuser/casuser username+password combo to "login" to unicon.net - the unicon password is "Mellon" (no quotes).
+1b. Add www.unicon.net to your services JSON list
+1c. Use a test url similar to - https://localhost/cas/login?authn_method=strong_two_factor&service=http://www.unicon.net
+
+2. Checkout the Unicon CAS Overlay project (github url - https://github.com/Unicon/unicon-cas-overlay.git)
+3. Modify the root pom.xml file as follows:
+3a. Add the following overlay block to the top of the overlays list (build tag, plugins tag, plugin tag, artifactId=maven-war-plugin, configuration tag, overlays-tag). The mfa overlay block must be first in the list.
+
+    <overlay>
+       <groupId>net.unicon</groupId>
+       <artifactId>cas-mfa-web</artifactId>
+       <excludes>
+          <exclude>WEB-INF/web.xml</exclude>
+       </excludes>
+    </overlay>
+    
+3b. Add the following plugin block (build tag, plugins tag). It doesn't matter in what order this is placed in the plugin blocks:
+
+    <plugin>  
+        <artifactId>maven-antrun-plugin</artifactId>  
+        <executions>  
+            <execution>  
+                <id>cleanJarsAndRepackage</id>  
+                <phase>package</phase>  
+                <configuration>  
+                    <tasks>  
+                        <delete>  
+                            <fileset dir="${project.build.directory}/cas/WEB-INF/lib">
+                               <include name="**/aspectjrt-1.6.10.jar" />
+                               <include name="**/aspectjweaver-1.6.10.jar" />
+                               <include name="**/commons-io-2.0.jar" />
+                               <include name="**/jdom-1.0.jar" />
+                               <include name="**/log4j-1.2.15.jar" />
+                               <include name="**/spring-aop-3.2.4.RELEASE.jar" />
+                               <include name="**/spring-beans-3.2.4.RELEASE.jar" />
+                               <include name="**/spring-binding-2.3.0.RELEASE.jar" />
+                               <include name="**/spring-context-3.2.4.RELEASE.jar" />
+                               <include name="**/spring-context-support-3.2.4.RELEASE.jar" />
+                               <include name="**/spring-core-3.2.4.RELEASE.jar" />                                       
+                               <include name="**/spring-expression-3.2.4.RELEASE.jar" />
+                               <include name="**/spring-jdbc-3.2.4.RELEASE.jar" />
+                               <include name="**/spring-js-2.3.0.RELEASE.jar" />
+                               <include name="**/spring-js-resources-2.3.0.RELEASE.jar" />
+                               <include name="**/spring-orm-3.2.4.RELEASE.jar" />
+                               <include name="**/spring-security-core.3.1.4.RELEASE.jar" />
+                               <include name="**/spring-tx-3.2.4.RELEASE.jar" />
+                               <include name="**/spring-web-3.2.4.RELEASE.jar" />
+                               <include name="**/spring-webflow-2.3.0.RELEASE.jar" />
+                               <include name="**/spring-webmvc-3.2.4.RELEASE.jar" />
+                               <include name="**/stax-api-1.0-2.jar" />
+                            </fileset>  
+                        </delete>
+                        <delete file="${project.build.directory}/${cas.war.name}.war"/> 
+                        <war destfile="${project.build.directory}/${cas.war.name}.war" needxmlfile="false">
+                            <fileset dir="${project.build.directory}/${cas.war.name}"/>
+                        </war>
+                    </tasks>  
+                </configuration>  
+                <goals>  
+                    <goal>run</goal>  
+                </goals>  
+            </execution>  
+        </executions>  
+    </plugin>
+
+3c. In the dependency block, add the following:
+
+    <dependency>
+        <groupId>net.unicon</groupId>
+        <artifactId>cas-mfa-web</artifactId>
+        <version>${cas-mfa.version}</version>
+        <type>war</type>
+    </dependency>
+    
+3d. In the properties block, add the following two items:
+
+    <cas-mfa.version>0.0.1-SNAPSHOT</cas-mfa.version>
+    <cas.war.name>cas</cas.war.name>
+    
+4. Copy messages_en.properties from [cas-mfa]/webapp-overlay-example/src/main/webapp/WEB-INF/classes to [cas-overlay]/src/main/resources
+5. Edit the [cas-overlay]/src/main/webapp/WEB-INF/login-webflow.xml file as follows:
+5a. Add the following action-state block to the file:
+
+    <action-state id="mfaTicketGrantingTicketExistsCheck">
+        <evaluate expression="validateInitialMfaRequestAction" />
+        <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
+        <transition on="mfa_sample_two_factor" to="mfa_sample_two_factor" />
+        <transition on="requireTgt" to="ticketGrantingTicketExistsCheck" />
+    </action-state>
+         
+5b. Find the following block in the file:
+
+	<transition on="submit" bind="true" validate="true" to="realSubmit">
+            <evaluate expression="authenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
+        </transition>
+        
+Replace the evaluate block with:
+
+<evaluate expression="initiatingAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
+
+5c. Find the following block in the file:
+
+  	<action-state id="realSubmit">
+            <evaluate expression="authenticationViaFormAction.submit(flowRequestContext, flowScope.credentials, messageContext)" />
+            <!--
+	      To enable LPPE on the 'warn' replace the below transition with:
+	      <transition on="warn" to="passwordPolicyCheck" />
+
+	      CAS will attempt to transition to the 'warn' when there's a 'renew' parameter
+	      and there exists a ticketGrantingId and a service for the incoming request.
+	    -->
+		<transition on="warn" to="warn" />
+            <!--
+	      To enable LPPE on the 'success' replace the below transition with:
+	      <transition on="success" to="passwordPolicyCheck" />
+	    -->
+	    <transition on="success" to="sendTicketGrantingTicket" />
+            <transition on="error" to="generateLoginTicket" />
+            <transition on="accountDisabled" to="casAccountDisabledView" />
+	    <transition on="mustChangePassword" to="casMustChangePassView" />
+	    <transition on="accountLocked" to="casAccountLockedView" />
+	    <transition on="badHours" to="casBadHoursView" />
+	    <transition on="badWorkstation" to="casBadWorkstationView" />
+	    <transition on="passwordExpired" to="casExpiredPassView" />
+	</action-state>
+        
+Replace the evaluate block with:
+
+<evaluate expression="initiatingAuthenticationViaFormAction.submit(flowRequestContext, flowScope.credentials, messageContext, flowScope.credentials.username)" />
+
+Add the following to the set of transitions:
+
+    <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
+    <transition on="mfa_sample_two_factor" to="mfa_sample_two_factor" />
+    
+5d. Add the following two blocks (below the previously modified action-state block is fine):
+
+    <subflow-state id="mfa_strong_two_factor" subflow="mfa_strong_two_factor">
+        <on-entry>
+            <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
+        </on-entry>
+        
+        <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
+               type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
+        <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
+        <transition on="unknownPrincipalError" to="viewUnknownPrincipalErrorView" />
+    </subflow-state>
+    
+    <subflow-state id="mfa_sample_two_factor" subflow="mfa_sample_two_factor">
+        <on-entry>
+            <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
+        </on-entry>
+        
+        <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
+               type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
+        <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
+        <transition on="unknownPrincipalError" to="viewUnknownPrincipalErrorView" />
+    </subflow-state>
+    
+5e. Towards the end of the file, add the following to the list of end-state items:
+
+    <end-state id="viewMfaUnrecognizedAuthnMethodErrorView" view="casMfaUnrecognizedAuthnMethodErrorView" />    
+    <end-state id="viewUnknownPrincipalErrorView" view="casUnknownPrincipalErrorView" />
+
+5f. In the global-transitions block, add the following to the list:
+    
+    <transition to="ticketGrantingTicketExistsCheck" on-exception="net.unicon.cas.mfa.web.flow.NoAuthenticationContextAvailable" />
+    <transition to="viewMfaUnrecognizedAuthnMethodErrorView" on-exception="net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException" />
+
+6. Modify the [cas-overlay]/src/main/webapp/WEB-INF/web.xml file. Add the following block beneath the existing init-param block in the cas servlet definition:
+
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            /WEB-INF/cas-servlet.xml
+            /WEB-INF/subflows/*_servlet.xml
+        </param-value>
+    </init-param>
+
+7. Build the cas-overlay using Maven. Deploy to Tomcat (replacing previous cas war and folder) and re-check using steps 1a-1c.
