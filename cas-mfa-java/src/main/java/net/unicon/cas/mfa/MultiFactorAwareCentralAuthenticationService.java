@@ -1,5 +1,6 @@
 package net.unicon.cas.mfa;
 
+import com.github.inspektr.audit.annotation.Audit;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 
 import org.jasig.cas.CentralAuthenticationService;
@@ -54,6 +55,10 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
     private AuthenticationManager authenticationManager;
 
     @Override
+    @Audit(
+            action="TICKET_GRANTING_TICKET",
+            actionResolverName="CREATE_TICKET_GRANTING_TICKET_RESOLVER",
+            resourceResolverName="CREATE_TICKET_GRANTING_TICKET_RESOURCE_RESOLVER")
     public String createTicketGrantingTicket(final Credentials credentials) throws TicketException {
         final MultiFactorCredentials mfaCredentials = (MultiFactorCredentials) credentials;
         final Authentication authentication = mfaCredentials.getAuthentication();
@@ -100,6 +105,10 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
     }
 
     @Override
+    @Audit(
+            action="PROXY_GRANTING_TICKET",
+            actionResolverName="GRANT_PROXY_GRANTING_TICKET_RESOLVER",
+            resourceResolverName="GRANT_PROXY_GRANTING_TICKET_RESOURCE_RESOLVER")
     public String delegateTicketGrantingTicket(final String serviceTicketId, final Credentials credentials) throws TicketException {
         try {
             this.authenticationManager.authenticate(credentials);
