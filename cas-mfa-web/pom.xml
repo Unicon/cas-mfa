@@ -4,14 +4,14 @@
    <parent>
       <artifactId>cas-mfa</artifactId>
       <groupId>net.unicon</groupId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>1.0.0-M2-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <artifactId>cas-mfa-web</artifactId>
    <name>CAS MFA Web Application</name>
    <description>
     This is the multifactor extensions for CAS sub-module for Web components. Things that are not Java,
-    that do not build into a .jar. For example: JSPs, deployment descriptors, customized and new 
+    that do not build into a .jar. For example: JSPs, deployment descriptors, customized and new
     Spring Web Flow XML and other Spring web framework configuration, etc.
   </description>
    <packaging>war</packaging>
