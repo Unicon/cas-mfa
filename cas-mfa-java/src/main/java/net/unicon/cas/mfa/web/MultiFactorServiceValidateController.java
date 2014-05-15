@@ -125,8 +125,9 @@ public class MultiFactorServiceValidateController extends DelegateController {
      * @param request the HttpServletRequest object.
      * @return the credentials or null if there was an error or no credentials
      * provided.
+     *
      */
-    protected final Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) throws ServletRequestBindingException {
+    protected Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) {
         final String pgtUrl = request.getParameter("pgtUrl");
         final String authnMethod = getAuthenticationMethodFromRequest(request);
 

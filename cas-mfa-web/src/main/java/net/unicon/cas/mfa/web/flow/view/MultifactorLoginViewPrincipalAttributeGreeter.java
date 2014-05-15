@@ -18,10 +18,16 @@ public final class MultifactorLoginViewPrincipalAttributeGreeter implements Mult
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultifactorLoginViewPrincipalAttributeGreeter.class);
 
+    /**
+     * MessageSource code.
+     */
     public static final String CODE = "screen.mfa.welcome.back";
 
     private final String greetingAttributeName;
 
+    /**
+     * @param greetingAttrName attribute name
+     */
     public MultifactorLoginViewPrincipalAttributeGreeter(final String greetingAttrName) {
         this.greetingAttributeName = greetingAttrName;
     }
