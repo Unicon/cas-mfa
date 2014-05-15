@@ -3,7 +3,7 @@
   <parent>
     <artifactId>cas-mfa</artifactId>
     <groupId>net.unicon</groupId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-M2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cas-mfa-java</artifactId>
@@ -14,7 +14,7 @@
   </description>
   <packaging>jar</packaging>
   <dependencies>
-		
+
     <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
@@ -49,12 +49,12 @@
 	  <groupId>junit</groupId>
 	  <artifactId>junit</artifactId>
 	</dependency>
-    
+
     <dependency>
       <groupId>org.jasig.cas</groupId>
       <artifactId>cas-server-core</artifactId>
-    </dependency>  
-    
+    </dependency>
+
     <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
@@ -63,7 +63,7 @@
     <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-    </dependency>     
+    </dependency>
   </dependencies>
 
 </project>
