@@ -31,7 +31,6 @@ import org.opensaml.saml1.core.StatusCode;
  * Represents a failed attempt at validating a ticket, responding via a SAML SOAP message.
  *
  * @author Misagh Moayyed
- * @since 3.1
  */
 public final class Saml10FailureResponseView extends AbstractSaml10ResponseView {
 

@@ -24,7 +24,7 @@
     <cas:authenticationFailure code='${code}'>
         ${fn:escapeXml(description)}
         <c:if test="${not empty authn_method}">
-            <cas:authn_method>${authn_method}</cas:authn_method>
+            <cas:authn_method>${fn:escapeXml(authn_method)}</cas:authn_method>
         </c:if>
     </cas:authenticationFailure>
 </cas:serviceResponse>
