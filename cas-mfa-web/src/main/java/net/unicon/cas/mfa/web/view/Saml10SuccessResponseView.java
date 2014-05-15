@@ -102,6 +102,12 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
         response.getAssertions().add(assertion);
     }
 
+    /**
+     *
+     * @param issuedAt timestamp
+     * @param serviceId service id
+     * @return new <code>Conditions</code> instance
+     */
     private Conditions newConditions(final DateTime issuedAt, final String serviceId) {
         final Conditions conditions = newSamlObject(Conditions.class);
         conditions.setNotBefore(issuedAt);
@@ -114,6 +120,12 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
         return conditions;
     }
 
+
+    /**
+     *
+     * @param identifier identifier
+     * @return new <code>Subject</code> instance
+     */
     private Subject newSubject(final String identifier) {
         final SubjectConfirmation confirmation = newSamlObject(SubjectConfirmation.class);
         final ConfirmationMethod method = newSamlObject(ConfirmationMethod.class);
@@ -127,6 +139,11 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
         return subject;
     }
 
+    /**
+     *
+     * @param authentication authentication
+     * @return new <code>Authentication</code> instance
+     */
     private AuthenticationStatement newAuthenticationStatement(final Authentication authentication) {
         final String authenticationMethod = (String) authentication.getAttributes().get(
                 SamlAuthenticationMetaDataPopulator.ATTRIBUTE_AUTHENTICATION_METHOD);
@@ -140,6 +157,14 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
         return authnStatement;
     }
 
+    /**
+     *
+     * @param subject subject
+     * @param attributes attributes
+     * @param isRemembered isRemembered
+     * @param casAssertion casAssertion
+     * @return new <code>AttributeStatement</code> instance
+     */
     private AttributeStatement newAttributeStatement(
             final Subject subject, final Map<String, Object> attributes,
             final boolean isRemembered, final org.jasig.cas.validation.Assertion casAssertion) {
@@ -185,6 +210,11 @@ public final class Saml10SuccessResponseView extends AbstractSaml10ResponseView 
         return attrStatement;
     }
 
+    /**
+     *
+     * @param value value
+     * @return new attribute value
+     */
     private XSString newAttributeValue(final Object value) {
         final XSString stringValue = this.attrValueBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, XSString.TYPE_NAME);
         if (value instanceof String) {

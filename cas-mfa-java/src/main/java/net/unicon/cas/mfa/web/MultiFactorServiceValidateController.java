@@ -125,8 +125,9 @@ public class MultiFactorServiceValidateController extends DelegateController {
      * @param request the HttpServletRequest object.
      * @return the credentials or null if there was an error or no credentials
      * provided.
+     *
      */
-    protected final Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) throws ServletRequestBindingException {
+    protected Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) {
         final String pgtUrl = request.getParameter("pgtUrl");
         final String authnMethod = getAuthenticationMethodFromRequest(request);
 
@@ -166,10 +167,11 @@ public class MultiFactorServiceValidateController extends DelegateController {
             throws Exception {
         final WebApplicationService service = this.argumentExtractor.extractService(request);
         final String serviceTicketId = service != null ? service.getArtifactId() : null;
+        final String authnMethod = getAuthenticationMethodFromRequest(request);
 
         if (service == null || serviceTicketId == null) {
             logger.debug(String.format("Could not process request; Service: %s, Service Ticket Id: %s", service, serviceTicketId));
-            return generateErrorView("INVALID_REQUEST", "INVALID_REQUEST", null);
+            return generateErrorView("INVALID_REQUEST", "INVALID_REQUEST", authnMethod, null);
         }
 
         try {
@@ -200,20 +202,20 @@ public class MultiFactorServiceValidateController extends DelegateController {
              *
              * This implementation opts for the latter choice.
              */
-            final String authnMethod = getAuthenticationMethodFromRequest(request);
             validationSpecification.setAuthenticationMethod(authnMethod);
 
             try {
                 if (!validationSpecification.isSatisfiedBy(assertion)) {
                     logger.debug("ServiceTicket [" + serviceTicketId + "] does not satisfy validation specification.");
-                    return generateErrorView("INVALID_TICKET", "INVALID_TICKET_SPEC", null);
+                    return generateErrorView("INVALID_TICKET", "INVALID_TICKET_SPEC", authnMethod, null);
                 }
             } catch (final UnrecognizedMultiFactorAuthenticationMethodException e) {
                 logger.debug(e.getMessage(), e);
-                return generateErrorView(e.getCode(), e.getMessage(), new Object[] {e.getAuthenticationMethod()});
+                return generateErrorView(e.getCode(), e.getMessage(), authnMethod, new Object[] {e.getAuthenticationMethod()});
             } catch (final UnacceptableMultiFactorAuthenticationMethodException e) {
                 logger.debug(e.getMessage(), e);
-                return generateErrorView(e.getCode(), e.getMessage(), new Object[] {serviceTicketId, e.getAuthenticationMethod()});
+                return generateErrorView(e.getCode(), e.getMessage(), authnMethod,
+                        new Object[] {serviceTicketId, e.getAuthenticationMethod()});
             }
 
             onSuccessfulValidation(serviceTicketId, assertion);
@@ -234,12 +236,12 @@ public class MultiFactorServiceValidateController extends DelegateController {
 
             return success;
         } catch (final TicketValidationException e) {
-            return generateErrorView(e.getCode(), e.getCode(),
+            return generateErrorView(e.getCode(), e.getCode(), authnMethod,
                     new Object[] {serviceTicketId, e.getOriginalService().getId(), service.getId()});
         } catch (final TicketException te) {
-            return generateErrorView(te.getCode(), te.getCode(), new Object[] {serviceTicketId});
+            return generateErrorView(te.getCode(), te.getCode(), authnMethod, new Object[] {serviceTicketId});
         } catch (final UnauthorizedServiceException e) {
-            return generateErrorView(e.getMessage(), e.getMessage(), null);
+            return generateErrorView(e.getMessage(), e.getMessage(), authnMethod, null);
         }
     }
 
@@ -257,14 +259,16 @@ public class MultiFactorServiceValidateController extends DelegateController {
      * @param code  the error code
      * @param description error description
      * @param args additional values associated with the error, passed down to the message source
+     * @param authnMethod requested authentication method in the request
      * @return A {@link ModelAndView} based on {@link #setFailureView(String)}
      */
-    private ModelAndView generateErrorView(final String code, final String description, final Object[] args) {
+    private ModelAndView generateErrorView(final String code, final String description,
+                                           final String authnMethod, final Object[] args) {
         final ModelAndView modelAndView = new ModelAndView(this.failureView);
         final String convertedDescription = getMessageSourceAccessor().getMessage(code, args, description);
         modelAndView.addObject("code", code);
         modelAndView.addObject("description", convertedDescription);
-
+        modelAndView.addObject(MODEL_AUTHN_METHOD, authnMethod);
         return modelAndView;
     }
 

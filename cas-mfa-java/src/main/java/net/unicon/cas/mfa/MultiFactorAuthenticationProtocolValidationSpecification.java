@@ -30,6 +30,8 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
     /**
      * Constructor to spin up the validation spec instance.
      * No restrictions on the requested authentication method.
+     *
+     * @param validateProxyAuthenticationRequests flag
      */
     public MultiFactorAuthenticationProtocolValidationSpecification(final boolean validateProxyAuthenticationRequests) {
         super();
