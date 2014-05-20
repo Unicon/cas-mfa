@@ -3,13 +3,15 @@ package net.unicon.cas.mfa.web.flow;
 import java.util.Set;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
+import net.unicon.cas.mfa.authentication.RequestArgumentRequestedAuthenticationMethodRetriever;
+import net.unicon.cas.mfa.authentication.ServiceBasedRequestedAuthenticationMethodRetriever;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
-import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Service;
+import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.web.support.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +21,8 @@ import org.springframework.webflow.execution.RequestContext;
 
 /**
  * Determines whether the login flow needs to branch *now* to honor the authentication method requirements of
- * {@link MultiFactorAuthenticationSupportingWebApplicationService}.
- *
+ * {@link org.jasig.cas.authentication.principal.WebApplicationService }
+ * <p/>
  * If the Service expresses a requirement for how the user must authenticate,
  * and there's an existing single sign-on session, and there is not a record in the user's
  * single sign-on session of having already fulfilled that requirement, then fires the `requireMfa` event indicating
@@ -28,23 +30,23 @@ import org.springframework.webflow.execution.RequestContext;
  * or there is no existing single sign-on session,
  * or the required exceptional authentication method is already fulfilled) then fire the `requireTgt` event indicating
  * that the login flow should proceed as per normal.
- *
+ * <p/>
  * More explicitly:
- *
- * <p>
+ * <p/>
+ * <p/>
  * <ol>
- *  <li>If an authentication context does not exist
- *  (i.e., the user does not have an existing single sign-on session with a record of a prior authentication),
- *  continue the login flow as usual by firing the `requireTgt` event.</li>
- *  <li>If an authentication context exists without any authentication method decoration, fire the
- *  `requireMfa` event indicating that an exceptional flow is required to fulfill the service's authentication
- *  requirements</li>
- *  <li>If an authentication context exists with an authentication method decoration indicating an authentication
- *  method other than that required by the service, fire the `requireMfa` event indicating that an exceptional flow
- *  is required to fulfill the service's authentication requirements.</li>
- *  <li>Otherwise, fire the `requireTgt` event to continue the login flow as per usual.</li>
+ * <li>If an authentication context does not exist
+ * (i.e., the user does not have an existing single sign-on session with a record of a prior authentication),
+ * continue the login flow as usual by firing the `requireTgt` event.</li>
+ * <li>If an authentication context exists without any authentication method decoration, fire the
+ * `requireMfa` event indicating that an exceptional flow is required to fulfill the service's authentication
+ * requirements</li>
+ * <li>If an authentication context exists with an authentication method decoration indicating an authentication
+ * method other than that required by the service, fire the `requireMfa` event indicating that an exceptional flow
+ * is required to fulfill the service's authentication requirements.</li>
+ * <li>Otherwise, fire the `requireTgt` event to continue the login flow as per usual.</li>
  * </ol>
- *
+ * <p/>
  * This means that in the case where there is not an existing single sign-on session, this Action will continue
  * the login flow as per normal <strong>even though additional authentication will be required
  * later in the flow to fulfill the authentication requirements of the CAS-using service</strong>.
@@ -55,14 +57,25 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
 
     private final Logger logger = LoggerFactory.getLogger(ValidateInitialMultiFactorAuthenticationRequestAction.class);
 
-    /** The Constant EVENT_ID_REQUIRE_MFA. */
+    /**
+     * The Constant EVENT_ID_REQUIRE_MFA.
+     */
     public static final String EVENT_ID_REQUIRE_MFA = "mfa_";
 
-    /** The Constant EVENT_ID_REQUIRE_TGT. */
+    /**
+     * The Constant EVENT_ID_REQUIRE_TGT.
+     */
     public static final String EVENT_ID_REQUIRE_TGT = "requireTgt";
 
-    /** The authentication support. */
+    /**
+     * The authentication support.
+     */
     private final AuthenticationSupport authenticationSupport;
+
+    /**
+     * The request param authn method retriever.
+     */
+    private final ServiceBasedRequestedAuthenticationMethodRetriever requestParamAuthenticationMethodRetriever = new RequestArgumentRequestedAuthenticationMethodRetriever();
 
     /**
      * Instantiates a new validate initial multifactor authentication request action.
@@ -86,20 +99,16 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
          * or does not implement the interface indicating what authentication method it requires
          * proceed with normal login flow.
          */
-        if (svc == null || !(svc instanceof MultiFactorAuthenticationSupportingWebApplicationService)) {
+        final String requiredAuthenticationMethod = this.requestParamAuthenticationMethodRetriever.getAuthenticationMethodIfAny(WebApplicationService.class.cast(svc));
+        if (requiredAuthenticationMethod == null) {
             logger.trace("Service null or does not implement authentication method requiring interface.");
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
-        final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
-                (MultiFactorAuthenticationSupportingWebApplicationService) svc;
-
-        final String requiredAuthenticationMethod = mfaSvc.getAuthenticationMethod();
-
         // place the authentication method in the appropriate scope
         MultiFactorRequestContextUtils.setRequiredAuthenticationMethod(context, requiredAuthenticationMethod);
         logger.trace("Service [[]] requires authentication method [{}]",
-                mfaSvc.getId(), requiredAuthenticationMethod);
+                svc.getId(), requiredAuthenticationMethod);
 
         final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
 
@@ -147,16 +156,19 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
         }
 
         logger.trace("Recorded authentication methods [{}] do not match "
-                + "now-required authentication method [{}]; "
-                + "branching to prompt for required authentication method.",
-                previouslyAchievedAuthenticationMethods, requiredAuthenticationMethod);
+                        + "now-required authentication method [{}]; "
+                        + "branching to prompt for required authentication method.",
+                previouslyAchievedAuthenticationMethods, requiredAuthenticationMethod
+        );
         return new Event(this, getMultiFactorEventIdByAuthenticationMethod(requiredAuthenticationMethod));
 
     }
 
     /**
      * Construct the next MFA event id based on the given authentication method.
+     *
      * @param authnMethod the authentication method provided
+     *
      * @return the next event in the flow, that is effectively the value of {@link #EVENT_ID_REQUIRE_MFA}
      * prepended to the authentication method.
      */
