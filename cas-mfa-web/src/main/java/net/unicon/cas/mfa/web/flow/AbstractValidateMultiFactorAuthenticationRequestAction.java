@@ -1,13 +1,8 @@
 package net.unicon.cas.mfa.web.flow;
 
-import java.util.Set;
-
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
-import net.unicon.cas.mfa.authentication.RequestArgumentRequestedAuthenticationMethodRetriever;
-import net.unicon.cas.mfa.authentication.ServiceBasedRequestedAuthenticationMethodRetriever;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
-
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Service;
@@ -18,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.webflow.action.AbstractAction;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
+
+import java.util.Set;
 
 /**
  * Determines whether the login flow needs to branch *now* to honor the authentication method requirements of
@@ -53,9 +50,9 @@ import org.springframework.webflow.execution.RequestContext;
  *
  * @author Misagh Moayyed
  */
-public final class ValidateInitialMultiFactorAuthenticationRequestAction extends AbstractAction {
+public abstract class AbstractValidateMultiFactorAuthenticationRequestAction extends AbstractAction {
 
-    private final Logger logger = LoggerFactory.getLogger(ValidateInitialMultiFactorAuthenticationRequestAction.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractValidateMultiFactorAuthenticationRequestAction.class);
 
     /**
      * The Constant EVENT_ID_REQUIRE_MFA.
@@ -73,16 +70,11 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
     private final AuthenticationSupport authenticationSupport;
 
     /**
-     * The request param authn method retriever.
-     */
-    private final ServiceBasedRequestedAuthenticationMethodRetriever requestParamAuthenticationMethodRetriever = new RequestArgumentRequestedAuthenticationMethodRetriever();
-
-    /**
      * Instantiates a new validate initial multifactor authentication request action.
      *
      * @param authSupport the authN support
      */
-    public ValidateInitialMultiFactorAuthenticationRequestAction(final AuthenticationSupport authSupport) {
+    public AbstractValidateMultiFactorAuthenticationRequestAction(final AuthenticationSupport authSupport) {
         this.authenticationSupport = authSupport;
     }
 
@@ -99,7 +91,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
          * or does not implement the interface indicating what authentication method it requires
          * proceed with normal login flow.
          */
-        final String requiredAuthenticationMethod = this.requestParamAuthenticationMethodRetriever.getAuthenticationMethodIfAny(WebApplicationService.class.cast(svc));
+        final String requiredAuthenticationMethod = retrieveAuthenticationMethodFromService(WebApplicationService.class.cast(svc));
         if (requiredAuthenticationMethod == null) {
             logger.trace("Service null or does not implement authentication method requiring interface.");
             return new Event(this, EVENT_ID_REQUIRE_TGT);
@@ -175,4 +167,11 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
     private String getMultiFactorEventIdByAuthenticationMethod(final String authnMethod) {
         return EVENT_ID_REQUIRE_MFA + authnMethod;
     }
+
+    /**
+     * Template method to be implemented by subclasses.
+     * @param service target service
+     * @return String representation of authentication method or null
+     */
+    protected abstract String retrieveAuthenticationMethodFromService(WebApplicationService service);
 }

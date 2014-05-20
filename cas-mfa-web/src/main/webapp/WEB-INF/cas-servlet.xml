@@ -290,9 +290,13 @@
   <bean id="credentialsValidator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
         p:messageInterpolator-ref="messageInterpolator"/>
   
-  <bean id="validateInitialMfaRequestAction" 
-        class="net.unicon.cas.mfa.web.flow.ValidateInitialMultiFactorAuthenticationRequestAction"
-        c:authSupport-ref="authenticationSupport" />
+  <bean id="requestParamAuthnMethodRetriever"
+        class="net.unicon.cas.mfa.authentication.RequestArgumentRequestedAuthenticationMethodRetriever"/>
+
+  <bean id="validateInitialMfaRequestAction"
+        class="net.unicon.cas.mfa.web.flow.ServiceBasedMultiFactorAuthenticationRequestAction"
+        c:authSupport-ref="authenticationSupport"
+        c:authenticationMethodRetriever-ref="requestParamAuthnMethodRetriever"/>
   
   <!-- Generate and chain multifactor credentials based on current authenticated credentials. -->
   <bean id="generateMfaCredentialsAction" class="net.unicon.cas.mfa.web.flow.GenerateMultiFactorCredentialsAction"
