@@ -34,7 +34,7 @@ class RegisteredServiceRequestedAuthenticationMethodRetrieverTests extends Speci
             findServiceBy(_) >> registeredServiceWithExtraAttributes_AND_WithAuthnMethod
         }
         @Subject
-        def retrieverUnderTest = new RegisteredServiceRequestedAuthenticationMethodRetriever(servicesManager)
+        def retrieverUnderTest = new RegisteredServiceAuthenticationMethodRetriever(servicesManager)
 
         expect:
         retrieverUnderTest.getAuthenticationMethodIfAny(this.targetService) == 'strong_two_factor'
@@ -47,7 +47,7 @@ class RegisteredServiceRequestedAuthenticationMethodRetrieverTests extends Speci
             findServiceBy(_) >> registeredServiceWithExtraAttributes_AND_WithoutAuthnMethod
         }
         @Subject
-        def retrieverUnderTest = new RegisteredServiceRequestedAuthenticationMethodRetriever(servicesManager)
+        def retrieverUnderTest = new RegisteredServiceAuthenticationMethodRetriever(servicesManager)
 
         expect:
         retrieverUnderTest.getAuthenticationMethodIfAny(this.targetService) == null
@@ -60,7 +60,7 @@ class RegisteredServiceRequestedAuthenticationMethodRetrieverTests extends Speci
             findServiceBy(_) >> regularRegisteredService
         }
         @Subject
-        def retrieverUnderTest = new RegisteredServiceRequestedAuthenticationMethodRetriever(servicesManager)
+        def retrieverUnderTest = new RegisteredServiceAuthenticationMethodRetriever(servicesManager)
 
         expect:
         retrieverUnderTest.getAuthenticationMethodIfAny(this.targetService) == null

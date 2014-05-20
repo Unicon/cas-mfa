@@ -13,7 +13,7 @@ import spock.lang.Subject
 class RequestArgumentRequestedAuthenticationMethodRetrieverTests extends Specification {
 
     @Subject
-    def retrieverUnderTest = new RequestArgumentRequestedAuthenticationMethodRetriever()
+    def retrieverUnderTest = new RequestParamAuthenticationMethodRetriever()
 
     def "Service that does not request additional authentication method passed to retriever as argument returns null"() {
 

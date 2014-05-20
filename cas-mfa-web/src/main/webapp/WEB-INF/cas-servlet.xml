@@ -291,7 +291,7 @@
         p:messageInterpolator-ref="messageInterpolator"/>
   
   <bean id="requestParamAuthnMethodRetriever"
-        class="net.unicon.cas.mfa.authentication.RequestArgumentRequestedAuthenticationMethodRetriever"/>
+        class="net.unicon.cas.mfa.authentication.RequestParamAuthenticationMethodRetriever"/>
 
   <bean id="validateInitialMfaRequestAction"
         class="net.unicon.cas.mfa.web.flow.ServiceBasedMultiFactorAuthenticationRequestAction"

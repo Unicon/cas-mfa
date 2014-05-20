@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
-import net.unicon.cas.mfa.authentication.RequestArgumentRequestedAuthenticationMethodRetriever;
+import net.unicon.cas.mfa.authentication.RequestParamAuthenticationMethodRetriever;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
@@ -49,7 +49,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         final AuthenticationSupport support = mock(AuthenticationSupport.class);
         when(support.getAuthenticationFrom(TGT_ID)).thenReturn(authentication);
 
-        this.action = new ServiceBasedMultiFactorAuthenticationRequestAction(support, new RequestArgumentRequestedAuthenticationMethodRetriever());
+        this.action = new ServiceBasedMultiFactorAuthenticationRequestAction(support, new RequestParamAuthenticationMethodRetriever());
 
         mockFlowScope = mock(MutableAttributeMap.class);
         when(requestContext.getFlowScope()).thenReturn(mockFlowScope);

@@ -1,7 +1,7 @@
 package net.unicon.cas.mfa.web.flow;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
-import net.unicon.cas.mfa.authentication.ServiceBasedRequestedAuthenticationMethodRetriever;
+import net.unicon.cas.mfa.authentication.ServiceBasedAuthenticationMethodRetriever;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 
 
@@ -16,7 +16,7 @@ public final class ServiceBasedMultiFactorAuthenticationRequestAction extends Ab
     /**
      * The authenticationMethodRetriever.
      */
-    private final ServiceBasedRequestedAuthenticationMethodRetriever authenticationMethodRetriever;
+    private final ServiceBasedAuthenticationMethodRetriever authenticationMethodRetriever;
 
 
     /**
@@ -26,7 +26,7 @@ public final class ServiceBasedMultiFactorAuthenticationRequestAction extends Ab
      * @param authenticationMethodRetriever authenticationMethodRetriever
      */
     public ServiceBasedMultiFactorAuthenticationRequestAction(final AuthenticationSupport authSupport,
-                                                              final ServiceBasedRequestedAuthenticationMethodRetriever authenticationMethodRetriever) {
+                                                              final ServiceBasedAuthenticationMethodRetriever authenticationMethodRetriever) {
         super(authSupport);
         this.authenticationMethodRetriever = authenticationMethodRetriever;
     }

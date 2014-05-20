@@ -4,15 +4,15 @@ import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebAppl
 import org.jasig.cas.authentication.principal.WebApplicationService;
 
 /**
- * Implementation of {@link net.unicon.cas.mfa.authentication.ServiceBasedRequestedAuthenticationMethodRetriever} that
+ * Implementation of {@link ServiceBasedAuthenticationMethodRetriever} that
  * gets a possible requested additional authentication method from a request parameter encapsulated in
  * {@link net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService} if available.
  *
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
  */
-public class RequestArgumentRequestedAuthenticationMethodRetriever implements
-        ServiceBasedRequestedAuthenticationMethodRetriever {
+public class RequestParamAuthenticationMethodRetriever implements
+        ServiceBasedAuthenticationMethodRetriever {
 
     @Override
     public String getAuthenticationMethodIfAny(final WebApplicationService webApplicationService) {

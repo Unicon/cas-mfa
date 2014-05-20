@@ -8,15 +8,15 @@ import org.jasig.cas.services.ServicesManager;
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
 
 /**
- * Implementation of {@link net.unicon.cas.mfa.authentication.ServiceBasedRequestedAuthenticationMethodRetriever} that
+ * Implementation of {@link ServiceBasedAuthenticationMethodRetriever} that
  * gets a possible requested additional authentication method from a registered service definition's extra attribute
  * for a given target service, if available.
  *
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
  */
-public class RegisteredServiceRequestedAuthenticationMethodRetriever implements
-        ServiceBasedRequestedAuthenticationMethodRetriever {
+public class RegisteredServiceAuthenticationMethodRetriever implements
+        ServiceBasedAuthenticationMethodRetriever {
 
     /**
      * ServicesManager.
@@ -28,7 +28,7 @@ public class RegisteredServiceRequestedAuthenticationMethodRetriever implements
      *
      * @param servicesManager instance
      */
-    public RegisteredServiceRequestedAuthenticationMethodRetriever(final ServicesManager servicesManager) {
+    public RegisteredServiceAuthenticationMethodRetriever(final ServicesManager servicesManager) {
         this.servicesManager = servicesManager;
     }
 

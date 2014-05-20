@@ -9,7 +9,7 @@ import org.jasig.cas.authentication.principal.WebApplicationService;
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
  */
-public interface ServiceBasedRequestedAuthenticationMethodRetriever {
+public interface ServiceBasedAuthenticationMethodRetriever {
 
     /**
      * Fetch authentication method from the given CAS service.
