@@ -3,6 +3,7 @@ package net.unicon.cas.mfa.authentication
 import net.unicon.cas.mfa.web.support.DefaultMultiFactorAuthenticationSupportingWebApplicationService
 import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl
 import spock.lang.Specification
+import spock.lang.Subject
 
 /**
  *
@@ -11,6 +12,7 @@ import spock.lang.Specification
  */
 class RequestArgumentRequestedAuthenticationMethodRetrieverTests extends Specification {
 
+    @Subject
     def retrieverUnderTest = new RequestArgumentRequestedAuthenticationMethodRetriever()
 
     def "Service that does not request additional authentication method passed to retriever as argument returns null"() {

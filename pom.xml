@@ -485,6 +485,7 @@
                 <groupId>net.unicon.cas</groupId>
                 <artifactId>cas-addons</artifactId>
                 <version>${cas-addons.version}</version>
+                <scope>compile</scope>
                 <exclusions>
                     <exclusion>
                         <groupId>edu.internet2.middleware.grouper</groupId>

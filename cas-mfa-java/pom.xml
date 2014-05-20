@@ -67,6 +67,11 @@
         </dependency>
 
         <dependency>
+            <groupId>net.unicon.cas</groupId>
+            <artifactId>cas-addons</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
         </dependency>
