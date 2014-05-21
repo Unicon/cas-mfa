@@ -4,55 +4,39 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jasig.cas.authentication.principal.WebApplicationService;
-import org.jasig.cas.web.support.AbstractSingleSignOutEnabledArgumentExtractor;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.springframework.util.StringUtils;
+
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 
 /**
  * The multifactor authentication argument extractor, responsible to
  * instruct CAS with the constructed instance of a {@link WebApplicationService}
  * that is supported based on the configured {@link #supportedAuthenticationMethods}.
+ *
+ * The requested authentication method discovery in this implementation is based on HTTP request parameter <b>authn_method</b>
+ *
  * @author Misagh Moayyed
  */
-public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSingleSignOutEnabledArgumentExtractor {
-    private final List<String> supportedAuthenticationMethods;
-
-    private final Set<ArgumentExtractor> supportedArgumentExtractors;
+public final class MultiFactorAuthenticationArgumentExtractor extends AbstractMultiFactorAuthenticationArgumentExtractor {
 
     /**
-     * This log would be replaced by the superclass's log if CAS-1332 realized.
-     */
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-    /**
-     * Create an instance of {@link MultiFactorAuthenticationArgumentExtractor}.
-     * @param authnMethods list of supported values for authentication method
-     * @param supportedProtocols set of argument extractors for each protocol that are to support MFA
+     * Ctor.
+     *
+     * @param authnMethods authn methods
+     * @param supportedProtocols supported protocols
      */
     public MultiFactorAuthenticationArgumentExtractor(final List<String> authnMethods, final Set<ArgumentExtractor> supportedProtocols) {
-        this.supportedAuthenticationMethods = authnMethods;
-        this.supportedArgumentExtractors = supportedProtocols;
+        super(authnMethods, supportedProtocols);
     }
 
     @Override
     protected WebApplicationService extractServiceInternal(final HttpServletRequest request) {
         logger.debug("Attempting to extract multifactor authentication parameters from the request");
 
-        WebApplicationService targetService = null;
-        for (final ArgumentExtractor extractor : this.supportedArgumentExtractors) {
-            targetService = extractor.extractService(request);
-            if (targetService != null) {
-                logger.debug("[{}] intercepted the request successfully for multifactor authentication",
-                        extractor);
-                break;
-            }
-        }
-
+        final WebApplicationService targetService = getTargetService(request);
         if (targetService == null) {
-            logger.debug("Request is unable to identify the target application");
             return null;
         }
 
@@ -65,33 +49,16 @@ public final class MultiFactorAuthenticationArgumentExtractor extends AbstractSi
             return null;
         }
 
-        if (!supportedAuthenticationMethods.contains(authenticationMethod)) {
-            logger.debug("CAS is not configured to support [{}] parameter value [{}].",
-                    MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
-                    authenticationMethod);
-            /**
-             * Argument extractors are still going to be invoked, if the flow
-             * decides to move the user experience to an error-view JSP. As such,
-             * and since we are unable to touch request parameters removing the invalid
-             * authn_method before that navigation takes place, there's a chance that an infinite
-             * redirect loop might occur. The compromise here to is to "remember" that the exception
-             * was handled once via a request attribute.
-             */
-            if (request.getAttribute(UnrecognizedAuthenticationMethodException.class.getName()) == null) {
-                request.setAttribute(UnrecognizedAuthenticationMethodException.class.getName(), Boolean.TRUE.toString());
-                throw new UnrecognizedAuthenticationMethodException(authenticationMethod, targetService.getId());
-            }
-        }
+        verifyAuthenticationMethod(authenticationMethod, targetService, request);
 
         final MultiFactorAuthenticationSupportingWebApplicationService svc =
                 new DefaultMultiFactorAuthenticationSupportingWebApplicationService(
                         targetService.getId(), targetService.getId(), targetService.getArtifactId(),
                         getHttpClientIfSingleSignOutEnabled(),
-                        authenticationMethod);
+                        authenticationMethod, AuthenticationMethodSource.REQUEST_PARAM);
         logger.debug("Created multifactor authentication request for [{}] with [{}] as [{}].",
                 svc.getId(), MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
                 svc.getAuthenticationMethod());
         return svc;
     }
-
 }

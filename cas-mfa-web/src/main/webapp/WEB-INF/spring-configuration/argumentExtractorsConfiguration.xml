@@ -44,6 +44,16 @@
           c:authnMethods-ref="listOfAuthenticationMethods"
           c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication">
     </bean>
+
+    <!-- This is an extractor that currently enforces the mfa source rule: (svc reg attribute FIRST and if not defined ONLY THEN delegates to req param one) -->
+    <bean id="registeredServiceAttributeMfaArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
+          parent="baseArgumentExtractor"
+          c:authnMethods-ref="listOfAuthenticationMethods"
+          c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
+          c:servicesManager-ref="servicesManager"
+          c:mfaArgExtractor-ref="mfaArgumentExtractor">
+    </bean>
     
     <util:list id="listOfAuthenticationMethods">
         <value>strong_two_factor</value>
@@ -56,7 +66,7 @@
     </util:set>   
  	
   <util:list id="argumentExtractors">
-        <ref bean="mfaArgumentExtractor" />
+        <ref bean="registeredServiceAttributeMfaArgumentExtractor" />
 		<ref bean="casArgumentExtractor" />
  		<ref bean="samlArgumentExtractor" />
  	</util:list>
