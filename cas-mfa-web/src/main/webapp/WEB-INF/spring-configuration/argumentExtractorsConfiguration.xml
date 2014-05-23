@@ -38,21 +38,20 @@
  	<bean id="samlArgumentExtractor" class="org.jasig.cas.web.support.SamlArgumentExtractor"
           parent="baseArgumentExtractor" />
  	
-    <bean id="mfaArgumentExtractor"
+    <bean id="requestParamMfaArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationArgumentExtractor"
           parent="baseArgumentExtractor"
           c:authnMethods-ref="listOfAuthenticationMethods"
           c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication">
     </bean>
 
-    <!-- This is an extractor that currently enforces the mfa source rule: (svc reg attribute FIRST and if not defined ONLY THEN delegates to req param one) -->
     <bean id="registeredServiceAttributeMfaArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
           parent="baseArgumentExtractor"
           c:authnMethods-ref="listOfAuthenticationMethods"
           c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
-          c:servicesManager-ref="servicesManager"
-          c:mfaArgExtractor-ref="mfaArgumentExtractor">
+          c:servicesManager-ref="servicesManager">
+
     </bean>
     
     <util:list id="listOfAuthenticationMethods">
@@ -67,6 +66,7 @@
  	
   <util:list id="argumentExtractors">
         <ref bean="registeredServiceAttributeMfaArgumentExtractor" />
+        <ref bean="requestParamMfaArgumentExtractor"/>
 		<ref bean="casArgumentExtractor" />
  		<ref bean="samlArgumentExtractor" />
  	</util:list>

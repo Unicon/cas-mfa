@@ -9,6 +9,7 @@ import org.jasig.cas.web.support.ArgumentExtractor;
 import org.springframework.util.StringUtils;
 
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
 
 /**
  * The multifactor authentication argument extractor, responsible to
@@ -56,9 +57,11 @@ public final class MultiFactorAuthenticationArgumentExtractor extends AbstractMu
                         targetService.getId(), targetService.getId(), targetService.getArtifactId(),
                         getHttpClientIfSingleSignOutEnabled(),
                         authenticationMethod, AuthenticationMethodSource.REQUEST_PARAM);
-        logger.debug("Created multifactor authentication request for [{}] with [{}] as [{}].",
-                svc.getId(), MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
-                svc.getAuthenticationMethod());
+
+        logger.debug("Created multifactor authentication request for [{}] with [{}] as [{}] and authentication method definition source [{}].",
+                svc.getId(), CONST_PARAM_AUTHN_METHOD,
+                svc.getAuthenticationMethod(),
+                AuthenticationMethodSource.REQUEST_PARAM);
         return svc;
     }
 }

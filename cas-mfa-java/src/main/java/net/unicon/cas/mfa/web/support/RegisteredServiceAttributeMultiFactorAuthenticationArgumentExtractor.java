@@ -36,25 +36,17 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
     private final ServicesManager servicesManager;
 
     /**
-     * Delegate argument extractor.
-     */
-    private final MultiFactorAuthenticationArgumentExtractor delegateMfaArgumentExtractor;
-
-    /**
      * Ctor.
      *
      * @param authnMethods authn methods
      * @param supportedProtocols supported protocols
      * @param servicesManager services manager
-     * @param mfaArgExtractor delegate mfa arg extractor
      */
     public RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor(final List<String> authnMethods,
                                                                                 final Set<ArgumentExtractor> supportedProtocols,
-                                                                                final ServicesManager servicesManager,
-                                                                                final MultiFactorAuthenticationArgumentExtractor mfaArgExtractor) {
+                                                                                final ServicesManager servicesManager) {
         super(authnMethods, supportedProtocols);
         this.servicesManager = servicesManager;
-        this.delegateMfaArgumentExtractor = mfaArgExtractor;
     }
 
     @Override
@@ -68,12 +60,12 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
 
         final RegisteredService registeredService = this.servicesManager.findServiceBy(targetService);
         if (registeredService == null) {
-            logger.debug("No registered service is found. Delegating to 'MultiFactorAuthenticationArgumentExtractor'...");
-            return this.delegateMfaArgumentExtractor.extractServiceInternal(request);
+            logger.debug("No registered service is found. Delegating to the next argument extractor in the chain...");
+            return null;
         }
         if (!(registeredService instanceof RegisteredServiceWithAttributes)) {
-            logger.debug("Registered service is not capable of defining an mfa attribute. Delegating to 'MultiFactorAuthenticationArgumentExtractor'...");
-            return this.delegateMfaArgumentExtractor.extractServiceInternal(request);
+            logger.debug("Registered service is not capable of defining an mfa attribute. Delegating to the next argument extractor in the chain...");
+            return null;
         }
 
         final String authenticationMethod =
@@ -81,9 +73,9 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
 
 
         if (!StringUtils.hasText(authenticationMethod)) {
-            logger.debug("Registered service does not define authentication method attribute [{}]. Delegating to 'MultiFactorAuthenticationArgumentExtractor'...",
+            logger.debug("Registered service does not define authentication method attribute [{}]. Delegating to the next argument extractor in the chain...",
                     CONST_PARAM_AUTHN_METHOD);
-            return this.delegateMfaArgumentExtractor.extractServiceInternal(request);
+            return null;
         }
 
         verifyAuthenticationMethod(authenticationMethod, targetService, request);
@@ -94,9 +86,10 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
                         getHttpClientIfSingleSignOutEnabled(),
                         authenticationMethod, AuthenticationMethodSource.REGISTERED_SERVICE_DEFINITION);
 
-        logger.debug("Created multifactor authentication request for [{}] with [{}] as [{}].",
+        logger.debug("Created multifactor authentication request for [{}] with [{}] as [{}] and authentication method definition source [{}].",
                 svc.getId(), CONST_PARAM_AUTHN_METHOD,
-                svc.getAuthenticationMethod());
+                svc.getAuthenticationMethod(),
+                AuthenticationMethodSource.REGISTERED_SERVICE_DEFINITION);
         return svc;
     }
 }
