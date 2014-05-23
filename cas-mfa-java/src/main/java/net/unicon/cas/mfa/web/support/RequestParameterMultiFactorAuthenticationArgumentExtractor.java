@@ -20,7 +20,7 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
  *
  * @author Misagh Moayyed
  */
-public final class MultiFactorAuthenticationArgumentExtractor extends AbstractMultiFactorAuthenticationArgumentExtractor {
+public final class RequestParameterMultiFactorAuthenticationArgumentExtractor extends AbstractMultiFactorAuthenticationArgumentExtractor {
 
     /**
      * Ctor.
@@ -28,7 +28,7 @@ public final class MultiFactorAuthenticationArgumentExtractor extends AbstractMu
      * @param authnMethods authn methods
      * @param supportedProtocols supported protocols
      */
-    public MultiFactorAuthenticationArgumentExtractor(final List<String> authnMethods, final Set<ArgumentExtractor> supportedProtocols) {
+    public RequestParameterMultiFactorAuthenticationArgumentExtractor(final List<String> authnMethods, final Set<ArgumentExtractor> supportedProtocols) {
         super(authnMethods, supportedProtocols);
     }
 

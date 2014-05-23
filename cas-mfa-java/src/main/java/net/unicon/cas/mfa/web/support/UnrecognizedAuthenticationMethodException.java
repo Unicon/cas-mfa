@@ -4,7 +4,7 @@ package net.unicon.cas.mfa.web.support;
  * Thrown if an incoming authentication request specified an authentication
  * method that is not supported and/or recognized by the MFA configuration.
  * @author Misagh Moayyed
- * @see MultiFactorAuthenticationArgumentExtractor
+ * @see net.unicon.cas.mfa.web.support.AbstractMultiFactorAuthenticationArgumentExtractor
  */
 public class UnrecognizedAuthenticationMethodException extends RuntimeException {
 
