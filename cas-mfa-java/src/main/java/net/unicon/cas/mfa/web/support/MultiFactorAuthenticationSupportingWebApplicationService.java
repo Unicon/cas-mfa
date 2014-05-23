@@ -16,4 +16,25 @@ public interface MultiFactorAuthenticationSupportingWebApplicationService extend
      * @return the supported method
      */
     String getAuthenticationMethod();
+
+    /**
+     * An authentication method source for this MFA service.
+     * @return the source for the supported authentication method
+     */
+    AuthenticationMethodSource getAuthenticationMethodSource();
+
+
+    /**
+     * Enum type representing the type of authentication method source.
+     */
+    enum AuthenticationMethodSource {
+        /** Sourced from registered service attribute. */
+        REGISTERED_SERVICE_DEFINITION,
+
+        /** Sourced from HTTP request param. */
+        REQUEST_PARAM,
+
+        /** Sourced from principal attribute. */
+        PRINCIPAL_ATTRIBUTE
+    }
 }

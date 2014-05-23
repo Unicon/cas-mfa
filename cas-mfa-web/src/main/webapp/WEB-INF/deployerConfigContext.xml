@@ -48,7 +48,7 @@
     <cas:default-health-check-monitor/>
 
     <sec:user-service id="userDetailsService">
-        <sec:user name="casuser" authorities="none"/>
+        <sec:user name="casuser" password="***" authorities="none"/>
     </sec:user-service>
 
 </beans>

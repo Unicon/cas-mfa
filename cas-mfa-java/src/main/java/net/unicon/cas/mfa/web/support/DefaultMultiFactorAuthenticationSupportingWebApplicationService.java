@@ -29,11 +29,14 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
 
     private static final long serialVersionUID = 7537062414761087535L;
 
-
-
+    /** The wrapped service. */
     private final SimpleWebApplicationServiceImpl wrapperService;
 
+    /** The authentication method. */
     private final String authenticationMethod;
+
+    /** The authentication method source. */
+    private AuthenticationMethodSource authenticationMethodSource;
 
     /**
      * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}.
@@ -51,12 +54,36 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
         this.authenticationMethod = authnMethod;
     }
 
+    /**
+     * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}.
+     *
+     * @param id the service id, potentially with a jsessionid; still needing excised
+     * @param originalUrl the service url
+     * @param artifactId the artifact id
+     * @param httpClient http client to process requests
+     * @param authnMethod the authentication method required for this service
+     * @param authenticationMethodSource the authentication method source for this service
+     */
+    public DefaultMultiFactorAuthenticationSupportingWebApplicationService(final String id, final String originalUrl,
+                                                                           final String artifactId, final HttpClient httpClient,
+                                                                           @NotNull final String authnMethod,
+                                                                           final AuthenticationMethodSource authenticationMethodSource) {
+        this(id, originalUrl, artifactId, httpClient, authnMethod);
+        this.authenticationMethodSource = authenticationMethodSource;
+    }
+
     @Override
     public Response getResponse(final String ticketId) {
         return wrapperService.getResponse(ticketId);
     }
 
+    @Override
     public String getAuthenticationMethod() {
         return this.authenticationMethod;
+    }
+
+    @Override
+    public AuthenticationMethodSource getAuthenticationMethodSource() {
+        return this.authenticationMethodSource;
     }
 }
