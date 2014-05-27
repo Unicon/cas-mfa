@@ -313,7 +313,11 @@
         </util:list>
     </property>
   </bean>
-        
+
+  <bean id="principalAttributeMfaRequestResolver"
+        class="net.unicon.cas.mfa.authentication.principal.PrincipalAttributeMultiFactorAuthenticationRequestResolver"
+        c:mfaMethodAttributeName="${mfa.method.userAttribute:authn_method}"/>
+
   <!-- 
     Initiating the the multifactor authentication sequence. Validates credentials and
     resolve principal, or authenticate and proceed to the second factor authentication flow.
@@ -321,9 +325,12 @@
   <bean id="initiatingAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.InitiatingMultiFactorAuthenticationViaFormAction"
         c:authenticationViaFormAction-ref="authenticationViaFormAction"
+        c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"
+        c:authenticationSupport-ref="authenticationSupport"
         p:centralAuthenticationService-ref="centralAuthenticationService"
         p:warnCookieGenerator-ref="warnCookieGenerator"
-        p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager" />
+        p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager"/>
+
    
    <bean id="principalMismatchExceptionHandler" 
          class="net.unicon.cas.mfa.web.flow.ConfigurableSpringWebflowExceptionHandler"

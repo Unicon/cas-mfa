@@ -124,11 +124,12 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
      * @param context request context
      * @param credentials the requesting credentials
      * @param messageContext the message bundle manager
+     * @param id the identifier of the credential, based on implementation provided in the flow setup
      * @return the resulting event
      * @throws Exception the exception
      */
     protected abstract Event doAuthentication(final RequestContext context, final Credentials credentials,
-            final MessageContext messageContext) throws Exception;
+            final MessageContext messageContext, final String id) throws Exception;
 
     /**
      * Checks if is valid login ticket.
@@ -168,7 +169,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
             }
             return getErrorEvent();
         }
-        return doAuthentication(context, credentials, messageContext);
+        return doAuthentication(context, credentials, messageContext, id);
     }
 
     /**

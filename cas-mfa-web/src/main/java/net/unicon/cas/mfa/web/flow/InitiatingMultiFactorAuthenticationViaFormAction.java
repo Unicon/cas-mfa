@@ -1,12 +1,21 @@
 package net.unicon.cas.mfa.web.flow;
 
+import net.unicon.cas.addons.authentication.AuthenticationSupport;
+import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
+import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
+import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
+import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.web.flow.AuthenticationViaFormAction;
+import org.jasig.cas.web.support.WebUtils;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.web.util.CookieGenerator;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * The multifactor authentication service action that branches to an loa-defined
@@ -15,31 +24,72 @@ import org.springframework.webflow.execution.RequestContext;
  * this action would simply attempt to verify the given credentials based on
  * {@link #setMultiFactorAuthenticationManager(org.jasig.cas.authentication.AuthenticationManager)}
  * and will alter the webflow to the next leg of the authentication sequence.
+ *
  * @author Misagh Moayyed
  */
 public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMultiFactorAuthenticationViaFormAction {
 
-    /** The wrapper authentication action. */
+    /**
+     * The wrapper authentication action.
+     */
     private final AuthenticationViaFormAction wrapperAuthenticationAction;
+
+    /**
+     * MultiFactorAuthenticationRequestResolver.
+     */
+    private final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver;
+
+    /**
+     * The authentication support.
+     */
+    private final AuthenticationSupport authenticationSupport;
 
     /**
      * Instantiates a new initiating multi factor authentication via form action.
      *
      * @param authenticationViaFormAction the authentication via form action
+     * @param multiFactorAuthenticationRequestResolver the mfa request resolver
+     * @param authenticationSupport the authenticationSupport
      */
-    public InitiatingMultiFactorAuthenticationViaFormAction(final AuthenticationViaFormAction authenticationViaFormAction) {
+    public InitiatingMultiFactorAuthenticationViaFormAction(final AuthenticationViaFormAction authenticationViaFormAction,
+                                                            final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
+                                                            final AuthenticationSupport authenticationSupport) {
+
         this.wrapperAuthenticationAction = authenticationViaFormAction;
+        this.multiFactorAuthenticationRequestResolver = multiFactorAuthenticationRequestResolver;
+        this.authenticationSupport = authenticationSupport;
     }
 
     /* (non-Javadoc)
      * @see net.unicon.cas.mfa.web.flow.AbstractMultiFactorAuthenticationViaFormAction#doAuthentication
      * (org.springframework.webflow.execution.RequestContext, org.jasig.cas.authentication.principal.Credentials
-     *  org.springframework.binding.message.MessageContext)
+     *  org.springframework.binding.message.MessageContext, String)
      */
     @Override
-    protected final Event doAuthentication(final RequestContext context, final Credentials credentials, final MessageContext messageContext)
+    protected final Event doAuthentication(final RequestContext context, final Credentials credentials, final MessageContext messageContext, final String id)
             throws Exception {
-        return new Event(this, this.wrapperAuthenticationAction.submit(context, credentials, messageContext));
+
+        final String primaryAuthnEventId = this.wrapperAuthenticationAction.submit(context, credentials, messageContext);
+        final Event primaryAuthnEvent = new Event(this, primaryAuthnEventId);
+        if (!"success".equals(primaryAuthnEventId)) {
+            return primaryAuthnEvent;
+        }
+
+        final MultiFactorAuthenticationRequestContext mfaRequest =
+                this.multiFactorAuthenticationRequestResolver.resolve(this.authenticationSupport.getAuthenticationFrom(WebUtils.getTicketGrantingTicketId(context)),
+                        WebApplicationService.class.cast(WebUtils.getService(context)));
+
+
+        if (mfaRequest != null) {
+            //Put this mfa request into the plain HttpServletRequest attribute to be retrieved by the appropriate argument extractor
+            //during 'initialFlowSetupAction' action state execution in the mfa subflow
+            putIntoRequestAttribute(mfaRequest, context);
+            return doMultiFactorAuthentication(context, credentials, messageContext, id);
+        }
+        return primaryAuthnEvent;
+
+
+        // Orig -> return new Event(this, this.wrapperAuthenticationAction.submit(context, credentials, messageContext));
     }
 
     /**
@@ -53,8 +103,20 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
 
     @Override
     protected final Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
-            final Credentials credentials, final MessageContext messageContext, final String id) {
-        return super.getSuccessEvent(context);
+                                                              final Credentials credentials, final MessageContext messageContext, final String id) {
+        if (WebUtils.getService(context) instanceof MultiFactorAuthenticationSupportingWebApplicationService) {
+            return super.getSuccessEvent(context);
+        }
+        return new Event(this, MFA_SUCCESS_EVENT_ID_PREFIX + authentication.getPrincipal().getAttributes().get(CONST_PARAM_AUTHN_METHOD));
     }
 
+    /**
+     * Put mfa request into http request attribute.
+     *
+     * @param mfaRequest mfaRequest
+     * @param requestContext SWF requestContext
+     */
+    private void putIntoRequestAttribute(final MultiFactorAuthenticationRequestContext mfaRequest, final RequestContext requestContext) {
+        HttpServletRequest.class.cast(requestContext.getExternalContext().getNativeRequest()).setAttribute("mfaRequest", mfaRequest);
+    }
 }
