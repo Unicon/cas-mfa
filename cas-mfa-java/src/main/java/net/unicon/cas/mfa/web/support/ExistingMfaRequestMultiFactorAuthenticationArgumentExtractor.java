@@ -16,11 +16,9 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
  * instruct CAS with the constructed instance of a {@link org.jasig.cas.authentication.principal.WebApplicationService}
  * that is supported based on the configured {@link #supportedAuthenticationMethods}.
  * <p/>
- * The requested authentication method discovery in this implementation is based on registered service extra attribute <b>authn_method</b>
- * <p/>
- * This implementation first checks if the target registered service contains the supported authentication method attribute
- * and uses that to create an mfa supporting service. If that is not the case, only then it delegates to a wrapped
- * <code>MultiFactorAuthenticationArgumentExtractor</code>
+ * The requested authentication method discovery in this implementation is based on the existing <code>MultiFactorAuthenticationRequestContext</code>
+ * which is assumed to be placed into the HttpServletRequest attribute keyed by <i>mfaRequest</i> by SWF layers participating in mfa transactions.
+ * If there is no such request object available, then the control is passed to the next argument extractor in the chain by returning null.
  *
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
