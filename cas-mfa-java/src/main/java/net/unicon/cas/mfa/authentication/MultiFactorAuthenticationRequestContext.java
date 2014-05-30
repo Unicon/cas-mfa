@@ -53,7 +53,7 @@ public final class MultiFactorAuthenticationRequestContext {
     }
 
     /**
-     * Yes, this is in fact a getter method! ;-).
+     * Get target service.
      *
      * @return targetService
      */
@@ -62,7 +62,7 @@ public final class MultiFactorAuthenticationRequestContext {
     }
 
     /**
-     * Yes, this is in fact a getter method! ;-).
+     * Get authentication method source.
      *
      * @return authenticationMethodSource
      */

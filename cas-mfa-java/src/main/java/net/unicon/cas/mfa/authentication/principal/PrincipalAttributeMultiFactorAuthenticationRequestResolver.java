@@ -19,8 +19,21 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
 
     /**
      * Principal attribute name for requested mfa method.
+     * Default value if not provided via constructor is <i>authn_method</i>
      */
     private final String mfaMethodAttributeName;
+
+    /**
+     * Default principal attribute name for retrieving requested mfa authentication method.
+     */
+    public static final String DEFAULT_MFA_METHOD_ATTRIBUTE_NAME = "authn_method";
+
+    /**
+     * Default ctor.
+     */
+    public PrincipalAttributeMultiFactorAuthenticationRequestResolver() {
+        this(DEFAULT_MFA_METHOD_ATTRIBUTE_NAME);
+    }
 
     /**
      * Ctor.
