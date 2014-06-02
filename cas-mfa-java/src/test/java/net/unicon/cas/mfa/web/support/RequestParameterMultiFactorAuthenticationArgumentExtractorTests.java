@@ -23,11 +23,15 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
     private final Set<ArgumentExtractor> supportedArgumentExtractors;
 
+    private final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory;
+
     public RequestParameterMultiFactorAuthenticationArgumentExtractorTests() {
         this.supportedArgumentExtractors = new HashSet<ArgumentExtractor>();
         this.supportedArgumentExtractors.add(new CasArgumentExtractor());
         this.supportedArgumentExtractors.add(new SamlArgumentExtractor());
+        this.mfaWebApplicationServiceFactory = new DefaultMfaWebApplicationServiceFactory(true, null);
     }
+
     /**
      * When login presents no authentication method, the extractor extracts a null service.
      */
@@ -40,7 +44,8 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
                 Arrays.asList("fingerprint", "strong_two_factor", "personal_attestation", "retina_scan");
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
-                new RequestParameterMultiFactorAuthenticationArgumentExtractor(supportedAuthenticationMethods, this.supportedArgumentExtractors);
+                new RequestParameterMultiFactorAuthenticationArgumentExtractor(supportedAuthenticationMethods,
+                        this.supportedArgumentExtractors, this.mfaWebApplicationServiceFactory);
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -57,11 +62,12 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
     /**
      * When login presents an unrecognized authentication method, the extractor extracts a null service.
      */
-    @Test(expected=UnrecognizedAuthenticationMethodException.class)
+    @Test(expected = UnrecognizedAuthenticationMethodException.class)
     public void testUnrecognizedAuthenticationMethodParameterYieldsNullService() {
         final List<String> emptyList = Collections.emptyList();
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
-                new RequestParameterMultiFactorAuthenticationArgumentExtractor(emptyList, this.supportedArgumentExtractors);
+                new RequestParameterMultiFactorAuthenticationArgumentExtractor(emptyList,
+                        this.supportedArgumentExtractors, this.mfaWebApplicationServiceFactory);
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -81,7 +87,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         final List<String> validAuthenticationMethods = Arrays.asList("strong_two_factor");
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(validAuthenticationMethods
-                        , this.supportedArgumentExtractors);
+                        , this.supportedArgumentExtractors, this.mfaWebApplicationServiceFactory);
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -109,7 +115,8 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
                 Arrays.asList("fingerprint", "strong_two_factor", "personal_attestation", "retina_scan");
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
-                new RequestParameterMultiFactorAuthenticationArgumentExtractor(validAuthenticationMethods, this.supportedArgumentExtractors);
+                new RequestParameterMultiFactorAuthenticationArgumentExtractor(validAuthenticationMethods,
+                        this.supportedArgumentExtractors, this.mfaWebApplicationServiceFactory);
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -136,7 +143,8 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
                 Arrays.asList("fingerprint", "strong_two_factor", "personal_attestation", "retina_scan");
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
-                new RequestParameterMultiFactorAuthenticationArgumentExtractor(validAuthenticationMethods, this.supportedArgumentExtractors);
+                new RequestParameterMultiFactorAuthenticationArgumentExtractor(validAuthenticationMethods,
+                        this.supportedArgumentExtractors, this.mfaWebApplicationServiceFactory);
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -152,8 +160,8 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
     public void testRecognizedAuthenticationMethodParameterInSamlRequest() {
         final List<String> validAuthenticationMethods = Arrays.asList("strong_two_factor");
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
-                new RequestParameterMultiFactorAuthenticationArgumentExtractor(validAuthenticationMethods
-                        , this.supportedArgumentExtractors);
+                new RequestParameterMultiFactorAuthenticationArgumentExtractor(validAuthenticationMethods,
+                        this.supportedArgumentExtractors, this.mfaWebApplicationServiceFactory);
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
