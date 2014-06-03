@@ -1,6 +1,5 @@
 package net.unicon.cas.mfa.web.support;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,15 +27,15 @@ public final class RequestParameterMultiFactorAuthenticationArgumentExtractor ex
     /**
      * Ctor.
      *
-     * @param authnMethods authnMethods
      * @param supportedProtocols supportedProtocols
      * @param mfaWebApplicationServiceFactory mfaWebApplicationServiceFactory
+     * @param authenticationMethodVerifier authenticationMethodVerifier
      */
-    public RequestParameterMultiFactorAuthenticationArgumentExtractor(final List<String> authnMethods,
-                                                                      final Set<ArgumentExtractor> supportedProtocols,
-                                                                      final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory) {
+    public RequestParameterMultiFactorAuthenticationArgumentExtractor(final Set<ArgumentExtractor> supportedProtocols,
+                                                                      final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory,
+                                                                      final AuthenticationMethodVerifier authenticationMethodVerifier) {
 
-        super(authnMethods, supportedProtocols, mfaWebApplicationServiceFactory);
+        super(supportedProtocols, mfaWebApplicationServiceFactory, authenticationMethodVerifier);
     }
 
     @Override

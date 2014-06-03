@@ -41,19 +41,22 @@
           parent="baseArgumentExtractor"/>
 
 
+    <bean id="authenticationMethodVerifier" class="net.unicon.cas.mfa.web.support.DefaultAuthenticationMethodVerifier"
+          c:supportedAuthenticationMethods-ref="listOfAuthenticationMethods"/>
+
     <bean id="requestParamMfaArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.RequestParameterMultiFactorAuthenticationArgumentExtractor"
-          c:authnMethods-ref="listOfAuthenticationMethods"
           c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
-          c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"/>
+          c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
+          c:authenticationMethodVerifier-ref="authenticationMethodVerifier"/>
 
 
     <bean id="registeredServiceAttributeMfaArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
-          c:authnMethods-ref="listOfAuthenticationMethods"
           c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
           c:servicesManager-ref="servicesManager"
-          c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"/>
+          c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
+          c:authenticationMethodVerifier-ref="authenticationMethodVerifier"/>
 
 
     <util:list id="listOfAuthenticationMethods">
