@@ -2,6 +2,8 @@ package net.unicon.cas.mfa.authentication;
 
 import org.jasig.cas.authentication.principal.WebApplicationService;
 
+import java.io.Serializable;
+
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 
 /**
@@ -10,7 +12,7 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
  */
-public final class MultiFactorAuthenticationRequestContext {
+public final class MultiFactorAuthenticationRequestContext implements Serializable {
 
     /**
      * Requested authentication method.

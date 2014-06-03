@@ -15,8 +15,6 @@ import org.springframework.web.util.CookieGenerator;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * The multifactor authentication service action that branches to an loa-defined
  * subflow state based on the service loa requirement. If the requesting service
@@ -81,15 +79,12 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
 
 
         if (mfaRequest != null) {
-            //Put this mfa request into the plain HttpServletRequest attribute to be retrieved by the appropriate argument extractor
-            //during 'initialFlowSetupAction' action state execution in the mfa subflow
-            putIntoRequestAttribute(mfaRequest, context);
+            //Put this mfa request into the conversation scope
+            //to be accessed and transformed into instances of appropriate MultiFactorAuthenticationSupportingWebApplicationService by mfa subflows
+            putIntoConversationScope(mfaRequest, context);
             return doMultiFactorAuthentication(context, credentials, messageContext, id);
         }
         return primaryAuthnEvent;
-
-
-        // Orig -> return new Event(this, this.wrapperAuthenticationAction.submit(context, credentials, messageContext));
     }
 
     /**
@@ -111,12 +106,12 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
     }
 
     /**
-     * Put mfa request into http request attribute.
+     * Put mfa request into SWF's conversation scope.
      *
      * @param mfaRequest mfaRequest
      * @param requestContext SWF requestContext
      */
-    private void putIntoRequestAttribute(final MultiFactorAuthenticationRequestContext mfaRequest, final RequestContext requestContext) {
-        HttpServletRequest.class.cast(requestContext.getExternalContext().getNativeRequest()).setAttribute("mfaRequest", mfaRequest);
+    private void putIntoConversationScope(final MultiFactorAuthenticationRequestContext mfaRequest, final RequestContext requestContext) {
+        requestContext.getConversationScope().put("mfaRequest", mfaRequest);
     }
 }

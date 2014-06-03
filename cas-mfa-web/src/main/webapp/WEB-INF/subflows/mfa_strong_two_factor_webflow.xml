@@ -30,6 +30,7 @@
     
     <on-start>
         <evaluate expression="initialFlowSetupAction" />
+        <evaluate expression="mfaRequestContextCheck"/>
     </on-start>
       
     <action-state id="generateLoginTicket">
@@ -72,4 +73,10 @@
       
     <end-state id="mfaSuccess" />
     <end-state id="unknownPrincipalError" />
+    <end-state id="mfaUnrecognizedAuthnMethodError" />
+
+    <global-transitions>
+        <transition to="mfaUnrecognizedAuthnMethodError"
+                    on-exception="net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException" />
+    </global-transitions>
 </flow>

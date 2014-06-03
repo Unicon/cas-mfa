@@ -32,7 +32,12 @@
        http://unicon.net/schema/cas http://unicon.net/schema/cas/cas-addons.xsd">
     
         
-  <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->     
+
+  <bean id="mfaRequestContextCheck" class="net.unicon.cas.mfa.web.flow.MfaRequestContextCheckAction"
+        c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
+        c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"/>
+
+  <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->
   <bean id="terminatingTwoFactorAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction" 
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
