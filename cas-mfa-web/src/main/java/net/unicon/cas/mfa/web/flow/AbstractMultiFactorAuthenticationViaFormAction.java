@@ -18,10 +18,10 @@ import org.jasig.cas.web.bind.CredentialsBinder;
 import org.jasig.cas.web.support.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.util.Assert;
+import org.springframework.webflow.action.AbstractAction;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
@@ -35,7 +35,7 @@ import org.springframework.webflow.execution.RequestContext;
  * @author Misagh Moayyed
  */
 @SuppressWarnings("deprecation")
-public abstract class AbstractMultiFactorAuthenticationViaFormAction implements InitializingBean {
+public abstract class AbstractMultiFactorAuthenticationViaFormAction extends AbstractAction {
 
     /** The Constant MFA_ERROR_EVENT_ID. */
     public static final String MFA_ERROR_EVENT_ID = "error";
@@ -251,5 +251,10 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction implements 
         } catch (final Exception fe) {
             logger.error(fe.getMessage(), fe);
         }
+    }
+
+    @Override
+    protected final Event doExecute(final RequestContext arg0) throws Exception {
+        throw new UnsupportedOperationException();
     }
 }

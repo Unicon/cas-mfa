@@ -5,6 +5,7 @@ import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
+
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.WebApplicationService;
@@ -70,7 +71,7 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
 
         final String primaryAuthnEventId = this.wrapperAuthenticationAction.submit(context, credentials, messageContext);
         final Event primaryAuthnEvent = new Event(this, primaryAuthnEventId);
-        if (!"success".equals(primaryAuthnEventId)) {
+        if (!success().equals(primaryAuthnEvent)) {
             return primaryAuthnEvent;
         }
 
@@ -81,9 +82,10 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
 
 
         if (mfaRequest != null) {
-            /*Put this mfa request into the conversation scope
-            to be accessed and transformed into instances of
-            appropriate MultiFactorAuthenticationSupportingWebApplicationService by mfa subflows
+            /*
+             * Put this mfa request into the conversation scope
+               to be accessed and transformed into instances of
+               appropriate MultiFactorAuthenticationSupportingWebApplicationService by mfa subflows
             */
             putIntoConversationScope(mfaRequest, context);
             return doMultiFactorAuthentication(context, credentials, messageContext, id);
