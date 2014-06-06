@@ -47,29 +47,14 @@ public final class MultiFactorAuthenticationRequestContext implements Serializab
         this.authenticationMethodSource = authenticationMethodSource;
     }
 
-    /**
-     * Yes, this is in fact a getter method! ;-).
-     *
-     * @return authenticationMethod
-     */
     public String getAuthenticationMethod() {
         return authenticationMethod;
     }
 
-    /**
-     * Get target service.
-     *
-     * @return targetService
-     */
     public WebApplicationService getTargetService() {
         return targetService;
     }
-
-    /**
-     * Get authentication method source.
-     *
-     * @return authenticationMethodSource
-     */
+    
     public AuthenticationMethodSource getAuthenticationMethodSource() {
         return authenticationMethodSource;
     }

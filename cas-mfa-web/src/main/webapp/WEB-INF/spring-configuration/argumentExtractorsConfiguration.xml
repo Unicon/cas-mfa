@@ -39,25 +39,20 @@
 
     <bean id="samlArgumentExtractor" class="org.jasig.cas.web.support.SamlArgumentExtractor"
           parent="baseArgumentExtractor"/>
-
-
+                    
     <bean id="authenticationMethodVerifier" class="net.unicon.cas.mfa.web.support.DefaultAuthenticationMethodVerifier"
           c:supportedAuthenticationMethods-ref="listOfAuthenticationMethods"/>
 
-    <bean id="requestParamMfaArgumentExtractor"
-          class="net.unicon.cas.mfa.web.support.RequestParameterMultiFactorAuthenticationArgumentExtractor"
+    <bean id="mfaArgumentExtractor" abstract="true" 
           c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
           c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
-          c:authenticationMethodVerifier-ref="authenticationMethodVerifier"/>
+          c:authenticationMethodVerifier-ref="authenticationMethodVerifier" />
+          
+    <bean id="requestParamMfaArgumentExtractor" parent="mfaArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.RequestParameterMultiFactorAuthenticationArgumentExtractor"/>
 
-
-    <bean id="registeredServiceAttributeMfaArgumentExtractor"
-          class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
-          c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
-          c:servicesManager-ref="servicesManager"
-          c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
-          c:authenticationMethodVerifier-ref="authenticationMethodVerifier"/>
-
+    <bean id="registeredServiceAttributeMfaArgumentExtractor" parent="mfaArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"/>
 
     <util:list id="listOfAuthenticationMethods">
         <value>strong_two_factor</value>

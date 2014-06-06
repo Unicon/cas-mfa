@@ -74,7 +74,7 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
             return null;
         }
 
-        return null;
+        return authenticationMethod;
     }
 
     @Override
