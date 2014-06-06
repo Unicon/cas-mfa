@@ -39,9 +39,9 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
      * @param authenticationMethodVerifier authenticationMethodVerifier
      */
     public RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor(final Set<ArgumentExtractor> supportedProtocols,
-                                                                                final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory,
-                                                                                final ServicesManager servicesManager,
-                                                                                final AuthenticationMethodVerifier authenticationMethodVerifier) {
+                                                              final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory,
+                                                              final ServicesManager servicesManager,
+                                                              final AuthenticationMethodVerifier authenticationMethodVerifier) {
         super(supportedProtocols, mfaWebApplicationServiceFactory, authenticationMethodVerifier);
         this.servicesManager = servicesManager;
     }
@@ -57,16 +57,19 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
             return null;
         }
         if (!(registeredService instanceof RegisteredServiceWithAttributes)) {
-            logger.debug("Registered service is not capable of defining an mfa attribute. Delegating to the next argument extractor in the chain...");
+            logger.debug("Registered service is not capable of defining an mfa attribute."
+                    + "Delegating to the next argument extractor in the chain...");
             return null;
         }
 
         final String authenticationMethod =
-                String.class.cast(RegisteredServiceWithAttributes.class.cast(registeredService).getExtraAttributes().get(CONST_PARAM_AUTHN_METHOD));
+                String.class.cast(RegisteredServiceWithAttributes.class.cast(registeredService)
+                        .getExtraAttributes().get(CONST_PARAM_AUTHN_METHOD));
 
 
         if (!StringUtils.hasText(authenticationMethod)) {
-            logger.debug("Registered service does not define authentication method attribute [{}]. Delegating to the next argument extractor in the chain...",
+            logger.debug("Registered service does not define authentication method attribute [{}]."
+                    + "Delegating to the next argument extractor in the chain...",
                     CONST_PARAM_AUTHN_METHOD);
             return null;
         }

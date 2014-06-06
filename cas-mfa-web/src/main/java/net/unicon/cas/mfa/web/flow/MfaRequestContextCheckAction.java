@@ -66,11 +66,13 @@ public final class MfaRequestContextCheckAction extends AbstractAction {
                     mfaRequest.getTargetService().getId(), authenticationMethod);
 
             context.getFlowScope().put("service",
-                    this.mfaWebApplicationServiceFactory.create(mfaRequest.getTargetService().getId(), mfaRequest.getTargetService().getId(),
+                    this.mfaWebApplicationServiceFactory.create(mfaRequest.getTargetService().getId(), 
+                            mfaRequest.getTargetService().getId(),
                             mfaRequest.getTargetService().getArtifactId(), authenticationMethod, mfaRequest.getAuthenticationMethodSource())
             );
 
-            logger.debug("Created multifactor authentication service instance for [{}] with [{}] as [{}] and authentication method definition source [{}].",
+            logger.debug("Created multifactor authentication service instance for [{}] with [{}]"
+                    + "as [{}] and authentication method definition source [{}].",
                     mfaRequest.getTargetService().getId(), CONST_PARAM_AUTHN_METHOD,
                     authenticationMethod,
                     mfaRequest.getAuthenticationMethodSource());

@@ -50,8 +50,8 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
      * @param authenticationSupport the authenticationSupport
      */
     public InitiatingMultiFactorAuthenticationViaFormAction(final AuthenticationViaFormAction authenticationViaFormAction,
-                                                            final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
-                                                            final AuthenticationSupport authenticationSupport) {
+                                                final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
+                                                final AuthenticationSupport authenticationSupport) {
 
         this.wrapperAuthenticationAction = authenticationViaFormAction;
         this.multiFactorAuthenticationRequestResolver = multiFactorAuthenticationRequestResolver;
@@ -64,7 +64,8 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
      *  org.springframework.binding.message.MessageContext, String)
      */
     @Override
-    protected final Event doAuthentication(final RequestContext context, final Credentials credentials, final MessageContext messageContext, final String id)
+    protected final Event doAuthentication(final RequestContext context, final Credentials credentials,
+            final MessageContext messageContext, final String id)
             throws Exception {
 
         final String primaryAuthnEventId = this.wrapperAuthenticationAction.submit(context, credentials, messageContext);
@@ -74,13 +75,16 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
         }
 
         final MultiFactorAuthenticationRequestContext mfaRequest =
-                this.multiFactorAuthenticationRequestResolver.resolve(this.authenticationSupport.getAuthenticationFrom(WebUtils.getTicketGrantingTicketId(context)),
+                this.multiFactorAuthenticationRequestResolver.resolve(
+                        this.authenticationSupport.getAuthenticationFrom(WebUtils.getTicketGrantingTicketId(context)),
                         WebApplicationService.class.cast(WebUtils.getService(context)));
 
 
         if (mfaRequest != null) {
-            //Put this mfa request into the conversation scope
-            //to be accessed and transformed into instances of appropriate MultiFactorAuthenticationSupportingWebApplicationService by mfa subflows
+            /*Put this mfa request into the conversation scope
+            to be accessed and transformed into instances of
+            appropriate MultiFactorAuthenticationSupportingWebApplicationService by mfa subflows
+            */
             putIntoConversationScope(mfaRequest, context);
             return doMultiFactorAuthentication(context, credentials, messageContext, id);
         }
@@ -98,7 +102,8 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
 
     @Override
     protected final Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
-                                                              final Credentials credentials, final MessageContext messageContext, final String id) {
+                                                              final Credentials credentials,
+                                                              final MessageContext messageContext, final String id) {
         if (WebUtils.getService(context) instanceof MultiFactorAuthenticationSupportingWebApplicationService) {
             return super.getSuccessEvent(context);
         }

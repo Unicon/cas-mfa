@@ -21,13 +21,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.web.util.CookieGenerator;
-import org.springframework.webflow.context.ExternalContext;
+
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.core.collection.ParameterMap;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
-import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -102,8 +101,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         when(manager.authenticate(any(Credentials.class))).thenReturn(this.authentication);
 
-        this.action = new InitiatingMultiFactorAuthenticationViaFormAction
-                (authViaFormAction,
+        this.action = new InitiatingMultiFactorAuthenticationViaFormAction(authViaFormAction,
                 multiFactorAuthenticationRequestResolver,
                 authenticationSupport);
         this.action.setCentralAuthenticationService(this.cas);
@@ -144,7 +142,8 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         final MultiFactorAuthenticationSupportingWebApplicationService svc =
                 (MultiFactorAuthenticationSupportingWebApplicationService) WebUtils.getService(this.ctx);
         assertNotNull(svc);
-        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_SUCCESS_EVENT_ID_PREFIX + svc.getAuthenticationMethod());
+        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_SUCCESS_EVENT_ID_PREFIX
+                + svc.getAuthenticationMethod());
     }
 
     private Credentials getCredentials() {

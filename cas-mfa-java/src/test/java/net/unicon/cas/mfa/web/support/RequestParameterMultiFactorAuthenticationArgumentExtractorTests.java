@@ -98,7 +98,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
         assertTrue(extractor.extractService(request) instanceof MultiFactorAuthenticationSupportingWebApplicationService);
 
-        MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
+         final MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
                 (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(request);
 
         assertEquals("strong_two_factor", authenticationMethodRequiringService.getAuthenticationMethod());
@@ -128,7 +128,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
         assertTrue(extractor.extractService(request) instanceof MultiFactorAuthenticationSupportingWebApplicationService);
 
-        MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
+        final MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
                 (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(request);
 
         assertEquals("personal_attestation", authenticationMethodRequiringService.getAuthenticationMethod());
@@ -175,7 +175,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
         assertTrue(extractor.extractService(request) instanceof MultiFactorAuthenticationSupportingWebApplicationService);
 
-        MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
+        final MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
                 (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(request);
 
         assertEquals("strong_two_factor", authenticationMethodRequiringService.getAuthenticationMethod());

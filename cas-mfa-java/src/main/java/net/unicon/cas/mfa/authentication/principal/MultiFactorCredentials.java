@@ -75,7 +75,6 @@ public class MultiFactorCredentials implements Credentials {
      * that the resolved principal of the new authentication
      * matches what has been remembered and collected as the principal.
      * @param authentication authentication context to add to the chain
-     * @throws UnknownPrincipalMatchException if principal of the authentication does not match the chain
      */
     public final void addAuthenticationToChain(final Authentication authentication) {
         if (!doesPrincipalMatchAuthenticationChain(authentication)) {

@@ -7,12 +7,14 @@ import java.io.Serializable;
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 
 /**
- * Holds a requested authentication method along with a target <code>WebApplicationService</code> and an authentication method request source.
+ * Holds a requested authentication method along with a target <code>WebApplicationService</code>
+ * and an authentication method request source.
  *
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
  */
 public final class MultiFactorAuthenticationRequestContext implements Serializable {
+    private static final long serialVersionUID = -2464940656897107660L;
 
     /**
      * Requested authentication method.
