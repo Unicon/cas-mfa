@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 
@@ -18,7 +20,7 @@ import org.jasig.cas.services.ServicesManager;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.jasig.cas.web.support.CasArgumentExtractor;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
+
 
 public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractorTests {
 
@@ -28,6 +30,13 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
     
     private MultiFactorAuthenticationSupportingWebApplicationService getMfaService() {
         return new DefaultMultiFactorAuthenticationSupportingWebApplicationService(CAS_SERVICE, CAS_SERVICE, null, null, CAS_AUTHN_METHOD);
+    }
+    
+    private HttpServletRequest getRequest() {
+        final HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.getParameter(anyString())).thenReturn(CAS_SERVICE);
+        return req;
+        
     }
     
     @Test
@@ -55,11 +64,9 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
         
         final RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor extractor = 
                 new RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor(set, factory, mgmr, verifier);
-        
-        final MockHttpServletRequest req = new MockHttpServletRequest();
-        req.addParameter("service", CAS_SERVICE);
+
         final MultiFactorAuthenticationSupportingWebApplicationService webSvc =
-                (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(req);
+                (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(getRequest());
         assertEquals(webSvc.getAuthenticationMethod(), CAS_AUTHN_METHOD);
     }
     
@@ -86,10 +93,8 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
         final RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor extractor = 
                 new RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor(set, factory, mgmr, verifier);
         
-        final MockHttpServletRequest req = new MockHttpServletRequest();
-        req.addParameter("service", CAS_SERVICE);
         final MultiFactorAuthenticationSupportingWebApplicationService webSvc =
-                (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(req);
+                (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(getRequest());
         assertNull(webSvc);
     }
     
@@ -112,10 +117,9 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
         final RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor extractor = 
                 new RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor(set, factory, mgmr, verifier);
         
-        final MockHttpServletRequest req = new MockHttpServletRequest();
-        req.addParameter("service", CAS_SERVICE);
+
         final MultiFactorAuthenticationSupportingWebApplicationService webSvc =
-                (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(req);
+                (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(getRequest());
         assertNull(webSvc);
     }
 }
