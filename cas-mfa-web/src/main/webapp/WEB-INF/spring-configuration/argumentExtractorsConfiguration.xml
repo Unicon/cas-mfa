@@ -44,6 +44,7 @@
           c:supportedAuthenticationMethods-ref="listOfAuthenticationMethods"/>
 
     <bean id="mfaArgumentExtractor" abstract="true" 
+          class="net.unicon.cas.mfa.web.support.AbstractMultiFactorAuthenticationArgumentExtractor"
           c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
           c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
           c:authenticationMethodVerifier-ref="authenticationMethodVerifier" />
@@ -52,7 +53,8 @@
           class="net.unicon.cas.mfa.web.support.RequestParameterMultiFactorAuthenticationArgumentExtractor"/>
 
     <bean id="registeredServiceAttributeMfaArgumentExtractor" parent="mfaArgumentExtractor"
-          class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"/>
+          class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
+          c:servicesManager-ref="servicesManager" />
 
     <util:list id="listOfAuthenticationMethods">
         <value>strong_two_factor</value>

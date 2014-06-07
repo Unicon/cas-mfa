@@ -2,8 +2,12 @@ package net.unicon.cas.mfa.authentication.principal;
 
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
+
+import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.WebApplicationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 
@@ -19,6 +23,9 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
 public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implements
         MultiFactorAuthenticationRequestResolver {
 
+    /** The logger. */
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    
     /**
      * Principal attribute name for requested mfa method.
      * Default value if not provided via constructor is <i>authn_method</i>
@@ -50,9 +57,13 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     public MultiFactorAuthenticationRequestContext resolve(final Authentication authentication, final WebApplicationService targetService) {
         if ((authentication != null) && (targetService != null)) {
             final String mfaMethod = String.class.cast(authentication.getPrincipal().getAttributes().get(this.mfaMethodAttributeName));
-            return (mfaMethod != null)
-                    ? new MultiFactorAuthenticationRequestContext(mfaMethod, targetService, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE)
-                    : null;
+            
+            if (StringUtils.isNotBlank(mfaMethod)) {
+                logger.debug("Found mfa attribute [{}] with value [{}] for principal [{}]", this.mfaMethodAttributeName,
+                        mfaMethod, authentication.getPrincipal().getId());
+                return new MultiFactorAuthenticationRequestContext(mfaMethod, targetService,
+                        AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
+            }
         }
         return null;
     }

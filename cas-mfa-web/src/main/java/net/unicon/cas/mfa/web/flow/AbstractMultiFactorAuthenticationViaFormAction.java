@@ -44,7 +44,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
     public static final String MFA_SUCCESS_EVENT_ID_PREFIX = "mfa_";
 
     /** The logger. */
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /** The authentication manager. */
     @NotNull

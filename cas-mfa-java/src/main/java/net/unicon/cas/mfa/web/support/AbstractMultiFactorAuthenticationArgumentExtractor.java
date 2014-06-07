@@ -71,7 +71,7 @@ public abstract class AbstractMultiFactorAuthenticationArgumentExtractor impleme
                 this.mfaWebApplicationServiceFactory.create(targetService.getId(), targetService.getId(), targetService.getArtifactId(),
                         authenticationMethod, getAuthenticationMethodSource());
 
-        logger.debug("Created multifactor authentication service instance for [{}] with [{}] as [{}]"
+        logger.debug("Created multifactor authentication service instance for [{}] with [{}] as [{}] "
                 + "and authentication method definition source [{}].",
                 mfaService.getId(), CONST_PARAM_AUTHN_METHOD,
                 mfaService.getAuthenticationMethod(),

@@ -93,7 +93,7 @@
     </logger>
 
     <logger name="net.unicon.cas.addons">
-        <level value="WARN" />
+        <level value="INFO" />
         <appender-ref ref="cas" />
     </logger>
     

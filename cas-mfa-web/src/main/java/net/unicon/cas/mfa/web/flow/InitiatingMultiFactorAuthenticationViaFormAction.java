@@ -71,7 +71,7 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
 
         final String primaryAuthnEventId = this.wrapperAuthenticationAction.submit(context, credentials, messageContext);
         final Event primaryAuthnEvent = new Event(this, primaryAuthnEventId);
-        if (!success().equals(primaryAuthnEvent)) {
+        if (!success().getId().equals(primaryAuthnEvent.getId())) {
             return primaryAuthnEvent;
         }
 

@@ -31,9 +31,9 @@
 
     <task:scheduled-tasks scheduler="springScheduler">
         <task:scheduled ref="personAttributesChangeDetectingEventNotifier"
-                        method="notifyOfTheResourceChangeEventIfNecessary" fixed-delay="5000"/>
+                        method="notifyOfTheResourceChangeEventIfNecessary" fixed-delay="${person.attributes.reload.interval:5000}"/>
         <task:scheduled ref="registeredServicesChangeDetectingEventNotifier"
-                        method="notifyOfTheResourceChangeEventIfNecessary" fixed-delay="5000"/>
+                        method="notifyOfTheResourceChangeEventIfNecessary" fixed-delay="${service.registry.reload.interval:5000}"/>
     </task:scheduled-tasks>
 
 </beans>
