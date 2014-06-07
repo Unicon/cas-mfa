@@ -32,7 +32,7 @@ public class MultiFactorAuthenticationProtocolValidationSpecificationTests {
     public MultiFactorAuthenticationProtocolValidationSpecificationTests() {
         MockitoAnnotations.initMocks(this);
 
-        List<Authentication> list = mock(List.class);
+        final List<Authentication> list = mock(List.class);
         when(list.size()).thenReturn(1);
 
         when(this.assertion.getChainedAuthentications()).thenReturn(list);

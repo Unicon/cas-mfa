@@ -43,7 +43,6 @@ public final class GenerateMultiFactorCredentialsAction {
      * @param id the identifier for the credentials used.
      * @return an instance of {@link MultiFactorCredentials}
      * @throws NoAuthenticationContextAvailable if the authentication cannot be established from the flow context
-     * @throws net.unicon.cas.mfa.authentication.principal.UnknownPrincipalMatchException if the newly resolved principal is different
      * from what has already been authenticated as the principal
      */
     public Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials,

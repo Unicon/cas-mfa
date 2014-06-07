@@ -30,9 +30,8 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd
        http://unicon.net/schema/cas http://unicon.net/schema/cas/cas-addons.xsd">
-    
-        
-  <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->     
+
+  <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->
   <bean id="terminatingTwoFactorAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction" 
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"

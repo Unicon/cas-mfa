@@ -27,47 +27,55 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <bean id="baseArgumentExtractor" p:httpClient-ref="noRedirectHttpClient"
-             p:disableSingleSignOut="${slo.callbacks.disabled:false}"
-             abstract="true" />
-             
+
+    <bean id="baseArgumentExtractor"
+          p:httpClient-ref="noRedirectHttpClient"
+          p:disableSingleSignOut="${slo.callbacks.disabled:false}"
+          abstract="true" />
+
     <bean id="casArgumentExtractor"
- 		  class="org.jasig.cas.web.support.CasArgumentExtractor"
-          parent="baseArgumentExtractor" />
+          class="org.jasig.cas.web.support.CasArgumentExtractor"
+          parent="baseArgumentExtractor"/>
 
- 	<bean id="samlArgumentExtractor" class="org.jasig.cas.web.support.SamlArgumentExtractor"
-          parent="baseArgumentExtractor" />
- 	
-    <bean id="requestParamMfaArgumentExtractor"
-          class="net.unicon.cas.mfa.web.support.RequestParameterMultiFactorAuthenticationArgumentExtractor"
-          parent="baseArgumentExtractor"
-          c:authnMethods-ref="listOfAuthenticationMethods"
-          c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication">
-    </bean>
+    <bean id="samlArgumentExtractor" class="org.jasig.cas.web.support.SamlArgumentExtractor"
+          parent="baseArgumentExtractor"/>
+                    
+    <bean id="authenticationMethodVerifier" class="net.unicon.cas.mfa.web.support.DefaultAuthenticationMethodVerifier"
+          c:supportedAuthenticationMethods-ref="listOfAuthenticationMethods"/>
 
-    <bean id="registeredServiceAttributeMfaArgumentExtractor"
-          class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
-          parent="baseArgumentExtractor"
-          c:authnMethods-ref="listOfAuthenticationMethods"
+    <bean id="mfaArgumentExtractor" abstract="true" 
+          class="net.unicon.cas.mfa.web.support.AbstractMultiFactorAuthenticationArgumentExtractor"
           c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
-          c:servicesManager-ref="servicesManager">
+          c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
+          c:authenticationMethodVerifier-ref="authenticationMethodVerifier" />
+          
+    <bean id="requestParamMfaArgumentExtractor" parent="mfaArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.RequestParameterMultiFactorAuthenticationArgumentExtractor"/>
 
-    </bean>
-    
+    <bean id="registeredServiceAttributeMfaArgumentExtractor" parent="mfaArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
+          c:servicesManager-ref="servicesManager" />
+
     <util:list id="listOfAuthenticationMethods">
         <value>strong_two_factor</value>
         <value>sample_two_factor</value>
     </util:list>
-    
+
     <util:set id="supportedProtocolsForMultifactorAuthentication">
-        <ref bean="casArgumentExtractor" />
-        <ref bean="samlArgumentExtractor" />
-    </util:set>   
- 	
-  <util:list id="argumentExtractors">
-        <ref bean="registeredServiceAttributeMfaArgumentExtractor" />
+        <ref bean="casArgumentExtractor"/>
+        <ref bean="samlArgumentExtractor"/>
+    </util:set>
+
+    <bean id="mfaServiceFactory" class="net.unicon.cas.mfa.web.support.DefaultMfaWebApplicationServiceFactory"
+          c:httpClient-ref="noRedirectHttpClient"
+          c:disableSingleSignOut="${slo.callbacks.disabled:true}"/>
+
+
+    <util:list id="argumentExtractors">
+        <ref bean="registeredServiceAttributeMfaArgumentExtractor"/>
         <ref bean="requestParamMfaArgumentExtractor"/>
-		<ref bean="casArgumentExtractor" />
- 		<ref bean="samlArgumentExtractor" />
- 	</util:list>
+        <ref bean="casArgumentExtractor"/>
+        <ref bean="samlArgumentExtractor"/>
+    </util:list>
+
 </beans>

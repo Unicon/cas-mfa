@@ -40,8 +40,8 @@
     </bean>
     
     <cas:json-attribute-repository/>
-
-    <cas:json-services-registry/>
+    
+    <cas:json-services-registry read-write="true"/>
 
     <cas:inspektr-log-files-audit-manager/>
 

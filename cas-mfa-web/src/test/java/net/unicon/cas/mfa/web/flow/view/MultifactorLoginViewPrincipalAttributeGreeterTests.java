@@ -31,7 +31,7 @@ public class MultifactorLoginViewPrincipalAttributeGreeterTests {
 
         when(msg.getSeverity()).thenReturn(Severity.INFO);
         when(msg.getSource()).thenReturn(MultifactorLoginViewPrincipalAttributeGreeter.CODE);
-        Message[] values = new Message[1];
+        final Message[] values = new Message[1];
         values[0] = msg;
 
         when(messageContext.getMessagesBySource(any(Object.class))).thenReturn(values);

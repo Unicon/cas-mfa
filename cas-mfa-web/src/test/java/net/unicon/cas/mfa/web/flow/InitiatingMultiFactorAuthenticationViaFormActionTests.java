@@ -1,5 +1,9 @@
 package net.unicon.cas.mfa.web.flow;
 
+import net.unicon.cas.addons.authentication.AuthenticationSupport;
+import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
+import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
+import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
 import org.jasig.cas.CentralAuthenticationService;
@@ -23,6 +27,9 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.core.collection.ParameterMap;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
+
+
+
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -63,6 +70,18 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
     @Mock
     private Authentication authentication;
 
+    @Mock
+    private MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver;
+
+    @Mock
+    private AuthenticationSupport authenticationSupport;
+
+    @Mock
+    private MfaWebApplicationServiceFactory factory;
+    
+    @Mock
+    private AuthenticationMethodVerifier verifier;
+    
     @Before
     public void setup() throws AuthenticationException {
 
@@ -73,6 +92,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         this.authViaFormAction.setWarnCookieGenerator(this.cookieGenerator);
 
         final MutableAttributeMap flowScope = mock(MutableAttributeMap.class);
+
         when(ctx.getFlowScope()).thenReturn(flowScope);
         when(ctx.getRequestScope()).thenReturn(flowScope);
 
@@ -91,7 +111,11 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         when(manager.authenticate(any(Credentials.class))).thenReturn(this.authentication);
 
-        this.action = new InitiatingMultiFactorAuthenticationViaFormAction(authViaFormAction);
+        this.action = new InitiatingMultiFactorAuthenticationViaFormAction(authViaFormAction,
+                multiFactorAuthenticationRequestResolver,
+                authenticationSupport,
+                factory,
+                verifier);
         this.action.setCentralAuthenticationService(this.cas);
         this.action.setCredentialsBinder(this.binder);
         this.action.setWarnCookieGenerator(this.cookieGenerator);
@@ -130,7 +154,8 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         final MultiFactorAuthenticationSupportingWebApplicationService svc =
                 (MultiFactorAuthenticationSupportingWebApplicationService) WebUtils.getService(this.ctx);
         assertNotNull(svc);
-        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_SUCCESS_EVENT_ID_PREFIX + svc.getAuthenticationMethod());
+        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_SUCCESS_EVENT_ID_PREFIX
+                + svc.getAuthenticationMethod());
     }
 
     private Credentials getCredentials() {

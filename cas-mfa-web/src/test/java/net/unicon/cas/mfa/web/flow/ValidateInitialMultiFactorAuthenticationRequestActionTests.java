@@ -147,7 +147,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         setMockTgtContextWith(TGT_ID);
 
         // the service implements the interface but doesn't provide a value
-        MultiFactorAuthenticationSupportingWebApplicationService nullReturningMockService =
+        final MultiFactorAuthenticationSupportingWebApplicationService nullReturningMockService =
                 mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
 
         when(nullReturningMockService.getAuthenticationMethod()).thenReturn(null);
@@ -171,7 +171,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         setMockTgtContextWith(TGT_ID);
 
         // the service implements the interface but doesn't provide a value
-        MultiFactorAuthenticationSupportingWebApplicationService nullReturningMockService =
+        final MultiFactorAuthenticationSupportingWebApplicationService nullReturningMockService =
                 mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
 
         when(nullReturningMockService.getAuthenticationMethod()).thenReturn(" ");

@@ -27,9 +27,13 @@
     <var name="credentials" class="org.jasig.cas.authentication.principal.UsernamePasswordCredentials" />    
     <input name="mfaCredentials" required="true" 
            type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
-    
+    <input name="mfaService" required="true"
+               type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService" />
+               
     <on-start>
         <evaluate expression="initialFlowSetupAction" />
+        <set name="flowScope.service" value="mfaService" 
+                 type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService"/>
     </on-start>
       
     <action-state id="generateLoginTicket">

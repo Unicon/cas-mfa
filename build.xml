@@ -24,9 +24,9 @@
 	<!-- ******************* PROPERTIES ************************* -->
 	<property environment="env" />
 	<property name="build.target.dir" value="target" />
-	<property name="catalina.home" value="c:/portal/apache-tomcat" />
+	<property name="catalina.home" value="e:/portal/apache-tomcat" />
 	<property name="tomcat.log.patterns" value="**/*.log, **/*.txt" />
-	<property name="cas.resources.dir" value="c:/etc/cas" />
+	<property name="cas.resources.dir" value="e:/etc/cas" />
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
 	<!-- ******************* MAVEN PROPERTIES******************** -->
@@ -117,7 +117,7 @@
 
 	<target name="install" description="Package src artifacts and prepare for deployment" depends="clean">
 		<exec dir="${basedir}" executable="${mavenExecutable}">
-			<arg value="install" />
+			<arg value="package" />
 			<arg value="-Dmaven.test.skip=true" />
 		</exec>
 	</target>

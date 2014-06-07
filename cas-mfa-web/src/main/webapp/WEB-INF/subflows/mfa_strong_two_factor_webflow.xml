@@ -27,9 +27,13 @@
     <var name="credentials" class="org.jasig.cas.authentication.principal.UsernamePasswordCredentials" />    
     <input name="mfaCredentials" required="true" 
            type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
-    
+    <input name="mfaService" required="true"
+               type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService" />
+               
     <on-start>
         <evaluate expression="initialFlowSetupAction" />
+        <set name="flowScope.service" value="mfaService" 
+                 type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService"/>
     </on-start>
       
     <action-state id="generateLoginTicket">
@@ -44,6 +48,7 @@
         </binder>
         <on-entry>
             <set name="viewScope.commandName" value="'credentials'" />
+
             <evaluate expression="mfaLoginViewPrincipalGreeter.getPersonToGreet(mfaCredentials.principal, messageContext)"
                       result="viewScope.greetingPrincipalAttribute" />
         </on-entry>
@@ -72,4 +77,10 @@
       
     <end-state id="mfaSuccess" />
     <end-state id="unknownPrincipalError" />
+    <end-state id="mfaUnrecognizedAuthnMethodError" />
+
+    <global-transitions>
+        <transition to="mfaUnrecognizedAuthnMethodError"
+                    on-exception="net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException" />
+    </global-transitions>
 </flow>
