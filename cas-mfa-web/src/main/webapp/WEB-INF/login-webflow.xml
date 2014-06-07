@@ -36,28 +36,28 @@
         <transition on="requireTgt" to="ticketGrantingTicketExistsCheck" />
     </action-state>
          
-	<decision-state id="ticketGrantingTicketExistsCheck">
-		<if test="flowScope.ticketGrantingTicketId != null" then="hasServiceCheck" else="gatewayRequestCheck" />
-	</decision-state>
+    <decision-state id="ticketGrantingTicketExistsCheck">
+        <if test="flowScope.ticketGrantingTicketId != null" then="hasServiceCheck" else="gatewayRequestCheck" />
+    </decision-state>
     
-	<decision-state id="gatewayRequestCheck">
-		<if test="requestParameters.gateway != '' and requestParameters.gateway != null and flowScope.service != null" then="gatewayServicesManagementCheck" else="serviceAuthorizationCheck" />
-	</decision-state>
-	
-	<decision-state id="hasServiceCheck">
-		<if test="flowScope.service != null" then="renewRequestCheck" else="viewGenericLoginSuccess" />
-	</decision-state>
-	
-	<decision-state id="renewRequestCheck">
-		<if test="requestParameters.renew != '' and requestParameters.renew != null" then="serviceAuthorizationCheck" else="generateServiceTicket" />
-	</decision-state>
+    <decision-state id="gatewayRequestCheck">
+        <if test="requestParameters.gateway != '' and requestParameters.gateway != null and flowScope.service != null" then="gatewayServicesManagementCheck" else="serviceAuthorizationCheck" />
+    </decision-state>
+    
+    <decision-state id="hasServiceCheck">
+        <if test="flowScope.service != null" then="renewRequestCheck" else="viewGenericLoginSuccess" />
+    </decision-state>
+    
+    <decision-state id="renewRequestCheck">
+        <if test="requestParameters.renew != '' and requestParameters.renew != null" then="serviceAuthorizationCheck" else="generateServiceTicket" />
+    </decision-state>
 
     <!-- Do a service authorization check early without the need to login first -->
     <action-state id="serviceAuthorizationCheck">
         <evaluate expression="serviceAuthorizationCheck"/>
         <transition to="generateLoginTicket"/>
     </action-state>
-	
+    
     <!--
         LPPE transitions begin here: You will also need to
         move over the 'lppe-configuration.xml' file from the
@@ -101,20 +101,20 @@
     <end-state id="casBadWorkstationView" view="casBadWorkstationView" />
     <!-- LPPE transitions end here... -->
   
-	<!-- 
-		The "warn" action makes the determination of whether to redirect directly to the requested
-		service or display the "confirmation" page to go back to the server.
-	-->
-	<decision-state id="warn">
-		<if test="flowScope.warnCookieValue" then="showWarningView" else="redirect" />
-	</decision-state>
-	
-	<action-state id="generateLoginTicket">
-        <evaluate expression="generateLoginTicketAction.generate(flowRequestContext)" />
-		<transition on="generated" to="viewLoginForm" />
-	</action-state>
+    <!-- 
+        The "warn" action makes the determination of whether to redirect directly to the requested
+        service or display the "confirmation" page to go back to the server.
+    -->
+    <decision-state id="warn">
+        <if test="flowScope.warnCookieValue" then="showWarningView" else="redirect" />
+    </decision-state>
     
-	<view-state id="viewLoginForm" view="casLoginView" model="credentials">
+    <action-state id="generateLoginTicket">
+        <evaluate expression="generateLoginTicketAction.generate(flowRequestContext)" />
+        <transition on="generated" to="viewLoginForm" />
+    </action-state>
+    
+    <view-state id="viewLoginForm" view="casLoginView" model="credentials">
         <binder>
             <binding property="username" />
             <binding property="password" />
@@ -122,17 +122,17 @@
         <on-entry>
             <set name="viewScope.commandName" value="'credentials'" />
         </on-entry>
-		<transition on="submit" bind="true" validate="true" to="realSubmit">
+        <transition on="submit" bind="true" validate="true" to="realSubmit">
             <evaluate expression="initiatingAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
-	</view-state>
+    </view-state>
 
-  	<action-state id="realSubmit">
+    <action-state id="realSubmit">
         <evaluate expression="initiatingAuthenticationViaFormAction.submit(flowRequestContext,
                               flowScope.credentials, messageContext, flowScope.credentials.username)" />
-		<transition on="warn" to="warn" />
-		<transition on="success" to="sendTicketGrantingTicket" />
-		<transition on="error" to="generateLoginTicket" />
+        <transition on="warn" to="warn" />
+        <transition on="success" to="sendTicketGrantingTicket" />
+        <transition on="error" to="generateLoginTicket" />
         <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
         <transition on="mfa_sample_two_factor" to="mfa_sample_two_factor" />
         <transition on="accountDisabled" to="casAccountDisabledView" />
@@ -141,46 +141,47 @@
         <transition on="badHours" to="casBadHoursView" />
         <transition on="badWorkstation" to="casBadWorkstationView" />
         <transition on="passwordExpired" to="casExpiredPassView" />
-	</action-state>
-	
-	<action-state id="sendTicketGrantingTicket">
+    </action-state>
+    
+    <action-state id="sendTicketGrantingTicket">
         <evaluate expression="sendTicketGrantingTicketAction" />
-		<transition to="serviceCheck" />
-	</action-state>
+        <transition to="serviceCheck" />
+    </action-state>
 
-	<decision-state id="serviceCheck">
-		<if test="flowScope.service != null" then="generateServiceTicket" else="viewGenericLoginSuccess" />
-	</decision-state>
-	
-    <subflow-state id="mfa_strong_two_factor" subflow="mfa_strong_two_factor">
+    <decision-state id="serviceCheck">
+        <if test="flowScope.service != null" then="generateServiceTicket" else="viewGenericLoginSuccess" />
+    </decision-state>
+    
+    <!-- 
+        The "subflow" is required by SWF at this point, otherwise a parsing error occurrs. 
+        We are nonetheless not using the subflow here, and the parent only serves as an abstract
+        definition to minimize config of other "real" subflows.
+    -->
+    
+    <subflow-state id="mfa_parent_abstract_subflow" subflow="mfaParentAbstractWebflow">
         <on-entry>
             <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
         </on-entry>
         
         <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
-               type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
+               type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
+        <input name="mfaService" value="flowScope.service" required="true"
+               type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService" />
+                       
         <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
         <transition on="unknownPrincipalError" to="viewUnknownPrincipalErrorView" />
         <transition on="mfaUnrecognizedAuthnMethodError" to="viewMfaUnrecognizedAuthnMethodErrorView"/>
     </subflow-state>
     
-    <subflow-state id="mfa_sample_two_factor" subflow="mfa_sample_two_factor">
-        <on-entry>
-            <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
-        </on-entry>
-        
-        <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
-               type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />        
-        <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
-        <transition on="unknownPrincipalError" to="viewUnknownPrincipalErrorView" />
-    </subflow-state>
+    <subflow-state id="mfa_strong_two_factor" subflow="mfa_strong_two_factor" parent="#mfa_parent_abstract_subflow" />
+    <subflow-state id="mfa_sample_two_factor" subflow="mfa_sample_two_factor" parent="#mfa_parent_abstract_subflow" />
     
-	<action-state id="generateServiceTicket">
+    <action-state id="generateServiceTicket">
         <evaluate expression="generateServiceTicketAction" />
-		<transition on="success" to ="warn" />
-		<transition on="error" to="generateLoginTicket" />
-		<transition on="gateway" to="gatewayServicesManagementCheck" />
-	</action-state>
+        <transition on="success" to ="warn" />
+        <transition on="error" to="generateLoginTicket" />
+        <transition on="gateway" to="gatewayServicesManagementCheck" />
+    </action-state>
 
     <action-state id="gatewayServicesManagementCheck">
         <evaluate expression="gatewayServicesManagementCheck" />
@@ -196,17 +197,17 @@
         <if test="requestScope.response.responseType.name() == 'POST'" then="postView" else="redirectView" />
     </decision-state>
 
-	<!-- 
-		the "viewGenericLogin" is the end state for when a user attempts to login without coming directly from a service.
-		They have only initialized their single-sign on session.
-	-->
-	<end-state id="viewGenericLoginSuccess" view="casLoginGenericSuccessView" />
+    <!-- 
+        the "viewGenericLogin" is the end state for when a user attempts to login without coming directly from a service.
+        They have only initialized their single-sign on session.
+    -->
+    <end-state id="viewGenericLoginSuccess" view="casLoginGenericSuccessView" />
 
-	<!-- 
-		The "showWarningView" end state is the end state for when the user has requested privacy settings (to be "warned") to be turned on.  It delegates to a 
-		view defines in default_views.properties that display the "Please click here to go to the service." message.
-	-->
-	<end-state id="showWarningView" view="casLoginConfirmView" />
+    <!-- 
+        The "showWarningView" end state is the end state for when the user has requested privacy settings (to be "warned") to be turned on.  It delegates to a 
+        view defines in default_views.properties that display the "Please click here to go to the service." message.
+    -->
+    <end-state id="showWarningView" view="casLoginConfirmView" />
 
     <end-state id="postView" view="postResponseView">
         <on-entry>
@@ -215,13 +216,13 @@
         </on-entry>
     </end-state>
 
-	<!-- 
-		The "redirect" end state allows CAS to properly end the workflow while still redirecting
-		the user back to the service required.
-	-->
-	<end-state id="redirectView" view="externalRedirect:${requestScope.response.url}" />
-	
-	<end-state id="viewServiceErrorView" view="viewServiceErrorView" />
+    <!-- 
+        The "redirect" end state allows CAS to properly end the workflow while still redirecting
+        the user back to the service required.
+    -->
+    <end-state id="redirectView" view="externalRedirect:${requestScope.response.url}" />
+    
+    <end-state id="viewServiceErrorView" view="viewServiceErrorView" />
     
     <end-state id="viewServiceSsoErrorView" view="viewServiceSsoErrorView" />
 
@@ -229,14 +230,14 @@
     
     <end-state id="viewUnknownPrincipalErrorView" view="casUnknownPrincipalErrorView" />
               
-	<global-transitions>
+    <global-transitions>
         <!-- CAS-1023 This one is simple - redirects to a login page (same as renew) when 'ssoEnabled' flag is unchecked
              instead of showing an intermediate unauthorized view with a link to login page -->
         <transition to="viewLoginForm" on-exception="org.jasig.cas.services.UnauthorizedSsoServiceException"/>
         <transition to="viewServiceErrorView" on-exception="org.springframework.webflow.execution.repository.NoSuchFlowExecutionException" />
-	    <transition to="viewServiceErrorView" on-exception="org.jasig.cas.services.UnauthorizedServiceException" />
+        <transition to="viewServiceErrorView" on-exception="org.jasig.cas.services.UnauthorizedServiceException" />
         <transition to="ticketGrantingTicketExistsCheck" on-exception="net.unicon.cas.mfa.web.flow.NoAuthenticationContextAvailable" />
         <transition to="viewMfaUnrecognizedAuthnMethodErrorView" on-exception="net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException" />
         
-	</global-transitions>
+    </global-transitions>
 </flow>

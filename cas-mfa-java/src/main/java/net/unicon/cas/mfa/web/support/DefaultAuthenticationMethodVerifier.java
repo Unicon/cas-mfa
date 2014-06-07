@@ -38,7 +38,7 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
     @Override
     public void verifyAuthenticationMethod(final String authenticationMethod,
                                            final WebApplicationService targetService,
-                                           final HttpServletRequest request) throws UnrecognizedAuthenticationMethodException {
+                                           final HttpServletRequest request) {
 
         if (!supportedAuthenticationMethods.contains(authenticationMethod)) {
             logger.debug("CAS is not configured to support [{}] authentication method value [{}].",

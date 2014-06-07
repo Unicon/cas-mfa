@@ -293,7 +293,7 @@
   <bean id="validateInitialMfaRequestAction" 
         class="net.unicon.cas.mfa.web.flow.ValidateInitialMultiFactorAuthenticationRequestAction"
         c:authSupport-ref="authenticationSupport" />
-  
+        
   <!-- Generate and chain multifactor credentials based on current authenticated credentials. -->
   <bean id="generateMfaCredentialsAction" class="net.unicon.cas.mfa.web.flow.GenerateMultiFactorCredentialsAction"
         p:authenticationSupport-ref="authenticationSupport"/>
@@ -327,10 +327,11 @@
         c:authenticationViaFormAction-ref="authenticationViaFormAction"
         c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"
         c:authenticationSupport-ref="authenticationSupport"
+        c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
+        c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
         p:centralAuthenticationService-ref="centralAuthenticationService"
         p:warnCookieGenerator-ref="warnCookieGenerator"
-        p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager"/>
-
+        p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager" />
    
    <bean id="principalMismatchExceptionHandler" 
          class="net.unicon.cas.mfa.web.flow.ConfigurableSpringWebflowExceptionHandler"
