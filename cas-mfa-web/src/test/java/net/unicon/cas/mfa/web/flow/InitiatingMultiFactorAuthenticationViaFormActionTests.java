@@ -2,6 +2,8 @@ package net.unicon.cas.mfa.web.flow;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
+import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
+import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
 import org.jasig.cas.CentralAuthenticationService;
@@ -21,11 +23,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.web.util.CookieGenerator;
-
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.core.collection.ParameterMap;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
+
+
 
 
 import static org.junit.Assert.*;
@@ -70,8 +73,15 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
     @Mock
     private MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver;
 
+    @Mock
     private AuthenticationSupport authenticationSupport;
 
+    @Mock
+    private MfaWebApplicationServiceFactory factory;
+    
+    @Mock
+    private AuthenticationMethodVerifier verifier;
+    
     @Before
     public void setup() throws AuthenticationException {
 
@@ -103,7 +113,9 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         this.action = new InitiatingMultiFactorAuthenticationViaFormAction(authViaFormAction,
                 multiFactorAuthenticationRequestResolver,
-                authenticationSupport);
+                authenticationSupport,
+                factory,
+                verifier);
         this.action.setCentralAuthenticationService(this.cas);
         this.action.setCredentialsBinder(this.binder);
         this.action.setWarnCookieGenerator(this.cookieGenerator);
