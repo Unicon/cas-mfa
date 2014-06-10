@@ -67,7 +67,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
     public DefaultMultiFactorAuthenticationSupportingWebApplicationService(final String id, final String originalUrl,
                                                                            final String artifactId, final HttpClient httpClient,
                                                                            @NotNull final String authnMethod,
-                                                                           final AuthenticationMethodSource authenticationMethodSource) {
+                                                                           @NotNull final AuthenticationMethodSource authenticationMethodSource) {
         this(id, originalUrl, artifactId, httpClient, authnMethod);
         this.authenticationMethodSource = authenticationMethodSource;
     }

@@ -18,21 +18,15 @@
  */
 package net.unicon.cas.mfa.web.flow;
 
-import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
-
-import javax.servlet.http.HttpServletRequest;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
-import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
-import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
-import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.web.flow.AuthenticationViaFormAction;
 import org.jasig.cas.web.support.WebUtils;
 import org.springframework.binding.message.MessageContext;
@@ -58,50 +52,30 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
     private final AuthenticationViaFormAction wrapperAuthenticationAction;
 
     /**
-     * MultiFactorAuthenticationRequestResolver.
-     */
-    private final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver;
-
-    /**
-     * The authentication support.
-     */
-    private final AuthenticationSupport authenticationSupport;
-
-    private final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory;
-
-    private final AuthenticationMethodVerifier authenticationMethodVerifier;
-
-    /**
-     * Instantiates a new initiating multi factor authentication via form action.
+     * Ctor.
      *
-     * @param authenticationViaFormAction the authentication via form action
-     * @param multiFactorAuthenticationRequestResolver the mfa request resolver
-     * @param authenticationSupport the authenticationSupport
-     * @param mfaWebApplicationServiceFactory the mfa web application service factory
-     * @param authenticationMethodVerifier the authentication method verifier
+     * @param multiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver
+     * @param authenticationSupport authenticationSupport
+     * @param authenticationMethodVerifier authenticationMethodVerifier
+     * @param wrapperAuthenticationAction wrapperAuthenticationAction
      */
-    public InitiatingMultiFactorAuthenticationViaFormAction(final AuthenticationViaFormAction authenticationViaFormAction,
-                                                final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
-                                                final AuthenticationSupport authenticationSupport,
-                                                final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory,
-                                                final AuthenticationMethodVerifier authenticationMethodVerifier) {
+    public InitiatingMultiFactorAuthenticationViaFormAction(final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
+                                                            final AuthenticationSupport authenticationSupport,
+                                                            final AuthenticationMethodVerifier authenticationMethodVerifier,
+                                                            final AuthenticationViaFormAction wrapperAuthenticationAction) {
 
-        this.mfaWebApplicationServiceFactory = mfaWebApplicationServiceFactory;
-        this.authenticationMethodVerifier = authenticationMethodVerifier;
-        this.wrapperAuthenticationAction = authenticationViaFormAction;
-        this.multiFactorAuthenticationRequestResolver = multiFactorAuthenticationRequestResolver;
-        this.authenticationSupport = authenticationSupport;
+        super(multiFactorAuthenticationRequestResolver, authenticationSupport, authenticationMethodVerifier);
+        this.wrapperAuthenticationAction = wrapperAuthenticationAction;
     }
 
     /* (non-Javadoc)
-     * @see net.unicon.cas.mfa.web.flow.AbstractMultiFactorAuthenticationViaFormAction#doAuthentication
-     * (org.springframework.webflow.execution.RequestContext, org.jasig.cas.authentication.principal.Credentials
-     *  org.springframework.binding.message.MessageContext, String)
-     */
+         * @see net.unicon.cas.mfa.web.flow.AbstractMultiFactorAuthenticationViaFormAction#doAuthentication
+         * (org.springframework.webflow.execution.RequestContext, org.jasig.cas.authentication.principal.Credentials
+         *  org.springframework.binding.message.MessageContext, String)
+         */
     @Override
     protected final Event doAuthentication(final RequestContext context, final Credentials credentials,
-            final MessageContext messageContext, final String id)
-            throws Exception {
+                                           final MessageContext messageContext, final String id) throws Exception {
 
         final String primaryAuthnEventId = this.wrapperAuthenticationAction.submit(context, credentials, messageContext);
         final Event primaryAuthnEvent = new Event(this, primaryAuthnEventId);
@@ -110,28 +84,11 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
         }
 
         final MultiFactorAuthenticationRequestContext mfaRequest =
-                this.multiFactorAuthenticationRequestResolver.resolve(
-                        this.authenticationSupport.getAuthenticationFrom(WebUtils.getTicketGrantingTicketId(context)),
-                        WebApplicationService.class.cast(WebUtils.getService(context)));
-
+                getMfaRequestOrNull(this.authenticationSupport.getAuthenticationFrom(WebUtils.getTicketGrantingTicketId(context)),
+                        WebUtils.getService(context), context);
 
         if (mfaRequest != null) {
-            
-            this.authenticationMethodVerifier.verifyAuthenticationMethod(mfaRequest.getAuthenticationMethod(),
-                    mfaRequest.getTargetService(),
-                    HttpServletRequest.class.cast(context.getExternalContext().getNativeRequest()));
-
-            logger.info("There is an existing mfa request for service [{}] with a requested authentication method of [{}]",
-                    mfaRequest.getTargetService().getId(), mfaRequest.getAuthenticationMethodSource());
-
-            final MultiFactorAuthenticationSupportingWebApplicationService svc =
-                    this.mfaWebApplicationServiceFactory.create(mfaRequest.getTargetService().getId(), 
-                            mfaRequest.getTargetService().getId(),
-                            mfaRequest.getTargetService().getArtifactId(),
-                            mfaRequest.getAuthenticationMethod(),
-                            mfaRequest.getAuthenticationMethodSource());
-                    
-            MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context, svc);
+            MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context, addToMfaTransactionAndGetHighestRankedMfaRequest(mfaRequest, context));
             return doMultiFactorAuthentication(context, credentials, messageContext, id);
         }
         return primaryAuthnEvent;
@@ -150,9 +107,6 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
     protected final Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
                                                               final Credentials credentials,
                                                               final MessageContext messageContext, final String id) {
-        if (WebUtils.getService(context) instanceof MultiFactorAuthenticationSupportingWebApplicationService) {
-            return super.getSuccessEvent(context);
-        }
-        return new Event(this, MFA_SUCCESS_EVENT_ID_PREFIX + authentication.getPrincipal().getAttributes().get(CONST_PARAM_AUTHN_METHOD));
+        return super.getSuccessEvent(context);
     }
 }

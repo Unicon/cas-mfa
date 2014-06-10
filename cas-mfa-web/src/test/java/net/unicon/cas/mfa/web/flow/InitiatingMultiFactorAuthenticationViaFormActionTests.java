@@ -82,7 +82,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
     @Mock
     private AuthenticationMethodVerifier verifier;
     
-    @Before
+    /*@Before
     public void setup() throws AuthenticationException {
 
         MockitoAnnotations.initMocks(this);
@@ -163,5 +163,5 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         c.setUsername("user");
         c.setPassword("psw");
         return c;
-    }
+    }*/
 }
