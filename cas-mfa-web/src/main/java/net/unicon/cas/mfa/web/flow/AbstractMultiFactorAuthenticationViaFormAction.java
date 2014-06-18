@@ -4,11 +4,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
+
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
-import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
-import net.unicon.cas.mfa.authentication.TemporaryMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
+import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
+import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
@@ -96,9 +97,9 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
 
 
     /**
-     * Authentication method ranking strategy. Hardcoded with temp impl for now. To be injected with the real impl later on.
+     * Authentication method ranking strategy. Hardcoded here for now. To be injected in the constructor later on.
      */
-    private final RequestedAuthenticationMethodRankingStrategy authnMethodRankingStrategy = new TemporaryMfaMethodRankingStrategy();
+    private final RequestedAuthenticationMethodRankingStrategy authnMethodRankingStrategy = new OrderedMfaMethodRankingStrategy();
 
 
     /**

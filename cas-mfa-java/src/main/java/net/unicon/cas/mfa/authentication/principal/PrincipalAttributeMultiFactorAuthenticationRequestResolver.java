@@ -10,6 +10,8 @@ import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 
 /**
@@ -42,6 +44,11 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     private final MfaWebApplicationServiceFactory mfaServiceFactory;
 
     /**
+     * A config map with ranking numbers per mfa request source.
+     */
+    private final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig;
+
+    /**
      * Default principal attribute name for retrieving requested mfa authentication method.
      */
     public static final String DEFAULT_MFA_METHOD_ATTRIBUTE_NAME = "authn_method";
@@ -50,9 +57,11 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * Ctor.
      *
      * @param mfaServiceFactory mfaServiceFactory
+     * @param mfaRequestSourceRankingConfig the mfa source ranking config
      */
-    public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final MfaWebApplicationServiceFactory mfaServiceFactory) {
-        this(DEFAULT_MFA_METHOD_ATTRIBUTE_NAME, mfaServiceFactory);
+    public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final MfaWebApplicationServiceFactory mfaServiceFactory,
+                                                                      final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig) {
+        this(DEFAULT_MFA_METHOD_ATTRIBUTE_NAME, mfaServiceFactory, mfaRequestSourceRankingConfig);
     }
 
     /**
@@ -60,11 +69,14 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      *
      * @param mfaMethodAttributeName mfaMethodAttributeName
      * @param mfaServiceFactory mfaServiceFactory
+     * @param mfaRequestSourceRankingConfig the mfa source ranking config
      */
     public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final String mfaMethodAttributeName,
-                                                                      final MfaWebApplicationServiceFactory mfaServiceFactory) {
+                                                                      final MfaWebApplicationServiceFactory mfaServiceFactory,
+                                                                      final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig) {
         this.mfaMethodAttributeName = mfaMethodAttributeName;
         this.mfaServiceFactory = mfaServiceFactory;
+        this.mfaRequestSourceRankingConfig =  mfaRequestSourceRankingConfig;
     }
 
     @Override
@@ -76,8 +88,9 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
                 logger.debug("Found mfa attribute [{}] with value [{}] for principal [{}]", this.mfaMethodAttributeName,
                         mfaMethod, authentication.getPrincipal().getId());
 
+                final int mfaSourceRank = this.mfaRequestSourceRankingConfig.get(AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
                 return new MultiFactorAuthenticationRequestContext(this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
-                        targetService.getArtifactId(), mfaMethod, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE));
+                        targetService.getArtifactId(), mfaMethod, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE), mfaSourceRank);
             }
         }
         return null;

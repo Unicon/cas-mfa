@@ -4,8 +4,8 @@ import java.util.Set;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
+import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
-import net.unicon.cas.mfa.authentication.TemporaryMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 
@@ -72,9 +72,9 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
     private final AuthenticationSupport authenticationSupport;
 
     /**
-     * Authentication method ranking strategy. Hardcoded with temp impl for now. To be injected with the real impl later on.
+     * Authentication method ranking strategy. Hardcoded here for now. To be injected in the constructor later on.
      */
-    private final RequestedAuthenticationMethodRankingStrategy authnMethodRankingStrategy = new TemporaryMfaMethodRankingStrategy();
+    private final RequestedAuthenticationMethodRankingStrategy authnMethodRankingStrategy = new OrderedMfaMethodRankingStrategy();
 
     /**
      * Instantiates a new validate initial multifactor authentication request action.

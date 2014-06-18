@@ -320,7 +320,8 @@
     <bean id="principalAttributeMfaRequestResolver"
           class="net.unicon.cas.mfa.authentication.principal.PrincipalAttributeMultiFactorAuthenticationRequestResolver"
           c:mfaMethodAttributeName="${mfa.method.userAttribute:authn_method}"
-          c:mfaServiceFactory-ref="mfaServiceFactory"/>
+          c:mfaServiceFactory-ref="mfaServiceFactory"
+          c:mfaRequestSourceRankingConfig-ref="mfaMethodsRankingConfig"/>
 
     <!--
       Initiating the the multifactor authentication sequence. Validates credentials and

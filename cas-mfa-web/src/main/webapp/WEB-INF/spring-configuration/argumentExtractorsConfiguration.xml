@@ -77,12 +77,24 @@
 
     <bean id="mfaRequestsCollectingArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationRequestsCollectingArgumentExtractor"
-          c:mfaArgumentExstractors-ref="mfaArgumentExtractors"/>
+          c:mfaArgumentExstractors-ref="mfaArgumentExtractors"
+          c:mfaRequestSourceRankingConfig-ref="mfaMethodsRankingConfig"/>
 
     <util:list id="argumentExtractors">
         <ref bean="mfaRequestsCollectingArgumentExtractor"/>
         <ref bean="casArgumentExtractor"/>
         <ref bean="samlArgumentExtractor"/>
     </util:list>
+
+    <!-- Work in progress. Definition(s) for mfa method ranking functionality -->
+
+    <!-- The actual ranking numbers could be externalized -->
+    <util:map id="mfaMethodsRankingConfig"
+              key-type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService$AuthenticationMethodSource">
+
+        <entry key="PRINCIPAL_ATTRIBUTE" value="${principalAttributeMfaSourceRank:1}"/>
+        <entry key="REGISTERED_SERVICE_DEFINITION" value="${registeredServiceMfaSourceRank:2}"/>
+        <entry key="REQUEST_PARAM" value="${requestParamMfaSourceRank:3}"/>
+    </util:map>
 
 </beans>
