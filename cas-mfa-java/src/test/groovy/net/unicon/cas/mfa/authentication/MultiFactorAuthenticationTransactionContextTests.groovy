@@ -1,7 +1,7 @@
 package net.unicon.cas.mfa.authentication
 
+import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService
 import org.jasig.cas.authentication.Authentication
-import org.jasig.cas.authentication.principal.WebApplicationService
 import spock.lang.Specification
 import spock.lang.Subject
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource
@@ -13,17 +13,20 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
  */
 class MultiFactorAuthenticationTransactionContextTests extends Specification {
 
-    def mfaReqViaParam = new MultiFactorAuthenticationRequestContext('strong_mfa', Stub(WebApplicationService) {
+    def mfaReqViaParam = new MultiFactorAuthenticationRequestContext(Stub(MultiFactorAuthenticationSupportingWebApplicationService) {
         getId() >> 'test service'
-    }, AuthenticationMethodSource.REQUEST_PARAM)
+        getAuthenticationMethodSource() >> AuthenticationMethodSource.REQUEST_PARAM
+    }, 3)
 
-    def mfaReqViaRegSvc = new MultiFactorAuthenticationRequestContext('weak_mfa', Stub(WebApplicationService) {
+    def mfaReqViaRegSvc = new MultiFactorAuthenticationRequestContext(Stub(MultiFactorAuthenticationSupportingWebApplicationService) {
         getId() >> 'test service'
-    }, AuthenticationMethodSource.REGISTERED_SERVICE_DEFINITION)
+        getAuthenticationMethodSource() >> AuthenticationMethodSource.REGISTERED_SERVICE_DEFINITION
+    }, 2)
 
-    def mfaReqViaPrincipalAttr = new MultiFactorAuthenticationRequestContext('other_mfa', Stub(WebApplicationService) {
+    def mfaReqViaPrincipalAttr = new MultiFactorAuthenticationRequestContext(Stub(MultiFactorAuthenticationSupportingWebApplicationService) {
         getId() >> 'second service trying to sneak in somehow'
-    }, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE)
+        getAuthenticationMethodSource() >> AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE
+    }, 1)
 
 
     def "creating an instance with a default constructor results in null primary authentication and empty mfa requests collection"() {
