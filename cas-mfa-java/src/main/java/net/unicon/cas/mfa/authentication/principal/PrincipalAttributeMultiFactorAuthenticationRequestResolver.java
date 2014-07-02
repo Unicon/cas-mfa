@@ -60,7 +60,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * @param mfaRequestSourceRankingConfig the mfa source ranking config
      */
     public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final MfaWebApplicationServiceFactory mfaServiceFactory,
-                                                                      final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig) {
+             final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig) {
         this(DEFAULT_MFA_METHOD_ATTRIBUTE_NAME, mfaServiceFactory, mfaRequestSourceRankingConfig);
     }
 
@@ -72,8 +72,8 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * @param mfaRequestSourceRankingConfig the mfa source ranking config
      */
     public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final String mfaMethodAttributeName,
-                                                                      final MfaWebApplicationServiceFactory mfaServiceFactory,
-                                                                      final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig) {
+               final MfaWebApplicationServiceFactory mfaServiceFactory,
+               final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig) {
         this.mfaMethodAttributeName = mfaMethodAttributeName;
         this.mfaServiceFactory = mfaServiceFactory;
         this.mfaRequestSourceRankingConfig =  mfaRequestSourceRankingConfig;
@@ -89,7 +89,8 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
                         mfaMethod, authentication.getPrincipal().getId());
 
                 final int mfaSourceRank = this.mfaRequestSourceRankingConfig.get(AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
-                return new MultiFactorAuthenticationRequestContext(this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
+                return new MultiFactorAuthenticationRequestContext(
+                        this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
                         targetService.getArtifactId(), mfaMethod, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE), mfaSourceRank);
             }
         }

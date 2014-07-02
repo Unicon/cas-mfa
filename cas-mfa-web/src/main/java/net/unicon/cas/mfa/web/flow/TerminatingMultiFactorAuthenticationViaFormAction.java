@@ -30,9 +30,10 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
      * @param authenticationSupport authenticationSupport
      * @param authenticationMethodVerifier authenticationMethodVerifier
      */
-    public TerminatingMultiFactorAuthenticationViaFormAction(final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
-                                                             final AuthenticationSupport authenticationSupport,
-                                                             final AuthenticationMethodVerifier authenticationMethodVerifier) {
+    public TerminatingMultiFactorAuthenticationViaFormAction(
+                                final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
+                                final AuthenticationSupport authenticationSupport,
+                                final AuthenticationMethodVerifier authenticationMethodVerifier) {
         super(multiFactorAuthenticationRequestResolver, authenticationSupport, authenticationMethodVerifier);
     }
 

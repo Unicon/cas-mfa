@@ -15,7 +15,9 @@ public interface RequestedAuthenticationMethodRankingStrategy {
      *
      * @param mfaTransaction mfa transaction encapsulating possible requested authentication methods
      *
-     * @return mfa service representing the highest possible ranking authentication method or null if implementations are unable to perform such calculation
+     * @return mfa service representing the highest possible ranking authentication method or null
+     * if implementations are unable to perform such calculation
      */
-    MultiFactorAuthenticationSupportingWebApplicationService computeHighestRankingAuthenticationMethod(MultiFactorAuthenticationTransactionContext mfaTransaction);
+    MultiFactorAuthenticationSupportingWebApplicationService computeHighestRankingAuthenticationMethod(
+            MultiFactorAuthenticationTransactionContext mfaTransaction);
 }

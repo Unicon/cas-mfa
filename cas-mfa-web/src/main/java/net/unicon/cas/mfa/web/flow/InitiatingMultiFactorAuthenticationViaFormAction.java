@@ -59,10 +59,11 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
      * @param authenticationMethodVerifier authenticationMethodVerifier
      * @param wrapperAuthenticationAction wrapperAuthenticationAction
      */
-    public InitiatingMultiFactorAuthenticationViaFormAction(final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
-                                                            final AuthenticationSupport authenticationSupport,
-                                                            final AuthenticationMethodVerifier authenticationMethodVerifier,
-                                                            final AuthenticationViaFormAction wrapperAuthenticationAction) {
+    public InitiatingMultiFactorAuthenticationViaFormAction(
+        final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
+        final AuthenticationSupport authenticationSupport,
+        final AuthenticationMethodVerifier authenticationMethodVerifier,
+        final AuthenticationViaFormAction wrapperAuthenticationAction) {
 
         super(multiFactorAuthenticationRequestResolver, authenticationSupport, authenticationMethodVerifier);
         this.wrapperAuthenticationAction = wrapperAuthenticationAction;
@@ -88,7 +89,8 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
                         WebUtils.getService(context), context);
 
         if (mfaRequest != null) {
-            MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context, addToMfaTransactionAndGetHighestRankedMfaRequest(mfaRequest, context));
+            MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context,
+                    addToMfaTransactionAndGetHighestRankedMfaRequest(mfaRequest, context));
             return doMultiFactorAuthentication(context, credentials, messageContext, id);
         }
         return primaryAuthnEvent;

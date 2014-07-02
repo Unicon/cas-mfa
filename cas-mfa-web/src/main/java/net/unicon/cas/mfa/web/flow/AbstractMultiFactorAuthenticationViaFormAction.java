@@ -1,10 +1,6 @@
 package net.unicon.cas.mfa.web.flow;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
-
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
-
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
@@ -13,7 +9,6 @@ import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStr
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.Authentication;
@@ -32,6 +27,9 @@ import org.springframework.util.Assert;
 import org.springframework.webflow.action.AbstractAction;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 
 /**
  * An abstraction that specifies how the authentication flow should behave.
@@ -109,9 +107,10 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @param authenticationSupport authenticationSupport
      * @param authenticationMethodVerifier authenticationMethodVerifier
      */
-    protected AbstractMultiFactorAuthenticationViaFormAction(final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
-                                                             final AuthenticationSupport authenticationSupport,
-                                                             final AuthenticationMethodVerifier authenticationMethodVerifier) {
+    protected AbstractMultiFactorAuthenticationViaFormAction(
+            final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
+            final AuthenticationSupport authenticationSupport,
+            final AuthenticationMethodVerifier authenticationMethodVerifier) {
 
         this.multiFactorAuthenticationRequestResolver = multiFactorAuthenticationRequestResolver;
         this.authenticationSupport = authenticationSupport;
@@ -152,6 +151,11 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
     /**
      * In the event of an MFA request, authenticate the credentials by default, and place
      * the authentication context back into the flow.
+     * <p>Coming from the 'doAuthentication' and checking if the principal mfa source has been ranked or not
+     * Or if coming straight from initial transition. In either case, if there is no mfa service already in the flow scope
+     * try to get the principal attribute sourced mfa request and re-rank the existing mfa tx, so the mfa service is
+     * always available in the flow scope for downstream subflows.
+     * <p>If we get to this method, the mfa transaction is guaranteed to be in the flow scope.
      *
      * @param context request context
      * @param credentials the requesting credentials
@@ -174,27 +178,22 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
                 cas.destroyTicketGrantingTicket(tgt);
             }
             final Authentication auth = this.authenticationManager.authenticate(credentials);
-            //Coming from the 'doAuthentication' and checking if the principal mfa source has been ranked or not
-            //Or if coming straight from initial transition. In either case, if there is no mfa service already in the flow scope
-            //try to get the principal attribute sourced mfa request and re-rank the existing mfa tx, so the mfa service is
-            //always available in the flow scope for downstream subflows.
-            //If we get to this method, the mfa transaction is guaranteed to be in the flow scope.
             if (MultiFactorRequestContextUtils.getMultifactorWebApplicationService(context) == null) {
                 final MultiFactorAuthenticationRequestContext mfaRequest = getMfaRequestOrNull(auth, WebUtils.getService(context), context);
                 //No principal attribute sourced mfa method request. Just get the highest ranked mfa service from existing ones
                 if (mfaRequest == null) {
-                    MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context, getHighestRankedMfaRequestFromMfaTransaction(context));
-                }
-                else {
-                    MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context, addToMfaTransactionAndGetHighestRankedMfaRequest(mfaRequest, context));
+                    MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context,
+                            getHighestRankedMfaRequestFromMfaTransaction(context));
+                } else {
+                    MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context,
+                            addToMfaTransactionAndGetHighestRankedMfaRequest(mfaRequest, context));
                 }
             }
 
             final Event result = multiFactorAuthenticationSuccessful(auth, context, credentials, messageContext, id);
             MultiFactorRequestContextUtils.setAuthentication(context, auth);
             return result;
-        }
-        catch (final AuthenticationException e) {
+        } catch (final AuthenticationException e) {
             populateErrorsInstance(e.getCode(), messageContext);
             logger.error(e.getMessage(), e);
         }
@@ -277,7 +276,8 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @throws TicketException in the event that granting the TGT fails.
      */
     protected abstract Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
-                                                                 final Credentials credentials, final MessageContext messageContext, final String id) throws TicketException;
+                                                                 final Credentials credentials, final MessageContext messageContext,
+                                                                 final String id) throws TicketException;
 
     /**
      * Set the binder instance.
@@ -346,8 +346,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
     protected final void populateErrorsInstance(final String code, final MessageContext messageContext) {
         try {
             messageContext.addMessage(new MessageBuilder().error().code(code).defaultText(code).build());
-        }
-        catch (final Exception fe) {
+        }  catch (final Exception fe) {
             logger.error(fe.getMessage(), fe);
         }
     }
@@ -370,7 +369,8 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
                                                                           final WebApplicationService service,
                                                                           final RequestContext context) {
 
-        final MultiFactorAuthenticationRequestContext mfaRequest = this.multiFactorAuthenticationRequestResolver.resolve(authentication, service);
+        final MultiFactorAuthenticationRequestContext mfaRequest =
+                this.multiFactorAuthenticationRequestResolver.resolve(authentication, service);
         if (mfaRequest != null) {
             this.authenticationMethodVerifier.verifyAuthenticationMethod(mfaRequest.getMfaService().getAuthenticationMethod(),
                     mfaRequest.getMfaService(),
@@ -392,15 +392,14 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @return newly ranked mfa request in the current mfa transaction
      */
     protected MultiFactorAuthenticationSupportingWebApplicationService
-    addToMfaTransactionAndGetHighestRankedMfaRequest(final MultiFactorAuthenticationRequestContext mfaRequest,
+                addToMfaTransactionAndGetHighestRankedMfaRequest(final MultiFactorAuthenticationRequestContext mfaRequest,
                                                      final RequestContext context) {
 
         MultiFactorAuthenticationTransactionContext mfaTx = MultiFactorRequestContextUtils.getMfaTransaction(context);
         if (mfaTx == null) {
             mfaTx = new MultiFactorAuthenticationTransactionContext(mfaRequest.getMfaService().getId()).addMfaRequest(mfaRequest);
             MultiFactorRequestContextUtils.setMfaTransaction(context, mfaTx);
-        }
-        else {
+        } else {
             mfaTx.addMfaRequest(mfaRequest);
         }
         return getHighestRankedMfaRequestFromMfaTransaction(context);
@@ -413,7 +412,9 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      *
      * @return highest ranked mfa request
      */
-    private MultiFactorAuthenticationSupportingWebApplicationService getHighestRankedMfaRequestFromMfaTransaction(final RequestContext context) {
-        return this.authnMethodRankingStrategy.computeHighestRankingAuthenticationMethod(MultiFactorRequestContextUtils.getMfaTransaction(context));
+    private MultiFactorAuthenticationSupportingWebApplicationService
+            getHighestRankedMfaRequestFromMfaTransaction(final RequestContext context) {
+        return this.authnMethodRankingStrategy.computeHighestRankingAuthenticationMethod(
+                MultiFactorRequestContextUtils.getMfaTransaction(context));
     }
 }

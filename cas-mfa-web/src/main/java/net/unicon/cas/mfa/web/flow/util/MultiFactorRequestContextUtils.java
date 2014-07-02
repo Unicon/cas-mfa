@@ -160,7 +160,8 @@ public final class MultiFactorRequestContextUtils {
      *
      * @return mfa service or null
      */
-    public static MultiFactorAuthenticationSupportingWebApplicationService getMultifactorWebApplicationService(final RequestContext context) {
+    public static MultiFactorAuthenticationSupportingWebApplicationService
+                            getMultifactorWebApplicationService(final RequestContext context) {
         final Object svc = context.getFlowScope().get("service");
         return ((svc != null) && (svc instanceof MultiFactorAuthenticationSupportingWebApplicationService))
                 ? MultiFactorAuthenticationSupportingWebApplicationService.class.cast(svc)

@@ -1,18 +1,24 @@
 package net.unicon.cas.mfa.authentication;
 
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.core.Ordered;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * Represents a single mfa request by wrapping {@link net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService}.
+ * Represents a single mfa request by wrapping
+ * {@link net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService}.
  * <p/>
- * Adds implementations of {@code equals} and {@code hashcode} to ensure the uniqueness of one mfa method per service per request origination source.
+ * Adds implementations of {@code equals} and {@code hashcode} to ensure the uniqueness of
+ * one mfa method per service per request origination source.
  * <p/>
  * Implements {@link org.springframework.core.Ordered} to assist implementations of
- * {@link net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy} do the ranking if they choose to use this abstraction.
+ * {@link net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy} do
+ * the ranking if they choose to use this abstraction.
  *
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
@@ -26,7 +32,7 @@ public final class MultiFactorAuthenticationRequestContext implements Serializab
     private final int rank;
 
     /**
-     * Ctor.
+     * Ctor. Treats zero or negative rank as undefined
      *
      * @param mfaService target mfa service
      * @param rank the rank value of this request
@@ -34,7 +40,6 @@ public final class MultiFactorAuthenticationRequestContext implements Serializab
     public MultiFactorAuthenticationRequestContext(@NotNull final MultiFactorAuthenticationSupportingWebApplicationService mfaService,
                                                    final int rank) {
         this.mfaService = mfaService;
-        //Treat zero or negative as undefined config value and make the request the lowest ranked?
         this.rank = (rank <= 0) ? Integer.MAX_VALUE : rank;
     }
 
@@ -57,30 +62,24 @@ public final class MultiFactorAuthenticationRequestContext implements Serializab
         }
 
         final MultiFactorAuthenticationRequestContext that = (MultiFactorAuthenticationRequestContext) o;
-
-        if (!this.getMfaService().getAuthenticationMethod().equals(that.getMfaService().getAuthenticationMethod())) {
-            return false;
-        }
-        if (this.getMfaService().getAuthenticationMethodSource() != that.getMfaService().getAuthenticationMethodSource()) {
-            return false;
-        }
-        if (!this.getMfaService().getId().equals(that.getMfaService().getId())) {
-            return false;
-        }
-        return true;
+        return this.getMfaService().equals(that.getMfaService());
     }
 
     @Override
     public int hashCode() {
-        int result = this.mfaService.getAuthenticationMethod().hashCode();
-        result = 31 * result + (this.mfaService.getId().hashCode());
-        result = 31 * result + (this.mfaService.getAuthenticationMethodSource().hashCode());
-        return result;
+        final HashCodeBuilder builder = new HashCodeBuilder(13, 133);
+        return builder.append(this.mfaService.getAuthenticationMethod())
+                      .append(this.mfaService.getId())
+                      .append(this.mfaService.getAuthenticationMethodSource())
+                      .toHashCode();
     }
 
     @Override
     public String toString() {
-        return String.format("MultiFactorAuthenticationRequestContext{ service={%s}, authn_method={%s}, source={%s} }",
-                this.mfaService.getId(), this.mfaService.getAuthenticationMethod(), this.mfaService.getAuthenticationMethodSource());
+        final ToStringBuilder builder = new ToStringBuilder(ToStringStyle.DEFAULT_STYLE);
+        return builder.append(this.mfaService.getId())
+               .append(this.mfaService.getAuthenticationMethod())
+               .append(this.mfaService.getAuthenticationMethodSource())
+               .toString();
     }
 }

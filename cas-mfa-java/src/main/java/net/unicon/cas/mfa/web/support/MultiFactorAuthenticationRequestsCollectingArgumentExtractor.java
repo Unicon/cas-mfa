@@ -4,14 +4,13 @@ import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.web.support.ArgumentExtractor;
-import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
-
-
 import org.springframework.webflow.execution.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Set;
+
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 
 /**
  * Composite argument extractor that collects and aggregates all possible mfa requests
@@ -41,8 +40,9 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
      * @param mfaArgumentExstractors delegate argument extractors
      * @param mfaRequestSourceRankingConfig the mfa source ranking config
      */
-    public MultiFactorAuthenticationRequestsCollectingArgumentExtractor(final Set<AbstractMultiFactorAuthenticationArgumentExtractor> mfaArgumentExstractors,
-                                                                        final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig) {
+    public MultiFactorAuthenticationRequestsCollectingArgumentExtractor(
+            final Set<AbstractMultiFactorAuthenticationArgumentExtractor> mfaArgumentExstractors,
+            final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig) {
         this.mfaArgumentExstractors = mfaArgumentExstractors;
         this.mfaRequestSourceRankingConfig = mfaRequestSourceRankingConfig;
     }
@@ -59,9 +59,9 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
                 final int mfaSourceRank = this.mfaRequestSourceRankingConfig.get(service.getAuthenticationMethodSource());
                 if (mfaTxCtx != null) {
                     mfaTxCtx.addMfaRequest(createMfaRequest(service, mfaSourceRank));
-                }
-                else {
-                    mfaTxCtx = new MultiFactorAuthenticationTransactionContext(service.getId()).addMfaRequest(createMfaRequest(service, mfaSourceRank));
+                } else {
+                    mfaTxCtx = new MultiFactorAuthenticationTransactionContext(
+                            service.getId()).addMfaRequest(createMfaRequest(service, mfaSourceRank));
                 }
             }
         }

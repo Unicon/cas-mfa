@@ -1,7 +1,5 @@
 package net.unicon.cas.mfa.authentication;
 
-import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
-
 import org.jasig.cas.authentication.Authentication;
 import org.springframework.util.Assert;
 
@@ -10,10 +8,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
+
 /**
  * Class holding contextual information pertaining to any currently in-progress mfa authentication transactions.
  * <p/>
- * This class enforces invariants that ensures that only a single target service is able to participate in such a single mfa authentication transaction
+ * This class enforces invariants that ensures that only a single target service is able to participate
+ * in such a single mfa authentication transaction
  * and only a single instance of the same authentication method source could exist at a time.
  *
  * @author Dmitriy Kopylenko
@@ -94,11 +95,13 @@ public final class MultiFactorAuthenticationTransactionContext implements Serial
      */
     public MultiFactorAuthenticationTransactionContext addMfaRequest(final MultiFactorAuthenticationRequestContext mfaRequest) {
         if (differentThanTargetService(mfaRequest.getMfaService().getId())) {
-            throw new IllegalArgumentException(String.format("Requested mfa target service {%s} is different from the current authentication transaction target service {%s}",
+            throw new IllegalArgumentException(String.format("Requested mfa target service {%s} is different from "
+                            + "the current authentication transaction target service {%s}",
                     mfaRequest.getMfaService().getId(), this.targetServiceId));
         }
         if (authnMethodSourceAlreadyExists(mfaRequest.getMfaService().getAuthenticationMethodSource())) {
-            throw new IllegalArgumentException(String.format("Requested mfa method source {%s} already exists", mfaRequest.getMfaService().getAuthenticationMethodSource()));
+            throw new IllegalArgumentException(String.format("Requested mfa method source {%s} already exists",
+                    mfaRequest.getMfaService().getAuthenticationMethodSource()));
         }
         this.mfaRequests.add(mfaRequest);
         return this;

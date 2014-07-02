@@ -1,13 +1,14 @@
 package net.unicon.cas.mfa.web.support;
 
-import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.jasig.cas.authentication.principal.AbstractWebApplicationService;
 import org.jasig.cas.authentication.principal.Response;
 import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;
 import org.jasig.cas.util.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * The MultiFactorAuthenticationService is an extension of the generic CAS service
@@ -54,6 +55,36 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
         this.authenticationMethod = authnMethod;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final DefaultMultiFactorAuthenticationSupportingWebApplicationService that =
+                (DefaultMultiFactorAuthenticationSupportingWebApplicationService) o;
+
+        if (!this.getAuthenticationMethod().equals(that.getAuthenticationMethod())) {
+            return false;
+        }
+        if (this.getAuthenticationMethodSource() != that.getAuthenticationMethodSource()) {
+            return false;
+        }
+        return this.getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        final HashCodeBuilder builder = new HashCodeBuilder(13, 133);
+        return builder.append(this.getAuthenticationMethod())
+                      .append(this.getAuthenticationMethodSource())
+                      .append(this.getId())
+                      .toHashCode();
+    }
+
     /**
      * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}.
      *
@@ -64,10 +95,11 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
      * @param authnMethod the authentication method required for this service
      * @param authenticationMethodSource the authentication method source for this service
      */
-    public DefaultMultiFactorAuthenticationSupportingWebApplicationService(final String id, final String originalUrl,
-                                                                           final String artifactId, final HttpClient httpClient,
-                                                                           @NotNull final String authnMethod,
-                                                                           @NotNull final AuthenticationMethodSource authenticationMethodSource) {
+    public DefaultMultiFactorAuthenticationSupportingWebApplicationService(
+            final String id, final String originalUrl,
+            final String artifactId, final HttpClient httpClient,
+            @NotNull final String authnMethod,
+            @NotNull final AuthenticationMethodSource authenticationMethodSource) {
         this(id, originalUrl, artifactId, httpClient, authnMethod);
         this.authenticationMethodSource = authenticationMethodSource;
     }
