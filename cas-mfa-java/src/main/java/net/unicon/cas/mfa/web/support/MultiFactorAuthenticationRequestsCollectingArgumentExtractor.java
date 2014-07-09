@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Set;
 
-import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
-
 /**
  * Composite argument extractor that collects and aggregates all possible mfa requests
  * (from different sources e.g. request param, registered service attribute), encapsulates them in
@@ -30,21 +28,22 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
     private final Set<AbstractMultiFactorAuthenticationArgumentExtractor> mfaArgumentExstractors;
 
     /**
-     * A config map with ranking numbers per mfa request source.
+     * A config map with ranking numbers per mfa method type.
      */
-    private final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig;
+    private final Map<String, Integer> mfaRankingConfig;
 
     /**
      * Ctor.
      *
      * @param mfaArgumentExstractors delegate argument extractors
-     * @param mfaRequestSourceRankingConfig the mfa source ranking config
+     * @param mfaRankingConfig the mfa source ranking config
      */
     public MultiFactorAuthenticationRequestsCollectingArgumentExtractor(
             final Set<AbstractMultiFactorAuthenticationArgumentExtractor> mfaArgumentExstractors,
-            final Map<AuthenticationMethodSource, Integer> mfaRequestSourceRankingConfig) {
+            final Map<String, Integer> mfaRankingConfig) {
+
         this.mfaArgumentExstractors = mfaArgumentExstractors;
-        this.mfaRequestSourceRankingConfig = mfaRequestSourceRankingConfig;
+        this.mfaRankingConfig = mfaRankingConfig;
     }
 
     @Override
@@ -56,12 +55,12 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
                     MultiFactorAuthenticationSupportingWebApplicationService.class.cast(extractor.extractService(request));
 
             if (service != null) {
-                final int mfaSourceRank = this.mfaRequestSourceRankingConfig.get(service.getAuthenticationMethodSource());
+                final int mfaMethodRank = this.mfaRankingConfig.get(service.getAuthenticationMethod());
                 if (mfaTxCtx != null) {
-                    mfaTxCtx.addMfaRequest(createMfaRequest(service, mfaSourceRank));
+                    mfaTxCtx.addMfaRequest(createMfaRequest(service, mfaMethodRank));
                 } else {
                     mfaTxCtx = new MultiFactorAuthenticationTransactionContext(
-                            service.getId()).addMfaRequest(createMfaRequest(service, mfaSourceRank));
+                            service.getId()).addMfaRequest(createMfaRequest(service, mfaMethodRank));
                 }
             }
         }
@@ -81,12 +80,12 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
      * Helper to create mfa requests.
      *
      * @param service mfa service
-     * @param mfaSourceRank mfa source rank value
+     * @param mfaMethodRank mfa source rank value
      *
      * @return mfa request
      */
     private MultiFactorAuthenticationRequestContext createMfaRequest(final MultiFactorAuthenticationSupportingWebApplicationService service,
-                                                                     final int mfaSourceRank) {
-        return new MultiFactorAuthenticationRequestContext(service, mfaSourceRank);
+                                                                     final int mfaMethodRank) {
+        return new MultiFactorAuthenticationRequestContext(service, mfaMethodRank);
     }
 }

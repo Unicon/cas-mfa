@@ -48,11 +48,9 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
                 }
     }
 
-    def map = [(AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE as AuthenticationMethodSource): 1]
-
     @Subject
-    def mfaAuthnReqResolverUnderTest = new PrincipalAttributeMultiFactorAuthenticationRequestResolver(mfaWebApplicationServiceFactory,
-            [(AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE as AuthenticationMethodSource): 1])
+    def mfaAuthnReqResolverUnderTest =
+            new PrincipalAttributeMultiFactorAuthenticationRequestResolver(mfaWebApplicationServiceFactory, ['strong_two_factor': 1])
 
     @Unroll
     def "either authentication OR service OR both null arguments OR no authn_method principal attribute SHOULD result in a null return value"() {

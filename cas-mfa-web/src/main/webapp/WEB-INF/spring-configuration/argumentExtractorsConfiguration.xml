@@ -41,18 +41,13 @@
           parent="baseArgumentExtractor"/>
 
     <bean id="authenticationMethodVerifier" class="net.unicon.cas.mfa.web.support.DefaultAuthenticationMethodVerifier"
-          c:supportedAuthenticationMethods-ref="listOfAuthenticationMethods"/>
+          c:supportedAuthenticationMethods-ref="supportedAuthenticationMethodsConfig"/>
 
     <bean id="mfaArgumentExtractor" abstract="true"
           class="net.unicon.cas.mfa.web.support.AbstractMultiFactorAuthenticationArgumentExtractor"
           c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
           c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
           c:authenticationMethodVerifier-ref="authenticationMethodVerifier" />
-
-    <util:list id="listOfAuthenticationMethods">
-        <value>strong_two_factor</value>
-        <value>sample_two_factor</value>
-    </util:list>
 
     <util:set id="supportedProtocolsForMultifactorAuthentication">
         <ref bean="casArgumentExtractor"/>
@@ -78,7 +73,7 @@
     <bean id="mfaRequestsCollectingArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationRequestsCollectingArgumentExtractor"
           c:mfaArgumentExstractors-ref="mfaArgumentExtractors"
-          c:mfaRequestSourceRankingConfig-ref="mfaMethodsRankingConfig"/>
+          c:mfaRankingConfig-ref="supportedAuthenticationMethodsConfig"/>
 
     <util:list id="argumentExtractors">
         <ref bean="mfaRequestsCollectingArgumentExtractor"/>
@@ -87,14 +82,9 @@
     </util:list>
 
     <!-- Work in progress. Definition(s) for mfa method ranking functionality -->
-
-    <!-- The actual ranking numbers could be externalized -->
-    <util:map id="mfaMethodsRankingConfig"
-              key-type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService$AuthenticationMethodSource">
-
-        <entry key="PRINCIPAL_ATTRIBUTE" value="${principalAttributeMfaSourceRank:1}"/>
-        <entry key="REGISTERED_SERVICE_DEFINITION" value="${registeredServiceMfaSourceRank:2}"/>
-        <entry key="REQUEST_PARAM" value="${requestParamMfaSourceRank:3}"/>
+    <util:map id="supportedAuthenticationMethodsConfig">
+        <entry key="strong_two_factor" value="1"/>
+        <entry key="sample_two_factor" value="2"/>
     </util:map>
 
 </beans>

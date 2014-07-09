@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Default implementation of {@link net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier}.
@@ -24,14 +24,14 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
     /**
      * Supported authentication methods.
      */
-    private final List<String> supportedAuthenticationMethods;
+    private final Map<String, Integer> supportedAuthenticationMethods;
 
     /**
      * Ctor.
      *
      * @param supportedAuthenticationMethods list of supported authentication methods
      */
-    public DefaultAuthenticationMethodVerifier(final List<String> supportedAuthenticationMethods) {
+    public DefaultAuthenticationMethodVerifier(final Map<String, Integer> supportedAuthenticationMethods) {
         this.supportedAuthenticationMethods = supportedAuthenticationMethods;
     }
 
@@ -40,7 +40,7 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
                                            final WebApplicationService targetService,
                                            final HttpServletRequest request) {
 
-        if (!supportedAuthenticationMethods.contains(authenticationMethod)) {
+        if (!supportedAuthenticationMethods.containsKey(authenticationMethod)) {
             logger.debug("CAS is not configured to support [{}] authentication method value [{}].",
                     MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
                     authenticationMethod);
