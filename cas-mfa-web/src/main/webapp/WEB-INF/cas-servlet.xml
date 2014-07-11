@@ -294,7 +294,8 @@
 
     <bean id="validateInitialMfaRequestAction"
           class="net.unicon.cas.mfa.web.flow.ValidateInitialMultiFactorAuthenticationRequestAction"
-          c:authSupport-ref="authenticationSupport"/>
+          c:authSupport-ref="authenticationSupport"
+          c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
 
     <!-- Generate and chain multifactor credentials based on current authenticated credentials. -->
     <bean id="generateMfaCredentialsAction" class="net.unicon.cas.mfa.web.flow.GenerateMultiFactorCredentialsAction"
@@ -323,6 +324,8 @@
           c:mfaServiceFactory-ref="mfaServiceFactory"
           c:mfaRankingConfig-ref="supportedAuthenticationMethodsConfig"/>
 
+    <bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy"/>
+
     <!--
       Initiating the the multifactor authentication sequence. Validates credentials and
       resolve principal, or authenticate and proceed to the second factor authentication flow.
@@ -335,7 +338,9 @@
           c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
           p:centralAuthenticationService-ref="centralAuthenticationService"
           p:warnCookieGenerator-ref="warnCookieGenerator"
-          p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager"/>
+          p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager"
+          c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
+
 
 
     <bean id="principalMismatchExceptionHandler"

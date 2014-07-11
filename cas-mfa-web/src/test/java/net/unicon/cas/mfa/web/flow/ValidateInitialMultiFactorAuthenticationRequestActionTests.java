@@ -5,6 +5,7 @@ import java.util.Map;
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
+import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
@@ -100,7 +101,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         final AuthenticationSupport support = mock(AuthenticationSupport.class);
         when(support.getAuthenticationFrom(TGT_ID)).thenReturn(authentication);
 
-        this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support);
+        this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support, new OrderedMfaMethodRankingStrategy());
 
         mockFlowScope = mock(MutableAttributeMap.class);
         when(requestContext.getFlowScope()).thenReturn(mockFlowScope);

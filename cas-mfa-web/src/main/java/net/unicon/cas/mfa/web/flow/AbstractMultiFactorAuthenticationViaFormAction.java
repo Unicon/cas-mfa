@@ -4,7 +4,6 @@ import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
-import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
@@ -95,9 +94,9 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
 
 
     /**
-     * Authentication method ranking strategy. Hardcoded here for now. To be injected in the constructor later on.
+     * Authentication method ranking strategy.
      */
-    private final RequestedAuthenticationMethodRankingStrategy authnMethodRankingStrategy = new OrderedMfaMethodRankingStrategy();
+    private final RequestedAuthenticationMethodRankingStrategy authnMethodRankingStrategy;
 
 
     /**
@@ -106,15 +105,18 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @param multiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver
      * @param authenticationSupport authenticationSupport
      * @param authenticationMethodVerifier authenticationMethodVerifier
+     * @param authenticationMethodRankingStrategy authenticationMethodRankingStrategy
      */
     protected AbstractMultiFactorAuthenticationViaFormAction(
             final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
             final AuthenticationSupport authenticationSupport,
-            final AuthenticationMethodVerifier authenticationMethodVerifier) {
+            final AuthenticationMethodVerifier authenticationMethodVerifier,
+            final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
 
         this.multiFactorAuthenticationRequestResolver = multiFactorAuthenticationRequestResolver;
         this.authenticationSupport = authenticationSupport;
         this.authenticationMethodVerifier = authenticationMethodVerifier;
+        this.authnMethodRankingStrategy = authenticationMethodRankingStrategy;
     }
 
     /**

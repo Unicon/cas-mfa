@@ -39,7 +39,8 @@
         p:multiFactorAuthenticationManager-ref="sample_terminatingAuthenticationManager"
         c:authenticationSupport-ref="authenticationSupport"
         c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
-        c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"/>
+        c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"
+        c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
 
 
  

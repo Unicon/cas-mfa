@@ -2,6 +2,7 @@ package net.unicon.cas.mfa.web.flow;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
+import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 
@@ -29,12 +30,15 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
      * @param multiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver
      * @param authenticationSupport authenticationSupport
      * @param authenticationMethodVerifier authenticationMethodVerifier
+     * @param authenticationMethodRankingStrategy authenticationMethodRankingStrategy
      */
     public TerminatingMultiFactorAuthenticationViaFormAction(
                                 final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
                                 final AuthenticationSupport authenticationSupport,
-                                final AuthenticationMethodVerifier authenticationMethodVerifier) {
-        super(multiFactorAuthenticationRequestResolver, authenticationSupport, authenticationMethodVerifier);
+                                final AuthenticationMethodVerifier authenticationMethodVerifier,
+                                final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
+
+        super(multiFactorAuthenticationRequestResolver, authenticationSupport, authenticationMethodVerifier, authenticationMethodRankingStrategy);
     }
 
     /* {@inheritDoc} */

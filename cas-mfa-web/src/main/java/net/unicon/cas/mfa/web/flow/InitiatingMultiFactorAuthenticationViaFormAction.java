@@ -22,6 +22,7 @@ package net.unicon.cas.mfa.web.flow;
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
+import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 
@@ -58,14 +59,16 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
      * @param authenticationSupport authenticationSupport
      * @param authenticationMethodVerifier authenticationMethodVerifier
      * @param wrapperAuthenticationAction wrapperAuthenticationAction
+     * @param authenticationMethodRankingStrategy authenticationMethodRankingStrategy
      */
     public InitiatingMultiFactorAuthenticationViaFormAction(
         final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
         final AuthenticationSupport authenticationSupport,
         final AuthenticationMethodVerifier authenticationMethodVerifier,
-        final AuthenticationViaFormAction wrapperAuthenticationAction) {
+        final AuthenticationViaFormAction wrapperAuthenticationAction,
+        final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
 
-        super(multiFactorAuthenticationRequestResolver, authenticationSupport, authenticationMethodVerifier);
+        super(multiFactorAuthenticationRequestResolver, authenticationSupport, authenticationMethodVerifier, authenticationMethodRankingStrategy);
         this.wrapperAuthenticationAction = wrapperAuthenticationAction;
     }
 

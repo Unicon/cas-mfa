@@ -4,7 +4,6 @@ import java.util.Set;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
-import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
@@ -72,17 +71,20 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
     private final AuthenticationSupport authenticationSupport;
 
     /**
-     * Authentication method ranking strategy. Hardcoded here for now. To be injected in the constructor later on.
+     * Authentication method ranking strategy.
      */
-    private final RequestedAuthenticationMethodRankingStrategy authnMethodRankingStrategy = new OrderedMfaMethodRankingStrategy();
+    private final RequestedAuthenticationMethodRankingStrategy authnMethodRankingStrategy;
 
     /**
      * Instantiates a new validate initial multifactor authentication request action.
      *
      * @param authSupport the authN support
+     * @param authenticationMethodRankingStrategy authenticationMethodRankingStrategy
      */
-    public ValidateInitialMultiFactorAuthenticationRequestAction(final AuthenticationSupport authSupport) {
+    public ValidateInitialMultiFactorAuthenticationRequestAction(final AuthenticationSupport authSupport,
+                                                                 final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
         this.authenticationSupport = authSupport;
+        this.authnMethodRankingStrategy = authenticationMethodRankingStrategy;
     }
 
     /* (non-Javadoc)

@@ -3,6 +3,7 @@ package net.unicon.cas.mfa.web.flow;
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
+import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
@@ -115,7 +116,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         when(manager.authenticate(any(Credentials.class))).thenReturn(this.authentication);
 
         this.action = new InitiatingMultiFactorAuthenticationViaFormAction(multiFactorAuthenticationRequestResolver,
-                authenticationSupport, verifier, authViaFormAction);
+                authenticationSupport, verifier, authViaFormAction, new OrderedMfaMethodRankingStrategy());
 
         this.action.setCentralAuthenticationService(this.cas);
         this.action.setCredentialsBinder(this.binder);
