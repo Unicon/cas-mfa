@@ -324,7 +324,7 @@
           c:mfaServiceFactory-ref="mfaServiceFactory"
           c:mfaRankingConfig-ref="supportedAuthenticationMethodsConfig"/>
 
-    <bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy"/>
+    <bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy"/>
 
     <!--
       Initiating the the multifactor authentication sequence. Validates credentials and

@@ -70,7 +70,7 @@ have requested an mfa. A created mfa request gets the ranking number based on th
 ### mfa method ranking strategy default implementation and components using it
 
 ```xml
-<bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy"/>
+<bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy"/>
 
 <bean id="initiatingAuthenticationViaFormAction"
           class="net.unicon.cas.mfa.web.flow.InitiatingMultiFactorAuthenticationViaFormAction"
