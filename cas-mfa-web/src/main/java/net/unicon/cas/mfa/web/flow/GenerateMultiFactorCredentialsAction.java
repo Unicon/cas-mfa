@@ -46,7 +46,7 @@ public final class GenerateMultiFactorCredentialsAction {
      * from what has already been authenticated as the principal
      */
     public Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials,
-            @NotNull final String id) {
+            @NotNull final String id) throws NoAuthenticationContextAvailable {
         final Authentication authentication = getCasAuthentication(context);
         if (authentication == null) {
             LOGGER.debug("No authentication context is available.");

@@ -1,61 +1,85 @@
 package net.unicon.cas.mfa.authentication;
 
-import org.jasig.cas.authentication.principal.WebApplicationService;
+import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.springframework.core.Ordered;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
-
 /**
- * Holds a requested authentication method along with a target <code>WebApplicationService</code>
- * and an authentication method request source.
+ * Represents a single mfa request by wrapping
+ * {@link net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService}.
+ * <p/>
+ * Adds implementations of {@code equals} and {@code hashcode} to ensure the uniqueness of
+ * one mfa method per service per request origination source.
+ * <p/>
+ * Implements {@link org.springframework.core.Ordered} to assist implementations of
+ * {@link net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy} do
+ * the ranking if they choose to use this abstraction.
  *
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
  */
-public final class MultiFactorAuthenticationRequestContext implements Serializable {
-    private static final long serialVersionUID = -2464940656897107660L;
+public final class MultiFactorAuthenticationRequestContext implements Serializable, Ordered {
+
+    private static final long serialVersionUID = 3895119051289676064L;
+
+    private final MultiFactorAuthenticationSupportingWebApplicationService mfaService;
+
+    private final int rank;
 
     /**
-     * Requested authentication method.
-     */
-    private final String authenticationMethod;
-
-    /**
-     * Target service.
-     */
-    private final WebApplicationService targetService;
-
-    /**
-     * Authentication method source.
-     */
-    private final AuthenticationMethodSource authenticationMethodSource;
-
-    /**
-     * Ctor.
+     * Ctor. Treats zero or negative rank as undefined
      *
-     * @param authenticationMethod authenticationMethod
-     * @param targetService targetService
-     * @param authenticationMethodSource authenticationMethodSource
+     * @param mfaService target mfa service
+     * @param rank the rank value of this request
      */
-    public MultiFactorAuthenticationRequestContext(final String authenticationMethod,
-                                                   final WebApplicationService targetService,
-                                                   final AuthenticationMethodSource authenticationMethodSource) {
-
-        this.authenticationMethod = authenticationMethod;
-        this.targetService = targetService;
-        this.authenticationMethodSource = authenticationMethodSource;
+    public MultiFactorAuthenticationRequestContext(@NotNull final MultiFactorAuthenticationSupportingWebApplicationService mfaService,
+                                                   final int rank) {
+        this.mfaService = mfaService;
+        this.rank = (rank <= 0) ? Integer.MAX_VALUE : rank;
     }
 
-    public String getAuthenticationMethod() {
-        return authenticationMethod;
+    public MultiFactorAuthenticationSupportingWebApplicationService getMfaService() {
+        return this.mfaService;
     }
 
-    public WebApplicationService getTargetService() {
-        return targetService;
+    @Override
+    public int getOrder() {
+        return this.rank;
     }
-    
-    public AuthenticationMethodSource getAuthenticationMethodSource() {
-        return authenticationMethodSource;
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final MultiFactorAuthenticationRequestContext that = (MultiFactorAuthenticationRequestContext) o;
+        return this.getMfaService().equals(that.getMfaService());
+    }
+
+    @Override
+    public int hashCode() {
+        final HashCodeBuilder builder = new HashCodeBuilder(13, 133);
+        return builder.append(this.mfaService.getAuthenticationMethod())
+                      .append(this.mfaService.getId())
+                      .append(this.mfaService.getAuthenticationMethodSource())
+                      .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        final ToStringBuilder builder = new ToStringBuilder(ToStringStyle.DEFAULT_STYLE);
+        return builder.append(this.mfaService.getId())
+               .append(this.mfaService.getAuthenticationMethod())
+               .append(this.mfaService.getAuthenticationMethodSource())
+               .toString();
     }
 }

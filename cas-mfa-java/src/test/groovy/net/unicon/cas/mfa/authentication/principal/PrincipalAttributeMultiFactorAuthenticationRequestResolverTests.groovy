@@ -1,5 +1,8 @@
 package net.unicon.cas.mfa.authentication.principal
 
+import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory
+import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService
+
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource
 import org.jasig.cas.authentication.Authentication
 import org.jasig.cas.authentication.principal.Principal
@@ -20,6 +23,7 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
     @Shared
     def authenticationWithValidPrincipalAttributeFor_strong_two_factor = Stub(Authentication) {
         getPrincipal() >> Stub(Principal) {
+            getId() >> 'test principal'
             getAttributes() >> [authn_method: 'strong_two_factor']
         }
     }
@@ -34,8 +38,19 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
     @Shared
     WebApplicationService targetService = new SimpleWebApplicationServiceImpl('test target service')
 
+    @Shared
+    MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory = Stub(MfaWebApplicationServiceFactory) {
+        create('test target service', 'test target service', null, 'strong_two_factor', AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE) >>
+                Stub(MultiFactorAuthenticationSupportingWebApplicationService) {
+                    getId() >> 'test target service'
+                    getAuthenticationMethod() >> 'strong_two_factor'
+                    getAuthenticationMethodSource() >> AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE
+                }
+    }
+
     @Subject
-    def mfaAuthnReqResolverUnderTest = new PrincipalAttributeMultiFactorAuthenticationRequestResolver('authn_method')
+    def mfaAuthnReqResolverUnderTest =
+            new PrincipalAttributeMultiFactorAuthenticationRequestResolver(mfaWebApplicationServiceFactory, ['strong_two_factor': 1])
 
     @Unroll
     def "either authentication OR service OR both null arguments OR no authn_method principal attribute SHOULD result in a null return value"() {
@@ -56,12 +71,12 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
         def mfaReq = mfaAuthnReqResolverUnderTest.resolve(authenticationWithValidPrincipalAttributeFor_strong_two_factor, targetService)
 
         expect:
-        mfaReq.targetService.id == 'test target service'
+        mfaReq.mfaService.id == 'test target service'
 
         and:
-        mfaReq.authenticationMethod == 'strong_two_factor'
+        mfaReq.mfaService.authenticationMethod == 'strong_two_factor'
 
         and:
-        mfaReq.authenticationMethodSource == AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE
+        mfaReq.mfaService.authenticationMethodSource == AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE
     }
 }

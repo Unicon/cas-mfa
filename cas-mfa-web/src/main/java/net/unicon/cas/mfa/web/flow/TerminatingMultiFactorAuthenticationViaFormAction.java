@@ -1,8 +1,12 @@
 package net.unicon.cas.mfa.web.flow;
 
+import net.unicon.cas.addons.authentication.AuthenticationSupport;
+import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
+import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 
+import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.ticket.TicketException;
@@ -18,6 +22,24 @@ import org.springframework.webflow.execution.RequestContext;
  * @author Misagh Moayyed
  */
 public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractMultiFactorAuthenticationViaFormAction {
+
+
+    /**
+     * Ctor.
+     *
+     * @param multiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver
+     * @param authenticationSupport authenticationSupport
+     * @param authenticationMethodVerifier authenticationMethodVerifier
+     * @param authenticationMethodRankingStrategy authenticationMethodRankingStrategy
+     */
+    public TerminatingMultiFactorAuthenticationViaFormAction(
+                                final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
+                                final AuthenticationSupport authenticationSupport,
+                                final AuthenticationMethodVerifier authenticationMethodVerifier,
+                                final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
+
+        super(multiFactorAuthenticationRequestResolver, authenticationSupport, authenticationMethodVerifier, authenticationMethodRankingStrategy);
+    }
 
     /* {@inheritDoc} */
     @Override

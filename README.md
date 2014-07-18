@@ -9,7 +9,7 @@ Unicon is undertaking this project under contract for Evergreen State College as
 
 The intention is to develop a solution that can be adopted by current CAS adopters.
 #Documentation
-Please review [the project wiki](https://github.com/Unicon/cas-mfa/wiki) for additional information on scope, functionality and how-to walkthroughs. 
+Please review [the project wiki](https://github.com/Unicon/cas-mfa/wiki) for additional information on scope, functionality and how-to walkthroughs.
 # Build Status
 * [![Build Status](https://secure.travis-ci.org/Unicon/cas-mfa.png)](http://travis-ci.org/Unicon/cas-mfa)
 * [ ![Codeship Status for Unicon/cas-mfa](https://www.codeship.io/projects/0bbd72d0-b74c-0130-d193-1eff452fc99e/status?branch=master)](https://www.codeship.io/projects/4315)
@@ -24,5 +24,3 @@ try refreshing the page once)
 ding in terms of the code being adopted into CAS server, but we'll consider successful adoption as a CAS extension equally successful.
 
 The point is to add value to eventually numerous CAS implementations through adoption of this functionality, regardless of how the extension is factored.
-
-

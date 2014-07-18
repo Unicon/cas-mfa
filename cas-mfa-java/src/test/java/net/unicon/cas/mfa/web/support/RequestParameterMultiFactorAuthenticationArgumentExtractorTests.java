@@ -1,9 +1,9 @@
 package net.unicon.cas.mfa.web.support;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,8 +40,11 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
         // let's say we support all sorts of interesting authentication methods,
         // but this login request isn't going to require any of these
-        final List<String> supportedAuthenticationMethods =
-                Arrays.asList("fingerprint", "strong_two_factor", "personal_attestation", "retina_scan");
+        final Map<String, Integer> supportedAuthenticationMethods = new HashMap<String, Integer>(4);
+        supportedAuthenticationMethods.put("fingerprint", 1);
+        supportedAuthenticationMethods.put("retina_scan", 2);
+        supportedAuthenticationMethods.put("personal_attestation", 3);
+        supportedAuthenticationMethods.put("strong_two_factor", 4);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -64,10 +67,10 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
      */
     @Test(expected = UnrecognizedAuthenticationMethodException.class)
     public void testUnrecognizedAuthenticationMethodParameterYieldsNullService() {
-        final List<String> emptyList = Collections.emptyList();
+        final Map<String, Integer> emptyMap = Collections.emptyMap();
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
-                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(emptyList));
+                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(emptyMap));
 
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
@@ -85,7 +88,9 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
      */
     @Test
     public void testRecognizedAuthenticationMethodParameterYieldsAuthenticationMethodRequiringService() {
-        final List<String> validAuthenticationMethods = Arrays.asList("strong_two_factor");
+        final Map<String, Integer> validAuthenticationMethods = new HashMap<String, Integer>(1);
+        validAuthenticationMethods.put("strong_two_factor", 1);
+
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
                         this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(validAuthenticationMethods));
@@ -112,8 +117,11 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
     public void testRecognizedAuthenticationMethodParamAmongMultipleSupportedYieldsService() {
 
         // this is a bit of testing paranoia, but always want to check that one item isn't an edge case
-        final List<String> validAuthenticationMethods =
-                Arrays.asList("fingerprint", "strong_two_factor", "personal_attestation", "retina_scan");
+        final Map<String, Integer> validAuthenticationMethods = new HashMap<String, Integer>(4);
+        validAuthenticationMethods.put("fingerprint", 1);
+        validAuthenticationMethods.put("retina_scan", 2);
+        validAuthenticationMethods.put("personal_attestation", 3);
+        validAuthenticationMethods.put("strong_two_factor", 4);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -141,8 +149,11 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
     public void testMissingServiceParameterYieldsNullService() {
 
         // this is a bit of testing paranoia, but always want to check that one item isn't an edge case
-        final List<String> validAuthenticationMethods =
-                Arrays.asList("fingerprint", "strong_two_factor", "personal_attestation", "retina_scan");
+        final Map<String, Integer> validAuthenticationMethods = new HashMap<String, Integer>(4);
+        validAuthenticationMethods.put("fingerprint", 1);
+        validAuthenticationMethods.put("retina_scan", 2);
+        validAuthenticationMethods.put("personal_attestation", 3);
+        validAuthenticationMethods.put("strong_two_factor", 4);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -161,7 +172,9 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
     @Test
     public void testRecognizedAuthenticationMethodParameterInSamlRequest() {
-        final List<String> validAuthenticationMethods = Arrays.asList("strong_two_factor");
+        final Map<String, Integer> validAuthenticationMethods = new HashMap<String, Integer>(4);
+        validAuthenticationMethods.put("strong_two_factor", 1);
+
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
                         this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(validAuthenticationMethods));

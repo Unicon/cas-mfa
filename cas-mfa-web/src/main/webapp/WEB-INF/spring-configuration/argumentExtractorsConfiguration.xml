@@ -31,7 +31,7 @@
     <bean id="baseArgumentExtractor"
           p:httpClient-ref="noRedirectHttpClient"
           p:disableSingleSignOut="${slo.callbacks.disabled:false}"
-          abstract="true" />
+          abstract="true"/>
 
     <bean id="casArgumentExtractor"
           class="org.jasig.cas.web.support.CasArgumentExtractor"
@@ -39,27 +39,15 @@
 
     <bean id="samlArgumentExtractor" class="org.jasig.cas.web.support.SamlArgumentExtractor"
           parent="baseArgumentExtractor"/>
-                    
-    <bean id="authenticationMethodVerifier" class="net.unicon.cas.mfa.web.support.DefaultAuthenticationMethodVerifier"
-          c:supportedAuthenticationMethods-ref="listOfAuthenticationMethods"/>
 
-    <bean id="mfaArgumentExtractor" abstract="true" 
+    <bean id="authenticationMethodVerifier" class="net.unicon.cas.mfa.web.support.DefaultAuthenticationMethodVerifier"
+          c:supportedAuthenticationMethods-ref="supportedAuthenticationMethodsConfig"/>
+
+    <bean id="mfaArgumentExtractor" abstract="true"
           class="net.unicon.cas.mfa.web.support.AbstractMultiFactorAuthenticationArgumentExtractor"
           c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
           c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
           c:authenticationMethodVerifier-ref="authenticationMethodVerifier" />
-          
-    <bean id="requestParamMfaArgumentExtractor" parent="mfaArgumentExtractor"
-          class="net.unicon.cas.mfa.web.support.RequestParameterMultiFactorAuthenticationArgumentExtractor"/>
-
-    <bean id="registeredServiceAttributeMfaArgumentExtractor" parent="mfaArgumentExtractor"
-          class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
-          c:servicesManager-ref="servicesManager" />
-
-    <util:list id="listOfAuthenticationMethods">
-        <value>strong_two_factor</value>
-        <value>sample_two_factor</value>
-    </util:list>
 
     <util:set id="supportedProtocolsForMultifactorAuthentication">
         <ref bean="casArgumentExtractor"/>
@@ -70,12 +58,33 @@
           c:httpClient-ref="noRedirectHttpClient"
           c:disableSingleSignOut="${slo.callbacks.disabled:true}"/>
 
+    <bean id="requestParamMfaArgumentExtractor" parent="mfaArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.RequestParameterMultiFactorAuthenticationArgumentExtractor"/>
 
-    <util:list id="argumentExtractors">
+    <bean id="registeredServiceAttributeMfaArgumentExtractor" parent="mfaArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
+          c:servicesManager-ref="servicesManager" />
+
+    <util:set id="mfaArgumentExtractors">
         <ref bean="registeredServiceAttributeMfaArgumentExtractor"/>
         <ref bean="requestParamMfaArgumentExtractor"/>
+    </util:set>
+
+    <bean id="mfaRequestsCollectingArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationRequestsCollectingArgumentExtractor"
+          c:mfaArgumentExstractors-ref="mfaArgumentExtractors"
+          c:mfaRankingConfig-ref="supportedAuthenticationMethodsConfig"/>
+
+    <util:list id="argumentExtractors">
+        <ref bean="mfaRequestsCollectingArgumentExtractor"/>
         <ref bean="casArgumentExtractor"/>
         <ref bean="samlArgumentExtractor"/>
     </util:list>
+
+    <!-- Work in progress. Definition(s) for mfa method ranking functionality -->
+    <util:map id="supportedAuthenticationMethodsConfig">
+        <entry key="strong_two_factor" value="1"/>
+        <entry key="sample_two_factor" value="2"/>
+    </util:map>
 
 </beans>

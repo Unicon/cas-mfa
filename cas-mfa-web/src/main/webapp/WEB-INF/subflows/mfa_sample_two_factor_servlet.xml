@@ -36,7 +36,13 @@
   <bean id="sample_terminatingTwoFactorAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction" 
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
-        p:multiFactorAuthenticationManager-ref="sample_terminatingAuthenticationManager" />
+        p:multiFactorAuthenticationManager-ref="sample_terminatingAuthenticationManager"
+        c:authenticationSupport-ref="authenticationSupport"
+        c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
+        c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"
+        c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
+
+
  
   <!-- 
     This is the authentication manager responsible to validate the second factor credentials.

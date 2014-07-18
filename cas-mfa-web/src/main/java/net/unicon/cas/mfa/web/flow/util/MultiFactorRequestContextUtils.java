@@ -18,6 +18,7 @@
  */
 package net.unicon.cas.mfa.web.flow.util;
 
+import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
@@ -26,20 +27,29 @@ import org.springframework.webflow.execution.RequestContext;
 
 /**
  * Utility methods that facilitate retrieval and storage of MFA objects inside {@link RequestContext}.
+ *
  * @author Misagh Moayyed
  */
 public final class MultiFactorRequestContextUtils {
 
-    /** Attribute name by which the authentication context can be retrieved/placed in the flow.**/
+    /**
+     * Attribute name by which the authentication context can be retrieved/placed in the flow.
+     */
     public static final String CAS_AUTHENTICATION_ATTR_NAME = "casAuthentication";
 
-    /** Attribute name by which the TGT can be retrieved/placed in the flow.**/
+    /**
+     * Attribute name by which the TGT can be retrieved/placed in the flow.
+     */
     public static final String CAS_TICKET_GRANTING_TICKET_ATTR_NAME = "ticketGrantingTicketId";
 
-    /** Attribute name by which the MFA credentials can be retrieved/placed in the flow.**/
+    /**
+     * Attribute name by which the MFA credentials can be retrieved/placed in the flow.
+     */
     public static final String CAS_MFA_CREDENTIALS_ATTR_NAME = "mfaCredentials";
 
-    /** Attribute name by which the required authentication method can be retrieved/placed in the flow.**/
+    /**
+     * Attribute name by which the required authentication method can be retrieved/placed in the flow.
+     */
     public static final String CAS_MFA_REQ_AUTHN_METHOD = "requiredAuthenticationMethod";
 
     /**
@@ -52,6 +62,7 @@ public final class MultiFactorRequestContextUtils {
      * Gets the mfa credentials.
      *
      * @param context the context
+     *
      * @return the mfa credentials
      */
     public static MultiFactorCredentials getMfaCredentials(final RequestContext context) {
@@ -62,6 +73,7 @@ public final class MultiFactorRequestContextUtils {
      * Gets the ticket granting ticket id.
      *
      * @param context the context
+     *
      * @return the ticket granting ticket id
      */
     public static String getTicketGrantingTicketId(final RequestContext context) {
@@ -72,6 +84,7 @@ public final class MultiFactorRequestContextUtils {
      * Gets the authentication.
      *
      * @param context the context
+     *
      * @return the authentication
      */
     public static Authentication getAuthentication(final RequestContext context) {
@@ -115,9 +128,20 @@ public final class MultiFactorRequestContextUtils {
      * @param requiredAuthenticationMethod the required authentication method
      */
     public static void setRequiredAuthenticationMethod(final RequestContext context, final String requiredAuthenticationMethod) {
-        context.getFlowScope().put("requiredAuthenticationMethod", requiredAuthenticationMethod);
+        context.getFlowScope().put(CAS_MFA_REQ_AUTHN_METHOD, requiredAuthenticationMethod);
     }
-    
+
+    /**
+     * Get required authentication method from flow scope.
+     *
+     * @param context the context
+     *
+     * @return authentication method or null
+     */
+    public static String getRequiredAuthenticationMethod(final RequestContext context) {
+        return String.class.cast(context.getFlowScope().get(CAS_MFA_REQ_AUTHN_METHOD));
+    }
+
     /**
      * Sets the multifactor web application service.
      *
@@ -125,7 +149,45 @@ public final class MultiFactorRequestContextUtils {
      * @param svc the svc
      */
     public static void setMultifactorWebApplicationService(final RequestContext context,
-            final MultiFactorAuthenticationSupportingWebApplicationService svc) {
+                                                           final MultiFactorAuthenticationSupportingWebApplicationService svc) {
         context.getFlowScope().put("service", svc);
+    }
+
+    /**
+     * Get mfa service from flow scope.
+     *
+     * @param context the context
+     *
+     * @return mfa service or null
+     */
+    public static MultiFactorAuthenticationSupportingWebApplicationService
+                            getMultifactorWebApplicationService(final RequestContext context) {
+        final Object svc = context.getFlowScope().get("service");
+        return ((svc != null) && (svc instanceof MultiFactorAuthenticationSupportingWebApplicationService))
+                ? MultiFactorAuthenticationSupportingWebApplicationService.class.cast(svc)
+                : null;
+    }
+
+    /**
+     * Fetch {@link net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext} from flow scope.
+     *
+     * @param context the context
+     *
+     * @return mfa transaction or null
+     */
+    public static MultiFactorAuthenticationTransactionContext getMfaTransaction(final RequestContext context) {
+        return MultiFactorAuthenticationTransactionContext.class
+                .cast(context.getConversationScope().get(MultiFactorAuthenticationTransactionContext.class.getSimpleName()));
+    }
+
+    /**
+     * Set mfa transaction into conversation scope.
+     *
+     * @param context the context
+     * @param mfaTransaction ths mfa transaction
+     */
+    public static void setMfaTransaction(final RequestContext context,
+                                         final MultiFactorAuthenticationTransactionContext mfaTransaction) {
+        context.getConversationScope().put(MultiFactorAuthenticationTransactionContext.class.getSimpleName(), mfaTransaction);
     }
 }
