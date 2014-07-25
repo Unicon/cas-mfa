@@ -4,7 +4,6 @@ import groovy.util.logging.Slf4j
 import org.jasig.cas.authentication.handler.AuthenticationException
 import org.jasig.cas.authentication.handler.AuthenticationHandler
 import org.jasig.cas.authentication.principal.Credentials
-import org.jasig.cas.authentication.principal.UsernamePasswordCredentials
 
 @Slf4j
 class DuoAuthenticationHandler implements AuthenticationHandler {
@@ -20,7 +19,7 @@ class DuoAuthenticationHandler implements AuthenticationHandler {
         final duoCredentials = credentials as DuoCredentials
 
         // Do an out of band request using the DuoWeb api (encapsulated in DuoAuthenticationService) to the hosted duo service, if it is successful
-        // it will return a String containing the username of the successfully authenticated user, but will
+        // it will return a String containing the username of the successfully authenticated user, but if not - will
         // return a blank String or null otherwise.
         final duoVerifyResponse = this.duoAuthenticationService.authenticate(duoCredentials.signedDuoResponse)
         log.debug("Response from Duo verify: [{}]", duoVerifyResponse)
