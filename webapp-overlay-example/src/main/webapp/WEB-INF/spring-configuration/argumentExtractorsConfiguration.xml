@@ -81,7 +81,6 @@
         <ref bean="samlArgumentExtractor"/>
     </util:list>
 
-    <!-- Work in progress. Definition(s) for mfa method ranking functionality -->
     <util:map id="supportedAuthenticationMethodsConfig">
         <entry key="duo_two_factor" value="1"/>
         <entry key="strong_two_factor" value="2"/>
