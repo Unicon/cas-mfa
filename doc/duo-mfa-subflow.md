@@ -161,3 +161,38 @@ Please note that the components below are already preconfigured in `webapp-overl
     </global-transitions>
     </flow>
   ```
+
+### How to trigger
+
+In order to trigger Duo factor authentication subflow, the authentication method value of `duo_two_factor` needs to be provided to CAS
+via any of the current authentication method definition sources supported by cas:
+
+* Request parameter:
+
+  `https://example.org:8143/cas/login?service=https://www.google.com&authn_method=duo_two_factor`
+
+* Registered service attribute:
+
+  ```json
+  ...
+  {
+            "id": 1,
+            "serviceId": "https://www.google.com",
+            "name": "GOOGLE",
+            "extraAttributes": {
+                "authn_method": "duo_two_factor"
+            }
+  }
+  ...
+  ```
+
+* Authenticated principal attribute:
+
+  ```json
+  ...
+  {
+    "casuser":{
+      "authn_method": ["duo_two_factor"]
+    }
+  }
+  ```
