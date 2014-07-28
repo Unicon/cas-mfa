@@ -1,7 +1,7 @@
 ## Duo security additional factor authentication subflow
 
-`webapp-overlay-example` Maven module includes implementation of the mfa subflow which allows integration of Duo security authentication integration
-into the overall cas-mfa based CAS instalation. This document describes components as well as configuration description.
+`webapp-overlay-example` Maven module includes implementation of the mfa subflow which allows integration of Duo security authentication
+into the overall cas-mfa based CAS instalation. This document describes components as well as configuration.
 
 ### Components
 
