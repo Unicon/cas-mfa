@@ -24,9 +24,9 @@
 	<!-- ******************* PROPERTIES ************************* -->
 	<property environment="env" />
 	<property name="build.target.dir" value="target" />
-	<property name="catalina.home" value="e:/portal/apache-tomcat" />
+	<property name="catalina.home" value="${env.CATALINA_HOME}" />
 	<property name="tomcat.log.patterns" value="**/*.log, **/*.txt" />
-	<property name="cas.resources.dir" value="e:/etc/cas" />
+	<property name="cas.resources.dir" value="/etc/cas" />
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
 	<!-- ******************* MAVEN PROPERTIES******************** -->
