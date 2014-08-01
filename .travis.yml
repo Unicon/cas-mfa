@@ -3,3 +3,7 @@ language: java
 branches:
   only:
     - master
+cache:
+  - bundler
+  directories:
+  - $HOME/.m2
