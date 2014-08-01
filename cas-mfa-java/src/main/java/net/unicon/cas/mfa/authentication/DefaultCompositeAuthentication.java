@@ -1,14 +1,13 @@
 package net.unicon.cas.mfa.authentication;
 
+import net.unicon.cas.mfa.authentication.principal.MutablePrincipal;
+import net.unicon.cas.mfa.util.MultiFactorUtils;
+import org.jasig.cas.authentication.principal.Principal;
+
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
-
-import net.unicon.cas.mfa.authentication.principal.MutablePrincipal;
-import net.unicon.cas.mfa.util.MultiFactorUtils;
-
-import org.jasig.cas.authentication.principal.Principal;
 
 /**
  * A {@link CompositeAuthentication} implementation that houses an instance of
@@ -17,7 +16,7 @@ import org.jasig.cas.authentication.principal.Principal;
  * instance of authentication attributes via {@link #getAttributes()}.
  * @author Misagh Moayyed
  */
-public class DefaultCompositeAuthentication implements CompositeAuthentication {
+public final class DefaultCompositeAuthentication implements CompositeAuthentication {
 
     private static final long serialVersionUID = 6594344317585898494L;
 

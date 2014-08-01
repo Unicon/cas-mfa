@@ -1,13 +1,10 @@
 package net.unicon.cas.mfa.web.flow;
 
-import java.util.Set;
-
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
-
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
@@ -16,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.webflow.action.AbstractAction;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
+
+import java.util.Set;
 
 /**
  * Determines whether the login flow needs to branch *now* to honor the authentication method requirements of
@@ -82,7 +81,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
      * @param authenticationMethodRankingStrategy authenticationMethodRankingStrategy
      */
     public ValidateInitialMultiFactorAuthenticationRequestAction(final AuthenticationSupport authSupport,
-                                                                 final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
+                           final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
         this.authenticationSupport = authSupport;
         this.authnMethodRankingStrategy = authenticationMethodRankingStrategy;
     }

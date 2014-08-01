@@ -38,7 +38,8 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
                                 final AuthenticationMethodVerifier authenticationMethodVerifier,
                                 final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
 
-        super(multiFactorAuthenticationRequestResolver, authenticationSupport, authenticationMethodVerifier, authenticationMethodRankingStrategy);
+        super(multiFactorAuthenticationRequestResolver, authenticationSupport,
+                authenticationMethodVerifier, authenticationMethodRankingStrategy);
     }
 
     /* {@inheritDoc} */
