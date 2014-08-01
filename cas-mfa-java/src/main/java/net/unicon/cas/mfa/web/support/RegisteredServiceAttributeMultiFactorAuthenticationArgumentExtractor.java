@@ -24,6 +24,7 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
 public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor extends
         AbstractMultiFactorAuthenticationArgumentExtractor {
 
+    private String authenticationMethodAttribute = CONST_PARAM_AUTHN_METHOD;
 
     /**
      * Services manager.
@@ -46,6 +47,9 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
         this.servicesManager = servicesManager;
     }
 
+    public void setAuthenticationMethodAttribute(final String authenticationMethodAttribute) {
+        this.authenticationMethodAttribute = authenticationMethodAttribute;
+    }
 
     @Override
     protected String getAuthenticationMethod(final HttpServletRequest request, final WebApplicationService targetService) {
@@ -64,13 +68,13 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
 
         final String authenticationMethod =
                 String.class.cast(RegisteredServiceWithAttributes.class.cast(registeredService)
-                        .getExtraAttributes().get(CONST_PARAM_AUTHN_METHOD));
+                        .getExtraAttributes().get(this.authenticationMethodAttribute));
 
 
         if (!StringUtils.hasText(authenticationMethod)) {
             logger.debug("Registered service does not define authentication method attribute [{}]. "
                     + "Delegating to the next argument extractor in the chain...",
-                    CONST_PARAM_AUTHN_METHOD);
+                    this.authenticationMethodAttribute);
             return null;
         }
 
