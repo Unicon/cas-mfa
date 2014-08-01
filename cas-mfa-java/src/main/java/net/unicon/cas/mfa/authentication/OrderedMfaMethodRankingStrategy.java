@@ -24,4 +24,11 @@ public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationM
         OrderComparator.sort(sortedRequests);
         return sortedRequests.get(0).getMfaService();
     }
+
+    @Override
+    public boolean anyPreviouslyAchievedAuthenticationMethodsStrongerThanRequestedOne(final List<String> previouslyAchievedAuthenticationMethods,
+                                                                                      final String requestedAuthenticationMethod) {
+        //TODO implement
+        return false;
+    }
 }
