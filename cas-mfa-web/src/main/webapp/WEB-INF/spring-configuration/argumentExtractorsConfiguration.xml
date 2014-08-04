@@ -83,7 +83,7 @@
 
     <!-- Definition(s) for mfa method ranking functionality -->
     <!-- Lower rank value means higher priority, hence stronger authentication factor
-         as per org.springframework.core,Ordered -->
+         as per org.springframework.core.Ordered -->
     <util:map id="supportedAuthenticationMethodsConfig">
         <entry key="strong_two_factor" value="1"/>
         <entry key="sample_two_factor" value="2"/>
