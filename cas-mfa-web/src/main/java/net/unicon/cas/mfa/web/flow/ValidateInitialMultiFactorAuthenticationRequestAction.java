@@ -138,21 +138,22 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
 
         final Set<String> previouslyAchievedAuthenticationMethods =
                 MultiFactorUtils.getSatisfiedAuthenticationMethods(authentication);
+
         /*
-         * If the recorded authentication method from the prior Authentication matches the authentication method
-         * required to access the CAS-using service, proceed with the normal authentication flow.
+         * If any of the recorded authentication methods from the prior Authentication are 'stronger'
+         * than the authentication method requested to access the CAS-using service, proceed with the normal authentication flow.
          */
-        if (previouslyAchievedAuthenticationMethods.contains(requestedAuthenticationMethod)) {
-            logger.trace("Authentication method [{}] previously fulfilled; "
-                    + "proceeding flow as per normal.", requestedAuthenticationMethod);
+        if (this.authnMethodRankingStrategy
+                .anyPreviouslyAchievedAuthenticationMethodsStrongerThanRequestedOne(previouslyAchievedAuthenticationMethods,
+                        requestedAuthenticationMethod)) {
+            logger.trace("Authentication method [{}] is WEAKER than any previously fulfilled methods [{}]; "
+                    + "proceeding flow as per normal.", requestedAuthenticationMethod, previouslyAchievedAuthenticationMethods);
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
-        logger.trace("Recorded authentication methods [{}] do not match "
-                        + "now-required authentication method [{}]; "
-                        + "branching to prompt for required authentication method.",
-                previouslyAchievedAuthenticationMethods, requestedAuthenticationMethod
-        );
+        logger.trace("Authentication method [{}] is STRONGER than any previously fulfilled methods [{}]; "
+                + "branching to prompt for required authentication method.",
+                requestedAuthenticationMethod, previouslyAchievedAuthenticationMethods);
 
         //Place the ranked mfa service into the flow scope to be available in the actual mfa subflows
         MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context, mfaService);

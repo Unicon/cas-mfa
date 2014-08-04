@@ -31,6 +31,9 @@ import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -115,8 +118,11 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         when(manager.authenticate(any(Credentials.class))).thenReturn(this.authentication);
 
+        final Map<String, Integer> mfaRankingConfig = new HashMap<String, Integer>(2);
+        mfaRankingConfig.put("strong_two_factor", 1);
+        mfaRankingConfig.put("sample_two_factor", 2);
         this.action = new InitiatingMultiFactorAuthenticationViaFormAction(multiFactorAuthenticationRequestResolver,
-                authenticationSupport, verifier, authViaFormAction, new OrderedMfaMethodRankingStrategy());
+                authenticationSupport, verifier, authViaFormAction, new OrderedMfaMethodRankingStrategy(mfaRankingConfig));
 
         this.action.setCentralAuthenticationService(this.cas);
         this.action.setCredentialsBinder(this.binder);

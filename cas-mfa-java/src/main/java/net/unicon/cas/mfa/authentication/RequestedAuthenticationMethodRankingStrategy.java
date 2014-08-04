@@ -2,7 +2,7 @@ package net.unicon.cas.mfa.authentication;
 
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Strategy interface for ranking requested authentication methods.
@@ -24,15 +24,15 @@ public interface RequestedAuthenticationMethodRankingStrategy {
             MultiFactorAuthenticationTransactionContext mfaTransaction);
 
     /**
-     * Determine if provided list of previously achieved authentication methods contains any one method stronger that
+     * Determine if provided list of previously achieved authentication methods contains any one method stronger than
      * currently requested one. The algorithm and configuration of the ranking strength of the authentication methods
      * should be provided by implementations.
      *
-     * @param previouslyAchievedAuthenticationMethods list of previously achieved authentication methods
+     * @param previouslyAchievedAuthenticationMethods set of previously achieved authentication methods
      * @param requestedAuthenticationMethod requestedAuthenticationMethod
      *
      * @return true if list contains any methods stronger than requested one, and false otherwise
      */
-    boolean anyPreviouslyAchievedAuthenticationMethodsStrongerThanRequestedOne(List<String> previouslyAchievedAuthenticationMethods,
+    boolean anyPreviouslyAchievedAuthenticationMethodsStrongerThanRequestedOne(Set<String> previouslyAchievedAuthenticationMethods,
                                                                                String requestedAuthenticationMethod);
 }
