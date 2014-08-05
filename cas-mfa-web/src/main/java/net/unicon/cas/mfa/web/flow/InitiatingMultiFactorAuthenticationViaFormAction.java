@@ -68,7 +68,8 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
         final AuthenticationViaFormAction wrapperAuthenticationAction,
         final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
 
-        super(multiFactorAuthenticationRequestResolver, authenticationSupport, authenticationMethodVerifier, authenticationMethodRankingStrategy);
+        super(multiFactorAuthenticationRequestResolver, authenticationSupport,
+                authenticationMethodVerifier, authenticationMethodRankingStrategy);
         this.wrapperAuthenticationAction = wrapperAuthenticationAction;
     }
 

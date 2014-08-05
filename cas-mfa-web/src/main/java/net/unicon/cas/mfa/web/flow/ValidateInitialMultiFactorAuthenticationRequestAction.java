@@ -1,13 +1,10 @@
 package net.unicon.cas.mfa.web.flow;
 
-import java.util.Set;
-
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
-
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
@@ -16,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.webflow.action.AbstractAction;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
+
+import java.util.Set;
 
 /**
  * Determines whether the login flow needs to branch *now* to honor the authentication method requirements of
@@ -82,7 +81,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
      * @param authenticationMethodRankingStrategy authenticationMethodRankingStrategy
      */
     public ValidateInitialMultiFactorAuthenticationRequestAction(final AuthenticationSupport authSupport,
-                                                                 final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
+                           final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
         this.authenticationSupport = authSupport;
         this.authnMethodRankingStrategy = authenticationMethodRankingStrategy;
     }
@@ -99,7 +98,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
         final MultiFactorAuthenticationSupportingWebApplicationService mfaService =
                 this.authnMethodRankingStrategy.computeHighestRankingAuthenticationMethod(mfaTx);
 
-        final String requiredAuthenticationMethod = (mfaService != null) ? mfaService.getAuthenticationMethod() : null;
+        final String requestedAuthenticationMethod = (mfaService != null) ? mfaService.getAuthenticationMethod() : null;
         final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
 
         /*
@@ -116,12 +115,12 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
          * If the authentication method the CAS-using service has specified is blank,
          * proceed with the normal login flow.
          */
-        if (StringUtils.isBlank(requiredAuthenticationMethod)) {
+        if (StringUtils.isBlank(requestedAuthenticationMethod)) {
             logger.trace("Since required authentication method is blank, proceed flow normally.");
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
-        logger.trace("Service [{}] requires authentication method [{}]", mfaTx.getTargetServiceId(), requiredAuthenticationMethod);
+        logger.trace("Service [{}] requires authentication method [{}]", mfaTx.getTargetServiceId(), requestedAuthenticationMethod);
         final Authentication authentication = this.authenticationSupport.getAuthenticationFrom(tgt);
 
         /*
@@ -134,30 +133,31 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
 
             //Place the ranked mfa service into the flow scope to be available in the actual mfa subflows
             MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context, mfaService);
-            return new Event(this, getMultiFactorEventIdByAuthenticationMethod(requiredAuthenticationMethod));
+            return new Event(this, getMultiFactorEventIdByAuthenticationMethod(requestedAuthenticationMethod));
         }
 
         final Set<String> previouslyAchievedAuthenticationMethods =
                 MultiFactorUtils.getSatisfiedAuthenticationMethods(authentication);
+
         /*
-         * If the recorded authentication method from the prior Authentication matches the authentication method
-         * required to access the CAS-using service, proceed with the normal authentication flow.
+         * If any of the recorded authentication methods from the prior Authentication are 'stronger'
+         * than the authentication method requested to access the CAS-using service, proceed with the normal authentication flow.
          */
-        if (previouslyAchievedAuthenticationMethods.contains(requiredAuthenticationMethod)) {
-            logger.trace("Authentication method [{}] previously fulfilled; "
-                    + "proceeding flow as per normal.", requiredAuthenticationMethod);
+        if (this.authnMethodRankingStrategy
+                .anyPreviouslyAchievedAuthenticationMethodsStrongerThanRequestedOne(previouslyAchievedAuthenticationMethods,
+                        requestedAuthenticationMethod)) {
+            logger.trace("Authentication method [{}] is WEAKER than any previously fulfilled methods [{}]; "
+                    + "proceeding flow as per normal.", requestedAuthenticationMethod, previouslyAchievedAuthenticationMethods);
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
-        logger.trace("Recorded authentication methods [{}] do not match "
-                        + "now-required authentication method [{}]; "
-                        + "branching to prompt for required authentication method.",
-                previouslyAchievedAuthenticationMethods, requiredAuthenticationMethod
-        );
+        logger.trace("Authentication method [{}] is STRONGER than any previously fulfilled methods [{}]; "
+                + "branching to prompt for required authentication method.",
+                requestedAuthenticationMethod, previouslyAchievedAuthenticationMethods);
 
         //Place the ranked mfa service into the flow scope to be available in the actual mfa subflows
         MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context, mfaService);
-        return new Event(this, getMultiFactorEventIdByAuthenticationMethod(requiredAuthenticationMethod));
+        return new Event(this, getMultiFactorEventIdByAuthenticationMethod(requestedAuthenticationMethod));
     }
 
     /**
