@@ -53,26 +53,35 @@ public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationM
             return false;
         }
 
-        final Integer currRank = this.mfaRankingConfig.get(requestedAuthenticationMethod);
-        //Treat this as misconfiguration and throw a RuntimeException
-        if (currRank == null) {
-            throw new RuntimeException("The [mfaRankingConfig] Map is mis-configured. It does not have a ranking value mapping for the"
-                    + " [" + requestedAuthenticationMethod + "] authentication method.");
-        }
+        final Integer requestedRank = getRank(requestedAuthenticationMethod);
         Integer prevRank = null;
         for (final String prevMethod : previouslyAchievedAuthenticationMethods) {
-            prevRank = this.mfaRankingConfig.get(prevMethod);
-            //Treat this as misconfiguration and throw a RuntimeException
-            if (prevRank == null) {
-                throw new RuntimeException("The [mfaRankingConfig] Map is mis-configured. It does not have a ranking value mapping for the"
-                        + " [" + prevMethod + "] authentication method.");
-            }
+            prevRank = getRank(prevMethod);
             //Lower rank value == stronger (higher order)
             //We also treat equal ranks as 'not stronger'
-            if(prevRank < currRank) {
+            if (prevRank < requestedRank) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Retrieve rank value from the internal Map instance variable for the provided mfa method key.
+     *
+     * @param mfaMethod key to retrieve the rank value for
+     *
+     * @return rank value
+     *
+     * @throws IllegalStateException if the Map is mis-configured i.e. does not hold valid (mfaMethod -> rank) configuration data.
+     *                               This is totally a config/deployment error as opposed to external input validation error.
+     */
+    private Integer getRank(final String mfaMethod) throws IllegalStateException {
+        final Integer rank = this.mfaRankingConfig.get(mfaMethod);
+        if (rank == null) {
+            throw new IllegalStateException("The [mfaRankingConfig] Map is mis-configured. It does not have a ranking value mapping for the"
+                    + " [" + mfaMethod + "] authentication method.");
+        }
+        return rank;
     }
 }
