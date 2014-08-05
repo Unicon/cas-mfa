@@ -36,7 +36,7 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
      * Ctor.
      *
      * @param mfaArgumentExstractors delegate argument extractors
-     * @param mfaRankingConfig the mfa source ranking config
+     * @param mfaRankingConfig the mfa ranking config
      */
     public MultiFactorAuthenticationRequestsCollectingArgumentExtractor(
             final Set<AbstractMultiFactorAuthenticationArgumentExtractor> mfaArgumentExstractors,

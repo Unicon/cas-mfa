@@ -1,5 +1,6 @@
 package net.unicon.cas.mfa.web.flow;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
@@ -100,8 +101,11 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
     public void setup() {
         final AuthenticationSupport support = mock(AuthenticationSupport.class);
         when(support.getAuthenticationFrom(TGT_ID)).thenReturn(authentication);
+        final Map<String, Integer> mfaRankingConfig = new HashMap<String, Integer>(2);
+        mfaRankingConfig.put("strong_two_factor", 1);
+        mfaRankingConfig.put("sample_two_factor", 2);
 
-        this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support, new OrderedMfaMethodRankingStrategy());
+        this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support, new OrderedMfaMethodRankingStrategy(mfaRankingConfig));
 
         mockFlowScope = mock(MutableAttributeMap.class);
         when(requestContext.getFlowScope()).thenReturn(mockFlowScope);
