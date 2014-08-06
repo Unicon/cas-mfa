@@ -12,7 +12,7 @@
   <packaging>pom</packaging>
   <name>CAS Multifactor Authentication</name>
   <description>Jasig CAS SSO server multifactor authentication libraries and web application.</description>
-  <version>1.0.0-M2-SNAPSHOT</version>
+  <version>1.0.0-M3-SNAPSHOT</version>
   <url>https://github.com/Unicon/cas-mfa</url>
   <inceptionYear>2013</inceptionYear>
   <organization>
@@ -109,6 +109,9 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.10</version>
         <configuration>
+          <!-- Temporarily disable as the remote endpoint for the rules is failing at the moment -->
+          <skip>true</skip>
+          
           <consoleOutput>true</consoleOutput>
           <configLocation>https://raw.github.com/Jasig/cas/master/checkstyle-rules.xml</configLocation>
           <suppressionsLocation>https://raw.github.com/Jasig/cas/master/checkstyle-suppressions.xml</suppressionsLocation>
