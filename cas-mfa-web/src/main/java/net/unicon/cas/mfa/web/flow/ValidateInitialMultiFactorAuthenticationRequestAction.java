@@ -146,7 +146,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
         if (this.authnMethodRankingStrategy
                 .anyPreviouslyAchievedAuthenticationMethodsStrongerThanRequestedOne(previouslyAchievedAuthenticationMethods,
                         requestedAuthenticationMethod)) {
-            logger.trace("Authentication method [{}] is WEAKER than any previously fulfilled methods [{}]; "
+            logger.trace("Authentication method [{}] is WEAKER -- OR -- EQUAL than any previously fulfilled methods [{}]; "
                     + "proceeding flow as per normal.", requestedAuthenticationMethod, previouslyAchievedAuthenticationMethods);
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
