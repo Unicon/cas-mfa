@@ -59,7 +59,7 @@ public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationM
             prevRank = getRank(prevMethod);
             //Lower rank value == stronger (higher order)
             //We also treat equal ranks as 'not stronger'
-            if (prevRank < requestedRank) {
+            if (prevRank <= requestedRank) {
                 return true;
             }
         }

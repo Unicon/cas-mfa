@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to Jasig under one or more contributor license
+    agreements. See the NOTICE file distributed with this work
+    for additional information regarding copyright ownership.
+    Jasig licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file
+    except in compliance with the License.  You may obtain a
+    copy of the License at the following location:
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <bean id="baseArgumentExtractor"
+          p:httpClient-ref="noRedirectHttpClient"
+          p:disableSingleSignOut="${slo.callbacks.disabled:false}"
+          abstract="true"/>
+
+    <bean id="casArgumentExtractor"
+          class="org.jasig.cas.web.support.CasArgumentExtractor"
+          parent="baseArgumentExtractor"/>
+
+    <bean id="samlArgumentExtractor" class="org.jasig.cas.web.support.SamlArgumentExtractor"
+          parent="baseArgumentExtractor"/>
+
+    <bean id="authenticationMethodVerifier" class="net.unicon.cas.mfa.web.support.DefaultAuthenticationMethodVerifier"
+          c:supportedAuthenticationMethods-ref="supportedAuthenticationMethodsConfig"/>
+
+    <bean id="mfaArgumentExtractor" abstract="true"
+          class="net.unicon.cas.mfa.web.support.AbstractMultiFactorAuthenticationArgumentExtractor"
+          c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
+          c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
+          c:authenticationMethodVerifier-ref="authenticationMethodVerifier" />
+
+    <util:set id="supportedProtocolsForMultifactorAuthentication">
+        <ref bean="casArgumentExtractor"/>
+        <ref bean="samlArgumentExtractor"/>
+    </util:set>
+
+    <bean id="mfaServiceFactory" class="net.unicon.cas.mfa.web.support.DefaultMfaWebApplicationServiceFactory"
+          c:httpClient-ref="noRedirectHttpClient"
+          c:disableSingleSignOut="${slo.callbacks.disabled:true}"/>
+
+    <bean id="requestParamMfaArgumentExtractor" parent="mfaArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.RequestParameterMultiFactorAuthenticationArgumentExtractor"/>
+
+    <bean id="registeredServiceAttributeMfaArgumentExtractor" parent="mfaArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
+          c:servicesManager-ref="servicesManager" />
+
+    <util:set id="mfaArgumentExtractors">
+        <ref bean="registeredServiceAttributeMfaArgumentExtractor"/>
+        <ref bean="requestParamMfaArgumentExtractor"/>
+    </util:set>
+
+    <bean id="mfaRequestsCollectingArgumentExtractor"
+          class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationRequestsCollectingArgumentExtractor"
+          c:mfaArgumentExstractors-ref="mfaArgumentExtractors"
+          c:mfaRankingConfig-ref="supportedAuthenticationMethodsConfig"/>
+
+    <util:list id="argumentExtractors">
+        <ref bean="mfaRequestsCollectingArgumentExtractor"/>
+        <ref bean="casArgumentExtractor"/>
+        <ref bean="samlArgumentExtractor"/>
+    </util:list>
+
+    <util:map id="supportedAuthenticationMethodsConfig">
+        <entry key="duo_two_factor" value="1"/>
+        <entry key="strong_two_factor" value="2"/>
+        <entry key="sample_two_factor" value="3"/>
+    </util:map>
+
+</beans>
