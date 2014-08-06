@@ -116,7 +116,7 @@
           <configLocation>https://raw.github.com/Jasig/cas/master/checkstyle-rules.xml</configLocation>
           <suppressionsLocation>https://raw.github.com/Jasig/cas/master/checkstyle-suppressions.xml</suppressionsLocation>
           <failsOnError>true</failsOnError>
-          <!-- exclude Duo code from the checkstyle check. It's a 3rd party code included in the sample overlay
+          <!-- exclude Duo code from the checkstyle check. It's a 3rd party code included in the cas-mfa-duo module
                which we don't want to be in business touching. Otherwise it certainly doesn't pass strict rules set here
                and as a result won't build -->
           <excludes>com/duosecurity/**/*</excludes>
@@ -506,6 +506,7 @@
     <module>cas-mfa-java</module>
     <module>cas-mfa-web</module>
     <module>webapp-overlay-example</module>
+    <module>cas-mfa-duo</module>
   </modules>
 
   <properties>

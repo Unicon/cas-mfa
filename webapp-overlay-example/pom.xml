@@ -104,14 +104,9 @@
             <type>war</type>
         </dependency>
         <dependency>
-            <groupId>org.jasig.cas</groupId>
-            <artifactId>cas-server-core</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <scope>compile</scope>
+            <groupId>net.unicon</groupId>
+            <artifactId>cas-mfa-duo</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

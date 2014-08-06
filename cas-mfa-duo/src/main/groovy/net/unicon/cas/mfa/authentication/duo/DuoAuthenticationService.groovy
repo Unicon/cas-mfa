@@ -1,6 +1,6 @@
-package net.unicon.cas.mfa.authentication.duo;
+package net.unicon.cas.mfa.authentication.duo
 
-import com.duosecurity.DuoWeb;
+import com.duosecurity.DuoWeb
 
 /**
  * An abstraction that encapsulates interaction with Duo 2fa authentication service via its public API
