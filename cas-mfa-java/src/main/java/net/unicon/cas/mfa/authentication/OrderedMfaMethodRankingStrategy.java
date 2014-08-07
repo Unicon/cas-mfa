@@ -43,8 +43,8 @@ public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationM
     }
 
     @Override
-    public boolean anyPreviouslyAchievedAuthenticationMethodsStrongerThanRequestedOne(final Set<String> previouslyAchievedAuthenticationMethods,
-                                                                                      final String requestedAuthenticationMethod) {
+    public boolean anyPreviouslyAchievedAuthenticationMethodsStrongerThanRequestedOne(
+            final Set<String> previouslyAchievedAuthenticationMethods, final String requestedAuthenticationMethod) {
 
         Assert.notNull(previouslyAchievedAuthenticationMethods);
         Assert.notNull(requestedAuthenticationMethod);
