@@ -5,8 +5,6 @@ This is a project to develop free and open source compatibly licensed extensions
 * support for relying parties (CAS-using applications) understanding how strongly the user authenticated from the ticket validation response, and
 * support for relying parties exerting authentication strength requirements.
 
-Unicon is undertaking this project under contract for Evergreen State College as an outcome of a successful response to a lovely RFP requisitioning this software development and thoughtfully insisting that the work product be free and open source software.
-
 The intention is to develop a solution that can be adopted by current CAS adopters.
 #Documentation
 Please review [the project wiki](https://github.com/Unicon/cas-mfa/wiki) for additional information on scope, functionality and how-to walkthroughs.
