@@ -11,6 +11,7 @@ of the `cas-mfa` project:
 * Duo web Java support code (in `src/main/java/com/duosecurity/*.java`)
 * Duo web JavaScript library (in `webapp/js/duo/**`)
 * CAS-specific components utilizing Duo as an authentication source (in `src/main/groovy/net/unicon/cas/mfa/authentication/duo/*.groovy`)
+* A JSP view with embedded Duo security iFrame and JS library wrapper (in `WEB-INF/view/jsp/default/ui/casDuoLoginView.jsp`)
 
 ### Configuration
 
@@ -67,6 +68,13 @@ Please note that the components below are already preconfigured in `webapp-overl
       ...
       <webflow:flow-location path="/WEB-INF/subflows/mfa_duo_two_factor_webflow.xml" id="mfa_duo_two_factor"/>
   </webflow:flow-registry>
+  ```
+* Add Duo view mapping in `src/main/resources/default_views.properties`:
+
+  ```
+  ### Duo Two-Factor Authentication
+  casDuoLoginView.(class)=org.springframework.web.servlet.view.JstlView
+  casDuoLoginView.url=/WEB-INF/view/jsp/default/ui/casDuoLoginView.jsp
   ```
 
 * Add `WEB-INF/subflows/mfa_duo_two_factor_servlet.xml`:
