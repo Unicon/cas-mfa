@@ -23,7 +23,7 @@ of the `cas-mfa` project:
   duo.secret.key=
   duo.application.key=
   ```
-  > NOTE: Duo application key should be generated manually and kept secret from Duo web as per Duo web documentation: 
+  > NOTE: Duo application key should be generated manually and kept secret from Duo web as per Duo web documentation:
   > https://www.duosecurity.com/docs/duoweb#1.-generate-an-akey
 
 Please note that the components below are already preconfigured in `webapp-overlay-example`
@@ -38,7 +38,7 @@ Please note that the components below are already preconfigured in `webapp-overl
   </util:map>
   ```
 
-  > NOTE: the ranking is just an arbitrary value and should be set according to local business requirements
+  > NOTE: the ranking is just an arbitrary integer value and should be set according to local business requirements
 
 * Modify `login-webflow.xml` to add duo subflows and appropriate transitions:
 
