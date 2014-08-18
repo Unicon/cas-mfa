@@ -1,6 +1,7 @@
 package net.unicon.cas.mfa.authentication.duo
 
 import com.duosecurity.DuoWeb
+import groovy.util.logging.Slf4j
 
 /**
  * An abstraction that encapsulates interaction with Duo 2fa authentication service via its public API
@@ -8,6 +9,7 @@ import com.duosecurity.DuoWeb
  * Derived from the fine work of @author Eric Pierce <epierce@usf.edu>
  * and @author Michael Kennedy <michael.kennedy@ucr.edu>
  */
+@Slf4j
 final class DuoAuthenticationService {
     private final String duoIntegrationKey
     private final String duoSecretKey
@@ -30,6 +32,7 @@ final class DuoAuthenticationService {
     }
 
     def authenticate(final String signedRequestToken) {
+        log.debug("Calling DuoWeb.verifyResponse with signed request token '{}'", signedRequestToken)
         DuoWeb.verifyResponse(this.duoIntegrationKey, this.duoSecretKey, this.duoApplicationKey, signedRequestToken)
     }
 }

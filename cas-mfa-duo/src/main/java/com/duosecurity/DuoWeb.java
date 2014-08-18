@@ -1,5 +1,8 @@
 package com.duosecurity;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -25,30 +28,41 @@ public final class DuoWeb {
   public static final String ERR_AKEY = "ERR|The application secret key passed to sign_request() must be at least " + AKEY_LEN + " characters.";
   public static final String ERR_UNKNOWN = "ERR|An unknown error has occurred.";
 
+  /** cas-mfa added logger */
+  private static final Logger logger = LoggerFactory.getLogger(DuoWeb.class);
+
   public static String signRequest(String ikey, String skey, String akey, String username) {
     String duo_sig;
     String app_sig;
 
+    logger.debug("username '{}'", username);
+
     if (username.equals("")) {
-      return ERR_USER;
+       logger.debug("username is empty");
+       return ERR_USER;
     }
     if (ikey.equals("") || ikey.length() != IKEY_LEN) {
-      return ERR_IKEY;
+       logger.debug("ikey '{}' is invalid", ikey);
+       return ERR_IKEY;
     }
     if (skey.equals("") || skey.length() != SKEY_LEN) {
-      return ERR_SKEY;
+        logger.debug("skey '{}' is invalid", skey);
+       return ERR_SKEY;
     }
     if (akey.equals("") || akey.length() < AKEY_LEN) {
-      return ERR_AKEY;
+       logger.debug("akey '{}' is invalid", akey);
+       return ERR_AKEY;
     }
 
     try {
       duo_sig = signVals(skey, username, ikey, DUO_PREFIX, DUO_EXPIRE);
       app_sig = signVals(akey, username, ikey, APP_PREFIX, APP_EXPIRE);
     } catch (Exception e) {
+      logger.error("Exception is caught during an attempt to signVals()", e);
       return ERR_UNKNOWN;
     }
 
+    logger.debug("The generated signed request: '{}:{}'", duo_sig, app_sig);
     return duo_sig + ":" + app_sig;
   }
 
@@ -57,6 +71,7 @@ public final class DuoWeb {
     String auth_user = null;
     String app_user = null;
 
+    logger.debug("Verifying sig_response: '{}'", sig_response);
     try {
       String[] sigs = sig_response.split(":");
       String auth_sig = sigs[0];
@@ -65,11 +80,13 @@ public final class DuoWeb {
       auth_user = parseVals(skey, auth_sig, AUTH_PREFIX);
       app_user = parseVals(akey, app_sig, APP_PREFIX);
     } catch (Exception e) {
-      return null;
+       logger.error("Exception is caught during an attempt to parseVals(). Returning null...", e);
+       return null;
     }
     
     if (auth_user == null || app_user == null | !auth_user.equals(app_user)) {
-      return null;
+       logger.debug("auth_user '{}' does not match app_user '{}' Returning null...", auth_user, app_user);
+       return null;
     }
 
     return auth_user;
