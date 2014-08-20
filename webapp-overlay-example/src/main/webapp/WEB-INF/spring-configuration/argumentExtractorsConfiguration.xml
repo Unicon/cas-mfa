@@ -73,6 +73,7 @@
     <bean id="mfaRequestsCollectingArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationRequestsCollectingArgumentExtractor"
           c:mfaArgumentExstractors-ref="mfaArgumentExtractors"
+          c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
           c:mfaRankingConfig-ref="supportedAuthenticationMethodsConfig"/>
 
     <util:list id="argumentExtractors">

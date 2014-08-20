@@ -14,8 +14,6 @@ import java.util.Map;
  * @author Unicon inc.
  */
 public final class DefaultAuthenticationMethodVerifier implements AuthenticationMethodVerifier {
-
-
     /**
      * The logger.
      */
@@ -36,7 +34,7 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
     }
 
     @Override
-    public void verifyAuthenticationMethod(final String authenticationMethod,
+    public boolean verifyAuthenticationMethod(final String authenticationMethod,
                                            final WebApplicationService targetService,
                                            final HttpServletRequest request) {
 
@@ -56,7 +54,9 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
                 request.setAttribute(UnrecognizedAuthenticationMethodException.class.getName(), Boolean.TRUE.toString());
                 throw new UnrecognizedAuthenticationMethodException(authenticationMethod, targetService.getId());
             }
+            return false;
         }
-
+        return true;
     }
+
 }

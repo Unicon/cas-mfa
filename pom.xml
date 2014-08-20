@@ -504,6 +504,7 @@
     <module>cas-mfa-web</module>
     <module>webapp-overlay-example</module>
     <module>cas-mfa-duo</module>
+    <module>cas-mfa-duo-web</module>
   </modules>
 
   <properties>

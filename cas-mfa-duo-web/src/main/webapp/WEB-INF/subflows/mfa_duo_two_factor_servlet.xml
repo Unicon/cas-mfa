@@ -41,6 +41,9 @@
           c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"
           c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
 
+    <!-- Duo Login View -->
+    <bean id="casDuoLoginView" class="org.springframework.web.servlet.view.JstlView"
+        p:url="/WEB-INF/view/jsp/default/ui/casDuoLoginView.jsp" />
 
     <!--
       This is the authentication manager responsible to validate the second factor credentials.
@@ -54,7 +57,6 @@
         <bean class="net.unicon.cas.mfa.authentication.duo.DuoAuthenticationHandler"
               c:duoAuthenticationService-ref="duoAuthenticationService" />
     </util:list>
-
 
     <bean id="duoAuthenticationService"
           class="net.unicon.cas.mfa.authentication.duo.DuoAuthenticationService"

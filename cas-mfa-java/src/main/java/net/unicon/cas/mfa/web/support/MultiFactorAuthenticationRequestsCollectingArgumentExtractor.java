@@ -33,17 +33,25 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
     private final Map<String, Integer> mfaRankingConfig;
 
     /**
+     * The Authentication method verifier.
+     */
+    private final AuthenticationMethodVerifier authenticationMethodVerifier;
+
+    /**
      * Ctor.
      *
      * @param mfaArgumentExstractors delegate argument extractors
      * @param mfaRankingConfig the mfa ranking config
+     * @param authenticationMethodVerifier the authentication method verifier
      */
     public MultiFactorAuthenticationRequestsCollectingArgumentExtractor(
             final Set<AbstractMultiFactorAuthenticationArgumentExtractor> mfaArgumentExstractors,
-            final Map<String, Integer> mfaRankingConfig) {
+            final Map<String, Integer> mfaRankingConfig,
+            final AuthenticationMethodVerifier authenticationMethodVerifier) {
 
         this.mfaArgumentExstractors = mfaArgumentExstractors;
         this.mfaRankingConfig = mfaRankingConfig;
+        this.authenticationMethodVerifier = authenticationMethodVerifier;
     }
 
     @Override
@@ -54,7 +62,9 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
             final MultiFactorAuthenticationSupportingWebApplicationService service =
                     MultiFactorAuthenticationSupportingWebApplicationService.class.cast(extractor.extractService(request));
 
-            if (service != null) {
+            if (service != null
+                && this.authenticationMethodVerifier.verifyAuthenticationMethod(service.getAuthenticationMethod(), service, request)) {
+
                 final int mfaMethodRank = this.mfaRankingConfig.get(service.getAuthenticationMethod());
                 if (mfaTxCtx != null) {
                     mfaTxCtx.addMfaRequest(createMfaRequest(service, mfaMethodRank));
@@ -62,13 +72,14 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
                     mfaTxCtx = new MultiFactorAuthenticationTransactionContext(
                             service.getId()).addMfaRequest(createMfaRequest(service, mfaMethodRank));
                 }
+
             }
         }
 
         if (mfaTxCtx != null) {
             //This is not unit testable (well in Java anyway, but would be possible if this class was written in Groovy),
             // but it's the only way to reach into the SWF context from here,
-            //and since there is no desire to use httpservletrequest attribute to get this object out.
+            //and since there is no desire to use <code>HttpServletRequest</code> attribute to get this object out.
             RequestContextHolder.getRequestContext().getConversationScope()
                     .put(MultiFactorAuthenticationTransactionContext.class.getSimpleName(), mfaTxCtx);
         }

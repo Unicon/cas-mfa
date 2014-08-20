@@ -29,15 +29,6 @@
                     <packagingExcludes>WEB-INF/lib/stax-api-1.0-2.jar</packagingExcludes>
                     <overlays>
                         <overlay>
-                            <groupId>net.unicon</groupId>
-                            <artifactId>cas-mfa-web</artifactId>
-                            <excludes>
-                                <exclude>WEB-INF/web.xml</exclude>
-                                <exclude>**/spring-expression-3.1.1.RELEASE.jar</exclude>
-                                <exclude>**/stax-api-1.0-2.jar</exclude>
-                            </excludes>
-                        </overlay>
-                        <overlay>
                             <groupId>org.jasig.cas</groupId>
                             <artifactId>cas-server-webapp</artifactId>
                             <excludes>
@@ -83,6 +74,19 @@
                                 <exclude>**/stax-api-1.0-2.jar</exclude>
                             </excludes>
                         </overlay>
+                        <overlay>
+                            <groupId>net.unicon</groupId>
+                            <artifactId>cas-mfa-web</artifactId>
+                            <excludes>
+                                <exclude>WEB-INF/web.xml</exclude>
+                                <exclude>**/spring-expression-3.1.1.RELEASE.jar</exclude>
+                                <exclude>**/stax-api-1.0-2.jar</exclude>
+                            </excludes>
+                        </overlay>
+                        <overlay>
+                            <groupId>net.unicon</groupId>
+                            <artifactId>cas-mfa-duo-web</artifactId>
+                        </overlay>
                     </overlays>
                 </configuration>
             </plugin>
@@ -104,8 +108,9 @@
         </dependency>
         <dependency>
             <groupId>net.unicon</groupId>
-            <artifactId>cas-mfa-duo</artifactId>
+            <artifactId>cas-mfa-duo-web</artifactId>
             <version>${project.version}</version>
+            <type>war</type>
         </dependency>
     </dependencies>
 </project>

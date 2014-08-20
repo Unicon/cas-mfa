@@ -76,4 +76,5 @@
         <transition to="mfaUnrecognizedAuthnMethodError"
                     on-exception="net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException" />
     </global-transitions>
+
 </flow>
