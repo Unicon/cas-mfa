@@ -1,5 +1,7 @@
 package net.unicon.cas.mfa.web.support;
 
+import net.unicon.cas.mfa.authentication.AuthenticationMethod;
+import net.unicon.cas.mfa.authentication.AuthenticationMethodConfiguration;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import org.jasig.cas.authentication.principal.WebApplicationService;
@@ -7,7 +9,6 @@ import org.jasig.cas.web.support.ArgumentExtractor;
 import org.springframework.webflow.execution.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,9 +29,9 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
     private final Set<AbstractMultiFactorAuthenticationArgumentExtractor> mfaArgumentExstractors;
 
     /**
-     * A config map with ranking numbers per mfa method type.
+     * Configuration of authn methods loaded.
      */
-    private final Map<String, Integer> mfaRankingConfig;
+    private final AuthenticationMethodConfiguration authenticationMethodConfiguration;
 
     /**
      * The Authentication method verifier.
@@ -41,16 +42,16 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
      * Ctor.
      *
      * @param mfaArgumentExstractors delegate argument extractors
-     * @param mfaRankingConfig the mfa ranking config
+     * @param authenticationMethodConfiguration the authn methods config
      * @param authenticationMethodVerifier the authentication method verifier
      */
     public MultiFactorAuthenticationRequestsCollectingArgumentExtractor(
             final Set<AbstractMultiFactorAuthenticationArgumentExtractor> mfaArgumentExstractors,
-            final Map<String, Integer> mfaRankingConfig,
+            final AuthenticationMethodConfiguration authenticationMethodConfiguration,
             final AuthenticationMethodVerifier authenticationMethodVerifier) {
 
         this.mfaArgumentExstractors = mfaArgumentExstractors;
-        this.mfaRankingConfig = mfaRankingConfig;
+        this.authenticationMethodConfiguration = authenticationMethodConfiguration;
         this.authenticationMethodVerifier = authenticationMethodVerifier;
     }
 
@@ -65,12 +66,13 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
             if (service != null
                 && this.authenticationMethodVerifier.verifyAuthenticationMethod(service.getAuthenticationMethod(), service, request)) {
 
-                final int mfaMethodRank = this.mfaRankingConfig.get(service.getAuthenticationMethod());
+                final AuthenticationMethod method =
+                        this.authenticationMethodConfiguration.getAuthenticationMethod(service.getAuthenticationMethod());
                 if (mfaTxCtx != null) {
-                    mfaTxCtx.addMfaRequest(createMfaRequest(service, mfaMethodRank));
+                    mfaTxCtx.addMfaRequest(createMfaRequest(service, method.getRank()));
                 } else {
                     mfaTxCtx = new MultiFactorAuthenticationTransactionContext(
-                            service.getId()).addMfaRequest(createMfaRequest(service, mfaMethodRank));
+                            service.getId()).addMfaRequest(createMfaRequest(service, method.getRank()));
                 }
 
             }

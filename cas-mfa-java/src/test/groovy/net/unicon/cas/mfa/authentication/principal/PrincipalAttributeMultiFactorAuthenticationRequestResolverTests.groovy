@@ -1,5 +1,7 @@
 package net.unicon.cas.mfa.authentication.principal
 
+import net.unicon.cas.mfa.authentication.AuthenticationMethod
+import net.unicon.cas.mfa.authentication.AuthenticationMethodConfiguration
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService
 
@@ -49,8 +51,14 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
     }
 
     @Subject
+    def s1 = [new AuthenticationMethod("strong_two_factor",1),
+              new AuthenticationMethod("lower_factor",2),
+              new AuthenticationMethod("lowest_factor",3)] as Set
+
+    def loader = new AuthenticationMethodConfiguration(s1)
+
     def mfaAuthnReqResolverUnderTest =
-            new PrincipalAttributeMultiFactorAuthenticationRequestResolver(mfaWebApplicationServiceFactory, ['strong_two_factor': 1])
+            new PrincipalAttributeMultiFactorAuthenticationRequestResolver(mfaWebApplicationServiceFactory, loader)
 
     @Unroll
     def "either authentication OR service OR both null arguments OR no authn_method principal attribute SHOULD result in a null return value"() {

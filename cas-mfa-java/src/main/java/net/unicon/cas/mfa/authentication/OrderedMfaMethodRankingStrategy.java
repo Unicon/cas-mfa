@@ -6,7 +6,6 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,17 +18,17 @@ import java.util.Set;
 public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationMethodRankingStrategy {
 
     /**
-     * A config map with ranking numbers per mfa method type.
+     * The authn method loader.
      */
-    private final Map<String, Integer> mfaRankingConfig;
+    private final AuthenticationMethodConfiguration authenticationMethodConfiguration;
 
     /**
      * Ctor.
      *
-     * @param mfaRankingConfig the mfa ranking config
+     * @param authenticationMethodConfiguration the authentication method loader
      */
-    public OrderedMfaMethodRankingStrategy(final Map<String, Integer> mfaRankingConfig) {
-        this.mfaRankingConfig = mfaRankingConfig;
+    public OrderedMfaMethodRankingStrategy(final AuthenticationMethodConfiguration authenticationMethodConfiguration) {
+        this.authenticationMethodConfiguration = authenticationMethodConfiguration;
     }
 
     @Override
@@ -77,7 +76,7 @@ public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationM
      *                               This is totally a config/deployment error as opposed to external input validation error.
      */
     private Integer getRank(final String mfaMethod) throws IllegalStateException {
-        final Integer rank = this.mfaRankingConfig.get(mfaMethod);
+        final Integer rank = this.authenticationMethodConfiguration.getAuthenticationMethod(mfaMethod).getRank();
         if (rank == null) {
             throw new IllegalStateException("The [mfaRankingConfig] Map is mis-configured. It does not have a ranking value mapping for the"
                     + " [" + mfaMethod + "] authentication method.");

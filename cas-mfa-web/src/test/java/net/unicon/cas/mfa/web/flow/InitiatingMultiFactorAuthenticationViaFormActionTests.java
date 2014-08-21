@@ -1,13 +1,14 @@
 package net.unicon.cas.mfa.web.flow;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
+import net.unicon.cas.mfa.authentication.AuthenticationMethod;
+import net.unicon.cas.mfa.authentication.AuthenticationMethodConfiguration;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.AuthenticationManager;
@@ -30,11 +31,11 @@ import org.springframework.webflow.core.collection.ParameterMap;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -118,11 +119,15 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         when(manager.authenticate(any(Credentials.class))).thenReturn(this.authentication);
 
-        final Map<String, Integer> mfaRankingConfig = new HashMap<String, Integer>(2);
-        mfaRankingConfig.put("strong_two_factor", 1);
-        mfaRankingConfig.put("sample_two_factor", 2);
+        final SortedSet<AuthenticationMethod> validAuthenticationMethods =
+                new TreeSet<AuthenticationMethod>();
+        validAuthenticationMethods.add(new AuthenticationMethod("sample_two_factor", 2));
+        validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
+
+        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
+
         this.action = new InitiatingMultiFactorAuthenticationViaFormAction(multiFactorAuthenticationRequestResolver,
-                authenticationSupport, verifier, authViaFormAction, new OrderedMfaMethodRankingStrategy(mfaRankingConfig));
+                authenticationSupport, verifier, authViaFormAction, new OrderedMfaMethodRankingStrategy(loader));
 
         this.action.setCentralAuthenticationService(this.cas);
         this.action.setCredentialsBinder(this.binder);

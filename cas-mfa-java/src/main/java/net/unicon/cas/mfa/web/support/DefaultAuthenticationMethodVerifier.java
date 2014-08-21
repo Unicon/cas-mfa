@@ -1,11 +1,11 @@
 package net.unicon.cas.mfa.web.support;
 
+import net.unicon.cas.mfa.authentication.AuthenticationMethodConfiguration;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * Default implementation of {@link net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier}.
@@ -22,15 +22,15 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
     /**
      * Supported authentication methods.
      */
-    private final Map<String, Integer> supportedAuthenticationMethods;
+    private final AuthenticationMethodConfiguration supportedAuthenticationMethodsConfig;
 
     /**
      * Ctor.
      *
-     * @param supportedAuthenticationMethods list of supported authentication methods
+     * @param authenticationMethodConfiguration list of supported authentication methods
      */
-    public DefaultAuthenticationMethodVerifier(final Map<String, Integer> supportedAuthenticationMethods) {
-        this.supportedAuthenticationMethods = supportedAuthenticationMethods;
+    public DefaultAuthenticationMethodVerifier(final AuthenticationMethodConfiguration authenticationMethodConfiguration) {
+        this.supportedAuthenticationMethodsConfig = authenticationMethodConfiguration;
     }
 
     @Override
@@ -38,7 +38,7 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
                                            final WebApplicationService targetService,
                                            final HttpServletRequest request) {
 
-        if (!supportedAuthenticationMethods.containsKey(authenticationMethod)) {
+        if (!supportedAuthenticationMethodsConfig.containsAuthenticationMethod(authenticationMethod)) {
             logger.debug("CAS is not configured to support [{}] authentication method value [{}].",
                     MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
                     authenticationMethod);

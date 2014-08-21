@@ -1,13 +1,7 @@
 package net.unicon.cas.mfa.web.support;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
+import net.unicon.cas.mfa.authentication.AuthenticationMethod;
+import net.unicon.cas.mfa.authentication.AuthenticationMethodConfiguration;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.jasig.cas.web.support.CasArgumentExtractor;
 import org.jasig.cas.web.support.SamlArgumentExtractor;
@@ -15,8 +9,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
@@ -40,15 +42,18 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
         // let's say we support all sorts of interesting authentication methods,
         // but this login request isn't going to require any of these
-        final Map<String, Integer> supportedAuthenticationMethods = new HashMap<String, Integer>(4);
-        supportedAuthenticationMethods.put("fingerprint", 1);
-        supportedAuthenticationMethods.put("retina_scan", 2);
-        supportedAuthenticationMethods.put("personal_attestation", 3);
-        supportedAuthenticationMethods.put("strong_two_factor", 4);
+        final SortedSet<AuthenticationMethod> validAuthenticationMethods =
+                new TreeSet<AuthenticationMethod>();
+        validAuthenticationMethods.add(new AuthenticationMethod("fingerprint", 1));
+        validAuthenticationMethods.add(new AuthenticationMethod("retina_scan", 2));
+        validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
+        validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
+
+        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
-                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(supportedAuthenticationMethods));
+                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(loader));
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -67,10 +72,11 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
      */
     @Test(expected = UnrecognizedAuthenticationMethodException.class)
     public void testUnrecognizedAuthenticationMethodParameterYieldsNullService() {
-        final Map<String, Integer> emptyMap = Collections.emptyMap();
+        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration();
+
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
-                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(emptyMap));
+                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(loader));
 
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
@@ -88,12 +94,14 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
      */
     @Test
     public void testRecognizedAuthenticationMethodParameterYieldsAuthenticationMethodRequiringService() {
-        final Map<String, Integer> validAuthenticationMethods = new HashMap<String, Integer>(1);
-        validAuthenticationMethods.put("strong_two_factor", 1);
+        final SortedSet<AuthenticationMethod> validAuthenticationMethods =
+                new TreeSet<AuthenticationMethod>();
+        validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 1));
+        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
-                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(validAuthenticationMethods));
+                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(loader));
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -114,18 +122,22 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
      * extractor extracts a service conveying the required authentication method.
      */
     @Test
-    public void testRecognizedAuthenticationMethodParamAmongMultipleSupportedYieldsService() {
+    public void testRecognizedAuthenticationMethodParamAmongMultipleSupportedYieldsService() throws IOException {
 
         // this is a bit of testing paranoia, but always want to check that one item isn't an edge case
-        final Map<String, Integer> validAuthenticationMethods = new HashMap<String, Integer>(4);
-        validAuthenticationMethods.put("fingerprint", 1);
-        validAuthenticationMethods.put("retina_scan", 2);
-        validAuthenticationMethods.put("personal_attestation", 3);
-        validAuthenticationMethods.put("strong_two_factor", 4);
+        final SortedSet<AuthenticationMethod> validAuthenticationMethods =
+                new TreeSet<AuthenticationMethod>();
+        validAuthenticationMethods.add(new AuthenticationMethod("fingerprint", 1));
+        validAuthenticationMethods.add(new AuthenticationMethod("retina_scan", 2));
+        validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
+        validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
+
+        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
-                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(validAuthenticationMethods));
+                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(
+                        loader));
 
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
@@ -149,15 +161,17 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
     public void testMissingServiceParameterYieldsNullService() {
 
         // this is a bit of testing paranoia, but always want to check that one item isn't an edge case
-        final Map<String, Integer> validAuthenticationMethods = new HashMap<String, Integer>(4);
-        validAuthenticationMethods.put("fingerprint", 1);
-        validAuthenticationMethods.put("retina_scan", 2);
-        validAuthenticationMethods.put("personal_attestation", 3);
-        validAuthenticationMethods.put("strong_two_factor", 4);
+        final SortedSet<AuthenticationMethod> validAuthenticationMethods =
+                new TreeSet<AuthenticationMethod>();
+        validAuthenticationMethods.add(new AuthenticationMethod("fingerprint", 1));
+        validAuthenticationMethods.add(new AuthenticationMethod("retina_scan", 2));
+        validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
+        validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 
+        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
-                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(validAuthenticationMethods));
+                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(loader));
 
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
@@ -172,12 +186,14 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
     @Test
     public void testRecognizedAuthenticationMethodParameterInSamlRequest() {
-        final Map<String, Integer> validAuthenticationMethods = new HashMap<String, Integer>(4);
-        validAuthenticationMethods.put("strong_two_factor", 1);
+        final SortedSet<AuthenticationMethod> validAuthenticationMethods =
+                new TreeSet<AuthenticationMethod>();
+        validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 1));
+        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
-                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(validAuthenticationMethods));
+                        this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(loader));
 
 
         final HttpServletRequest request = mock(HttpServletRequest.class);

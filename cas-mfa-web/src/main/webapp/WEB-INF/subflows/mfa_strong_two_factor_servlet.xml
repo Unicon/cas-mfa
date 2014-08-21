@@ -33,7 +33,7 @@
 
   <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->
   <bean id="terminatingTwoFactorAuthenticationViaFormAction"
-        class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction" 
+        class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction"
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
         p:multiFactorAuthenticationManager-ref="terminatingAuthenticationManager"
         c:authenticationSupport-ref="authenticationSupport"
@@ -46,9 +46,9 @@
       This is the authentication manager responsible to validate the second factor credentials.
       Will use a second set of authentication handlers to verify credentials.
     -->
-  <bean id="terminatingAuthenticationManager" parent="mfaAuthenticationManager" 
+  <bean id="terminatingAuthenticationManager" parent="mfaAuthenticationManager"
         p:authenticationHandlers-ref="listOfTwoFactorStrongAuthenticationHandlers" />
-    
+
   <!-- Custom set of authentication handlers for the second factor authentication. -->
   <util:list id="listOfTwoFactorStrongAuthenticationHandlers">
     <bean class="org.jasig.cas.adaptors.generic.AcceptUsersAuthenticationHandler"

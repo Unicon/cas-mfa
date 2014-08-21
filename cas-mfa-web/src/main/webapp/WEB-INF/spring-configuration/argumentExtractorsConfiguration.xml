@@ -41,7 +41,7 @@
           parent="baseArgumentExtractor"/>
 
     <bean id="authenticationMethodVerifier" class="net.unicon.cas.mfa.web.support.DefaultAuthenticationMethodVerifier"
-          c:supportedAuthenticationMethods-ref="supportedAuthenticationMethodsConfig"/>
+          c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
 
     <bean id="mfaArgumentExtractor" abstract="true"
           class="net.unicon.cas.mfa.web.support.AbstractMultiFactorAuthenticationArgumentExtractor"
@@ -73,7 +73,8 @@
     <bean id="mfaRequestsCollectingArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationRequestsCollectingArgumentExtractor"
           c:mfaArgumentExstractors-ref="mfaArgumentExtractors"
-          c:mfaRankingConfig-ref="supportedAuthenticationMethodsConfig"/>
+          c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
+          c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
 
     <util:list id="argumentExtractors">
         <ref bean="mfaRequestsCollectingArgumentExtractor"/>
@@ -81,12 +82,6 @@
         <ref bean="samlArgumentExtractor"/>
     </util:list>
 
-    <!-- Definition(s) for mfa method ranking functionality -->
-    <!-- Lower rank value means higher priority, hence stronger authentication factor
-         as per org.springframework.core.Ordered -->
-    <util:map id="supportedAuthenticationMethodsConfig">
-        <entry key="strong_two_factor" value="1"/>
-        <entry key="sample_two_factor" value="2"/>
-    </util:map>
-
+    <bean id="authenticationMethodsConfig" class="net.unicon.cas.mfa.authentication.AuthenticationMethodConfiguration"
+          c:configuration="${mfa.authn.methods.config.location:file:/etc/cas/authn-methods.conf}" />
 </beans>

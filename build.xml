@@ -117,7 +117,8 @@
 
 	<target name="install" description="Package src artifacts and prepare for deployment" depends="clean">
 		<exec dir="${basedir}" executable="${mavenExecutable}">
-			<arg value="package" />
+            <arg value="package" />
+            <arg value="install" />
 			<arg value="-Dmaven.test.skip=true" />
 		</exec>
 	</target>
