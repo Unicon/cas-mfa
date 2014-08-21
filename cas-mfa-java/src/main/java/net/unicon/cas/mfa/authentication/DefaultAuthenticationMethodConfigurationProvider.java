@@ -77,6 +77,7 @@ public final class DefaultAuthenticationMethodConfigurationProvider implements A
     }
 
     /** {@inheritDoc} **/
+    @Override
     public AuthenticationMethod getAuthenticationMethod(final String name) {
         for (final Iterator<AuthenticationMethod> it = this.authnMethods.iterator(); it.hasNext();) {
             final AuthenticationMethod f = it.next();

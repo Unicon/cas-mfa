@@ -36,7 +36,6 @@
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-web</artifactId>
                             <excludes>
-                                <exclude>WEB-INF/web.xml</exclude>
                                 <exclude>**/spring-expression-3.1.1.RELEASE.jar</exclude>
                                 <exclude>**/stax-api-1.0-2.jar</exclude>
                             </excludes>

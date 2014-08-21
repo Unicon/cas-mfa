@@ -1,0 +1,86 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:cas="http://unicon.net/schema/cas"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:webflow="http://www.springframework.org/schema/webflow-config"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://unicon.net/schema/cas http://unicon.net/schema/cas/cas-addons.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <cas:default-authentication-support/>
+
+    <cas:json-attribute-repository/>
+
+    <cas:json-services-registry read-write="true"/>
+
+    <context:component-scan base-package="net.unicon.cas.mfa" />
+    <context:annotation-config />
+
+    <aop:aspectj-autoproxy/>
+
+    <bean id="validateInitialMfaRequestAction"
+          class="net.unicon.cas.mfa.web.flow.ValidateInitialMultiFactorAuthenticationRequestAction"
+          c:authSupport-ref="authenticationSupport"
+          c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
+
+    <!-- Generate and chain multifactor credentials based on current authenticated credentials. -->
+    <bean id="generateMfaCredentialsAction" class="net.unicon.cas.mfa.web.flow.GenerateMultiFactorCredentialsAction"
+          p:authenticationSupport-ref="authenticationSupport"/>
+
+    <!--  CAS instance responsible for creating the final authenticated principal. -->
+    <bean id="mfaAwareCentralAuthenticationService"
+          class="net.unicon.cas.mfa.MultiFactorAwareCentralAuthenticationService"
+          p:ticketRegistry-ref="ticketRegistry"
+          p:ticketGrantingTicketExpirationPolicy-ref="grantingTicketExpirationPolicy"
+          p:ticketGrantingTicketUniqueTicketIdGenerator-ref="ticketGrantingTicketUniqueIdGenerator"
+          p:centralAuthenticationServiceDelegate-ref="centralAuthenticationService"
+          p:authenticationManager-ref="mfaAuthenticationManager"/>
+
+    <bean id="mfaAuthenticationManager" parent="authenticationManager">
+        <property name="authenticationMetaDataPopulators">
+            <util:list>
+                <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator"/>
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="principalAttributeMfaRequestResolver"
+          class="net.unicon.cas.mfa.authentication.principal.PrincipalAttributeMultiFactorAuthenticationRequestResolver"
+          c:mfaMethodAttributeName="${mfa.method.userAttribute:authn_method}"
+          c:mfaServiceFactory-ref="mfaServiceFactory"
+          c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
+
+    <bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy"
+          c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
+
+    <!--
+      Initiating the the multifactor authentication sequence. Validates credentials and
+      resolve principal, or authenticate and proceed to the second factor authentication flow.
+    -->
+    <bean id="initiatingAuthenticationViaFormAction"
+          class="net.unicon.cas.mfa.web.flow.InitiatingMultiFactorAuthenticationViaFormAction"
+          c:wrapperAuthenticationAction-ref="authenticationViaFormAction"
+          c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"
+          c:authenticationSupport-ref="authenticationSupport"
+          c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
+          p:centralAuthenticationService-ref="centralAuthenticationService"
+          p:warnCookieGenerator-ref="warnCookieGenerator"
+          p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager"
+          c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
+
+    <bean id="principalMismatchExceptionHandler"
+          class="net.unicon.cas.mfa.web.flow.ConfigurableSpringWebflowExceptionHandler"
+          c:exceptionClass="net.unicon.cas.mfa.authentication.principal.UnknownPrincipalMatchException"
+          c:state="unknownPrincipalError"/>
+
+    <bean id="mfaLoginViewPrincipalGreeter"
+          class="net.unicon.cas.mfa.web.flow.view.MultifactorLoginViewPrincipalAttributeGreeter"
+          c:greetingAttrName="${screen.mfa.greeting.userAttribute:cn}"/>
+</beans>

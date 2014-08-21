@@ -95,6 +95,7 @@
             <param-name>contextConfigLocation</param-name>
             <param-value>
                 /WEB-INF/cas-servlet.xml
+                /WEB-INF/cas-servlet-*.xml
                 /WEB-INF/subflows/*_servlet.xml
             </param-value>
         </init-param>
