@@ -2,7 +2,7 @@ package net.unicon.cas.mfa.web.flow;
 
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.AuthenticationMethod;
-import net.unicon.cas.mfa.authentication.AuthenticationMethodConfiguration;
+import net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfigurationProvider;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
@@ -124,7 +124,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         validAuthenticationMethods.add(new AuthenticationMethod("sample_two_factor", 2));
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 
-        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
+        final DefaultAuthenticationMethodConfigurationProvider loader = new DefaultAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         this.action = new InitiatingMultiFactorAuthenticationViaFormAction(multiFactorAuthenticationRequestResolver,
                 authenticationSupport, verifier, authViaFormAction, new OrderedMfaMethodRankingStrategy(loader));

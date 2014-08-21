@@ -20,14 +20,14 @@ public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationM
     /**
      * The authn method loader.
      */
-    private final AuthenticationMethodConfiguration authenticationMethodConfiguration;
+    private final DefaultAuthenticationMethodConfigurationProvider authenticationMethodConfiguration;
 
     /**
      * Ctor.
      *
      * @param authenticationMethodConfiguration the authentication method loader
      */
-    public OrderedMfaMethodRankingStrategy(final AuthenticationMethodConfiguration authenticationMethodConfiguration) {
+    public OrderedMfaMethodRankingStrategy(final DefaultAuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
         this.authenticationMethodConfiguration = authenticationMethodConfiguration;
     }
 

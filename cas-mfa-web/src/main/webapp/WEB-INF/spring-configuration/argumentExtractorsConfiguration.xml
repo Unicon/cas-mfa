@@ -82,6 +82,6 @@
         <ref bean="samlArgumentExtractor"/>
     </util:list>
 
-    <bean id="authenticationMethodsConfig" class="net.unicon.cas.mfa.authentication.AuthenticationMethodConfiguration"
+    <bean id="authenticationMethodsConfig" class="net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfigurationProvider"
           c:configuration="${mfa.authn.methods.config.location:file:/etc/cas/authn-methods.conf}" />
 </beans>

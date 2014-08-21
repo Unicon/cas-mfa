@@ -1,7 +1,7 @@
 package net.unicon.cas.mfa.web.support;
 
 import net.unicon.cas.mfa.authentication.AuthenticationMethod;
-import net.unicon.cas.mfa.authentication.AuthenticationMethodConfiguration;
+import net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfigurationProvider;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.jasig.cas.web.support.CasArgumentExtractor;
 import org.jasig.cas.web.support.SamlArgumentExtractor;
@@ -49,7 +49,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 
-        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
+        final DefaultAuthenticationMethodConfigurationProvider loader = new DefaultAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -72,7 +72,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
      */
     @Test(expected = UnrecognizedAuthenticationMethodException.class)
     public void testUnrecognizedAuthenticationMethodParameterYieldsNullService() {
-        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration();
+        final DefaultAuthenticationMethodConfigurationProvider loader = new DefaultAuthenticationMethodConfigurationProvider();
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -97,7 +97,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
                 new TreeSet<AuthenticationMethod>();
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 1));
-        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
+        final DefaultAuthenticationMethodConfigurationProvider loader = new DefaultAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -132,7 +132,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 
-        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
+        final DefaultAuthenticationMethodConfigurationProvider loader = new DefaultAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -168,7 +168,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 
-        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
+        final DefaultAuthenticationMethodConfigurationProvider loader = new DefaultAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
                         this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(loader));
@@ -189,7 +189,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
                 new TreeSet<AuthenticationMethod>();
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 1));
-        final AuthenticationMethodConfiguration loader = new AuthenticationMethodConfiguration(validAuthenticationMethods);
+        final DefaultAuthenticationMethodConfigurationProvider loader = new DefaultAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,

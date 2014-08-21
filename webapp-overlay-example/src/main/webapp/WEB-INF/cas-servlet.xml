@@ -345,7 +345,6 @@
           c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
 
 
-
     <bean id="principalMismatchExceptionHandler"
           class="net.unicon.cas.mfa.web.flow.ConfigurableSpringWebflowExceptionHandler"
           c:exceptionClass="net.unicon.cas.mfa.authentication.principal.UnknownPrincipalMatchException"

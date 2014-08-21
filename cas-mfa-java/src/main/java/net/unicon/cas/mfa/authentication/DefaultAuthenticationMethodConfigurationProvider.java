@@ -4,17 +4,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.Resource;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
+ * Loads authentication methods and their rank from an external configuration file
+ * that is expected to be JSON. The ranking of authentication methods is
+ * determined by the {@link RequestedAuthenticationMethodRankingStrategy}.
+ *
+ * <p>Example configuration:
+ * <pre><code>
+ [ {
+    "rank" : 1,
+     "name" : "duo_two_factor"
+     }, {
+     "rank" : 2,
+     "name" : "strong_two_factor"
+     }, {
+     "rank" : 3,
+     "name" : "sample_two_factor"
+ } ]
+ * </code></pre>
+ * </p>
  * @author Misagh Moayyed
  */
-public final class AuthenticationMethodConfiguration {
+public final class DefaultAuthenticationMethodConfigurationProvider implements AuthenticationMethodConfigurationProvider {
 
     private final Set<AuthenticationMethod> authnMethods;
 
@@ -27,7 +43,7 @@ public final class AuthenticationMethodConfiguration {
      * @param configuration the configuration
      * @throws IOException the iO exception
      */
-    public AuthenticationMethodConfiguration(final Resource configuration) throws IOException {
+    public DefaultAuthenticationMethodConfigurationProvider(final Resource configuration) throws IOException {
         this.authnMethods = new TreeSet<AuthenticationMethod>();
         final String json = FileUtils.readFileToString(configuration.getFile());
         final Set<?> set = this.objectMapper.readValue(json, Set.class);
@@ -43,33 +59,24 @@ public final class AuthenticationMethodConfiguration {
      *
      * @param authnMethods the authn methods
      */
-    public AuthenticationMethodConfiguration(final Set<AuthenticationMethod> authnMethods) {
+    public DefaultAuthenticationMethodConfigurationProvider(final Set<AuthenticationMethod> authnMethods) {
         this.authnMethods = authnMethods;
     }
 
     /**
      * Instantiates a new Authentication method loader.
      */
-    public AuthenticationMethodConfiguration() {
+    public DefaultAuthenticationMethodConfigurationProvider() {
         this.authnMethods = new TreeSet<AuthenticationMethod>();
     }
 
-    /**
-     * Contains authentication method.
-     *
-     * @param name the name
-     * @return true if the method is found
-     */
+    /** {@inheritDoc} **/
+    @Override
     public boolean containsAuthenticationMethod(final String name) {
         return getAuthenticationMethod(name) != null;
     }
 
-    /**
-     * Gets authentication method.
-     *
-     * @param name the name
-     * @return the authentication method, or null if none is found.
-     */
+    /** {@inheritDoc} **/
     public AuthenticationMethod getAuthenticationMethod(final String name) {
         for (final Iterator<AuthenticationMethod> it = this.authnMethods.iterator(); it.hasNext();) {
             final AuthenticationMethod f = it.next();
@@ -78,24 +85,5 @@ public final class AuthenticationMethodConfiguration {
             }
         }
         return  null;
-    }
-
-    /**
-     * Main void.
-     *
-     * @param agrs the agrs
-     * @throws Exception the exception
-     */
-    public static void main(final String[] agrs) throws Exception {
-        final File f = new File("c:\\etc\\cas\\authn-methods.conf");
-        final String s = FileUtils.readFileToString(f);
-
-        final HashSet<AuthenticationMethod> ss = new HashSet<AuthenticationMethod>();
-        ss.add(new AuthenticationMethod("m", 1));
-        ss.add(new AuthenticationMethod("m1", 12));
-        new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(f, ss);
-
-        final Set<?> aa = new ObjectMapper().readValue(FileUtils.readFileToString(f), Set.class);
-
     }
 }
