@@ -27,18 +27,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-
     <bean id="baseArgumentExtractor"
           p:httpClient-ref="noRedirectHttpClient"
           p:disableSingleSignOut="${slo.callbacks.disabled:false}"
           abstract="true"/>
-
-    <bean id="casArgumentExtractor"
-          class="org.jasig.cas.web.support.CasArgumentExtractor"
-          parent="baseArgumentExtractor"/>
-
-    <bean id="samlArgumentExtractor" class="org.jasig.cas.web.support.SamlArgumentExtractor"
-          parent="baseArgumentExtractor"/>
 
     <bean id="authenticationMethodVerifier" class="net.unicon.cas.mfa.web.support.DefaultAuthenticationMethodVerifier"
           c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
@@ -75,12 +67,6 @@
           c:mfaArgumentExstractors-ref="mfaArgumentExtractors"
           c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
           c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
-
-    <util:list id="argumentExtractors">
-        <ref bean="mfaRequestsCollectingArgumentExtractor"/>
-        <ref bean="casArgumentExtractor"/>
-        <ref bean="samlArgumentExtractor"/>
-    </util:list>
 
     <bean id="authenticationMethodsConfig" class="net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfigurationProvider"
           c:configuration="${mfa.authn.methods.config.location:file:/etc/cas/authn-methods.conf}" />
