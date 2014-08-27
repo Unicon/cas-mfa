@@ -33,14 +33,10 @@
     
         
   <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->     
-  <bean id="sample_terminatingTwoFactorAuthenticationViaFormAction"
+  <bean id="sample_terminatingTwoFactorAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction" 
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
-        p:multiFactorAuthenticationManager-ref="sample_terminatingAuthenticationManager"
-        c:authenticationSupport-ref="authenticationSupport"
-        c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
-        c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"
-        c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
+        p:multiFactorAuthenticationManager-ref="sample_terminatingAuthenticationManager" />
 
 
  

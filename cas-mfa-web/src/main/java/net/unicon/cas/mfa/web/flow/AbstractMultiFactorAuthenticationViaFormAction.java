@@ -14,6 +14,7 @@ import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.AuthenticationManager;
 import org.jasig.cas.authentication.handler.AuthenticationException;
 import org.jasig.cas.authentication.principal.Credentials;
+import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.web.bind.CredentialsBinder;
@@ -98,6 +99,10 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      */
     private final RequestedAuthenticationMethodRankingStrategy authnMethodRankingStrategy;
 
+    /**
+     * The CAS server hostname.
+     */
+    private final String hostname;
 
     /**
      * Ctor.
@@ -106,17 +111,20 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @param authenticationSupport authenticationSupport
      * @param authenticationMethodVerifier authenticationMethodVerifier
      * @param authenticationMethodRankingStrategy authenticationMethodRankingStrategy
+     * @param hostname the CAS server hostname
      */
     protected AbstractMultiFactorAuthenticationViaFormAction(
             final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
             final AuthenticationSupport authenticationSupport,
             final AuthenticationMethodVerifier authenticationMethodVerifier,
-            final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
+            final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy,
+            final String hostname) {
 
         this.multiFactorAuthenticationRequestResolver = multiFactorAuthenticationRequestResolver;
         this.authenticationSupport = authenticationSupport;
         this.authenticationMethodVerifier = authenticationMethodVerifier;
         this.authnMethodRankingStrategy = authenticationMethodRankingStrategy;
+        this.hostname = hostname;
     }
 
     /**
@@ -177,7 +185,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
         try {
             final String tgt = WebUtils.getTicketGrantingTicketId(context);
             if (!StringUtils.isBlank(tgt)) {
-                cas.destroyTicketGrantingTicket(tgt);
+                this.cas.destroyTicketGrantingTicket(tgt);
             }
             final Authentication auth = this.authenticationManager.authenticate(credentials);
             if (MultiFactorRequestContextUtils.getMultifactorWebApplicationService(context) == null) {
@@ -370,9 +378,21 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
     protected MultiFactorAuthenticationRequestContext getMfaRequestOrNull(final Authentication authentication,
                                                                           final WebApplicationService service,
                                                                           final RequestContext context) {
+        /*
+        The service may be null and not available in the context, in cases where
+        one is simply logging into CAS without noting the service application.
+        In those cases, we need to mock up a service instance in order for authentication
+        request resolver (i.e. based on principal attributes) to be able to establish the
+        mfa context and walk the user through the mfa sequence if need be. This dummy service
+        is based on the hostname provided to CAS via configuration, and is CAS itself.
+         */
+        WebApplicationService serviceToUse = service;
+        if (service == null) {
+            serviceToUse = new SimpleWebApplicationServiceImpl(this.hostname, null);
+        }
 
         final MultiFactorAuthenticationRequestContext mfaRequest =
-                this.multiFactorAuthenticationRequestResolver.resolve(authentication, service);
+                this.multiFactorAuthenticationRequestResolver.resolve(authentication, serviceToUse);
         if (mfaRequest != null) {
             this.authenticationMethodVerifier.verifyAuthenticationMethod(mfaRequest.getMfaService().getAuthenticationMethod(),
                     mfaRequest.getMfaService(),

@@ -122,7 +122,9 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         mfaRankingConfig.put("strong_two_factor", 1);
         mfaRankingConfig.put("sample_two_factor", 2);
         this.action = new InitiatingMultiFactorAuthenticationViaFormAction(multiFactorAuthenticationRequestResolver,
-                authenticationSupport, verifier, authViaFormAction, new OrderedMfaMethodRankingStrategy(mfaRankingConfig));
+                authenticationSupport, verifier, authViaFormAction,
+                new OrderedMfaMethodRankingStrategy(mfaRankingConfig),
+                "https://sso.cas.edu");
 
         this.action.setCentralAuthenticationService(this.cas);
         this.action.setCredentialsBinder(this.binder);

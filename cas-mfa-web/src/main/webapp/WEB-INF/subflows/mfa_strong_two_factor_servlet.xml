@@ -32,15 +32,10 @@
        http://unicon.net/schema/cas http://unicon.net/schema/cas/cas-addons.xsd">
 
   <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->
-  <bean id="terminatingTwoFactorAuthenticationViaFormAction"
+  <bean id="terminatingTwoFactorAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction" 
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
-        p:multiFactorAuthenticationManager-ref="terminatingAuthenticationManager"
-        c:authenticationSupport-ref="authenticationSupport"
-        c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
-        c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"
-        c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
-
+        p:multiFactorAuthenticationManager-ref="terminatingAuthenticationManager" />
 
     <!--
       This is the authentication manager responsible to validate the second factor credentials.

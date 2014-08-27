@@ -329,21 +329,24 @@
     <bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy"
           c:mfaRankingConfig-ref="supportedAuthenticationMethodsConfig"/>
 
+    <bean id="abstractAuthenticationViaFormAction" abstract="true"
+          class="net.unicon.cas.mfa.web.flow.AbstractMultiFactorAuthenticationViaFormAction"
+          p:centralAuthenticationService-ref="centralAuthenticationService"
+          p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager"
+          c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"
+          c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
+          c:hostname="${server.prefix}"
+          c:authenticationSupport-ref="authenticationSupport"
+          c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver" />
+
     <!--
       Initiating the the multifactor authentication sequence. Validates credentials and
       resolve principal, or authenticate and proceed to the second factor authentication flow.
     -->
-    <bean id="initiatingAuthenticationViaFormAction"
+    <bean id="initiatingAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
           class="net.unicon.cas.mfa.web.flow.InitiatingMultiFactorAuthenticationViaFormAction"
           c:wrapperAuthenticationAction-ref="authenticationViaFormAction"
-          c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"
-          c:authenticationSupport-ref="authenticationSupport"
-          c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
-          p:centralAuthenticationService-ref="centralAuthenticationService"
-          p:warnCookieGenerator-ref="warnCookieGenerator"
-          p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager"
-          c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"/>
-
+          p:warnCookieGenerator-ref="warnCookieGenerator" />
 
 
     <bean id="principalMismatchExceptionHandler"
@@ -354,5 +357,9 @@
     <bean id="mfaLoginViewPrincipalGreeter"
           class="net.unicon.cas.mfa.web.flow.view.MultifactorLoginViewPrincipalAttributeGreeter"
           c:greetingAttrName="${screen.mfa.greeting.userAttribute:cn}"/>
+
+    <bean id="checkHostnameServiceInContextAction"
+          class="net.unicon.cas.mfa.web.CheckHostnameInContextAction"
+          c:hostname="${server.prefix}" />
 
 </beans>

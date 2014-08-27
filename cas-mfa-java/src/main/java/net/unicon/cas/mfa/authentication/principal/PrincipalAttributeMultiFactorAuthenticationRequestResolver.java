@@ -4,6 +4,7 @@ import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
+import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.WebApplicationService;
@@ -90,9 +91,11 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
                         mfaMethod, authentication.getPrincipal().getId());
 
                 final int mfaMethodRank = this.mfaRankingConfig.get(mfaMethod);
-                return new MultiFactorAuthenticationRequestContext(
+                final MultiFactorAuthenticationSupportingWebApplicationService svc =
                         this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
-                        targetService.getArtifactId(), mfaMethod, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE), mfaMethodRank);
+                        targetService.getArtifactId(), mfaMethod, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
+
+                return new MultiFactorAuthenticationRequestContext(svc, mfaMethodRank);
             }
         }
         return null;
