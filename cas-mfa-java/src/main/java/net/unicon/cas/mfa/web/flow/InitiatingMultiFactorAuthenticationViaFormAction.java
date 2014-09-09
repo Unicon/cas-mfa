@@ -60,16 +60,18 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
      * @param authenticationMethodVerifier authenticationMethodVerifier
      * @param wrapperAuthenticationAction wrapperAuthenticationAction
      * @param authenticationMethodRankingStrategy authenticationMethodRankingStrategy
+     * @param hostname the hostname
      */
     public InitiatingMultiFactorAuthenticationViaFormAction(
         final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
         final AuthenticationSupport authenticationSupport,
         final AuthenticationMethodVerifier authenticationMethodVerifier,
         final AuthenticationViaFormAction wrapperAuthenticationAction,
-        final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
+        final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy,
+        final String hostname) {
 
         super(multiFactorAuthenticationRequestResolver, authenticationSupport,
-                authenticationMethodVerifier, authenticationMethodRankingStrategy);
+                authenticationMethodVerifier, authenticationMethodRankingStrategy, hostname);
         this.wrapperAuthenticationAction = wrapperAuthenticationAction;
     }
 

@@ -31,15 +31,17 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
      * @param authenticationSupport authenticationSupport
      * @param authenticationMethodVerifier authenticationMethodVerifier
      * @param authenticationMethodRankingStrategy authenticationMethodRankingStrategy
+     * @param hostname the hostname
      */
     public TerminatingMultiFactorAuthenticationViaFormAction(
                                 final MultiFactorAuthenticationRequestResolver multiFactorAuthenticationRequestResolver,
                                 final AuthenticationSupport authenticationSupport,
                                 final AuthenticationMethodVerifier authenticationMethodVerifier,
-                                final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy) {
+                                final RequestedAuthenticationMethodRankingStrategy authenticationMethodRankingStrategy,
+                                final String hostname) {
 
         super(multiFactorAuthenticationRequestResolver, authenticationSupport,
-                authenticationMethodVerifier, authenticationMethodRankingStrategy);
+                authenticationMethodVerifier, authenticationMethodRankingStrategy, hostname);
     }
 
     /* {@inheritDoc} */

@@ -105,6 +105,7 @@ public final class DuoWeb {
   }
 
   private static String parseVals(String key, String val, String prefix) throws InvalidKeyException, NoSuchAlgorithmException, IOException {
+
     long ts = System.currentTimeMillis() / 1000;
 
     String[] parts = val.split("\\|");
@@ -114,11 +115,13 @@ public final class DuoWeb {
 
     String sig = Util.hmacSign(key, u_prefix + "|" + u_b64);
     if (!Util.hmacSign(key, sig).equals(Util.hmacSign(key, u_sig))) {
-      return null;
+       logger.debug("Hmac of sig '{}' does not match hmac of u_sig '{}' for key '{}'. Returning null for prefix '{}'", sig, u_sig, key, prefix);
+       return null;
     }
 
     if (!u_prefix.equals(prefix)) {
-      return null;
+       logger.debug("u_prefix '{}' does not match prefix '{}'. Returning null...", u_prefix, prefix);
+       return null;
     }
 
     byte[] decoded = Base64.decode(u_b64);
@@ -130,7 +133,8 @@ public final class DuoWeb {
 
     long expire_ts = Long.parseLong(expire);
     if (ts >= expire_ts) {
-      return null;
+       logger.debug("Current timestamp '{}' is >= expire timestamp (from Duo server) '{}'. Returning null...", ts, expire_ts);
+       return null;
     }
 
     return username;    
