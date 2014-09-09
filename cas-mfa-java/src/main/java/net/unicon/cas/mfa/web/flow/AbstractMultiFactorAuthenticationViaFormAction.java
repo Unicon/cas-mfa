@@ -369,6 +369,12 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
     /**
      * Get MFA request or null.
      *
+     * <p>The service may be null and not available in the context, in cases where
+     * one is simply logging into CAS without noting the service application.
+     * In those cases, we need to mock up a service instance in order for authentication
+     * request resolver (i.e. based on principal attributes) to be able to establish the
+     * mfa context and walk the user through the mfa sequence if need be. This dummy service
+     * is based on the hostname provided to CAS via configuration, and is CAS itself.</p>
      * @param authentication the authentication
      * @param service the service
      * @param context the context
@@ -378,14 +384,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
     protected MultiFactorAuthenticationRequestContext getMfaRequestOrNull(final Authentication authentication,
                                                                           final WebApplicationService service,
                                                                           final RequestContext context) {
-        /*
-        The service may be null and not available in the context, in cases where
-        one is simply logging into CAS without noting the service application.
-        In those cases, we need to mock up a service instance in order for authentication
-        request resolver (i.e. based on principal attributes) to be able to establish the
-        mfa context and walk the user through the mfa sequence if need be. This dummy service
-        is based on the hostname provided to CAS via configuration, and is CAS itself.
-         */
+
         WebApplicationService serviceToUse = service;
         if (service == null) {
             serviceToUse = new SimpleWebApplicationServiceImpl(this.hostname, null);

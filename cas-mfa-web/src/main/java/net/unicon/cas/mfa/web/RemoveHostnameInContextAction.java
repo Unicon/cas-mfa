@@ -18,7 +18,7 @@ import org.springframework.webflow.execution.RequestContext;
  * don't consider it a valid service deserving of an ST.
  * @author Misagh Moayyed
  */
-public final class CheckHostnameInContextAction  extends AbstractAction {
+public final class RemoveHostnameInContextAction extends AbstractAction {
     private final String hostname;
 
     /**
@@ -26,7 +26,7 @@ public final class CheckHostnameInContextAction  extends AbstractAction {
      *
      * @param hostname the hostname
      */
-    public CheckHostnameInContextAction(final String hostname) {
+    public RemoveHostnameInContextAction(final String hostname) {
         this.hostname = hostname;
     }
 
