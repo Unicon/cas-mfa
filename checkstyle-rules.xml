@@ -135,6 +135,7 @@ Checkstyle configuration based on Sun's conventions, compliant with CAS coding c
     </module>
     <module name="RedundantThrows">
       <property name="suppressLoadErrors" value="true"/>
+      <property name="allowUnchecked" value="true" />
     </module>
     <module name="SimplifyBooleanExpression"/>
     <module name="SimplifyBooleanReturn"/>

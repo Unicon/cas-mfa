@@ -127,7 +127,8 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         final DefaultAuthenticationMethodConfigurationProvider loader = new DefaultAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         this.action = new InitiatingMultiFactorAuthenticationViaFormAction(multiFactorAuthenticationRequestResolver,
-                authenticationSupport, verifier, authViaFormAction, new OrderedMfaMethodRankingStrategy(loader));
+                authenticationSupport, verifier, authViaFormAction, new OrderedMfaMethodRankingStrategy(loader),
+                "https://sso.school.edu");
 
         this.action.setCentralAuthenticationService(this.cas);
         this.action.setCredentialsBinder(this.binder);

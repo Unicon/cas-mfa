@@ -38,8 +38,6 @@
         p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
         p:multiFactorAuthenticationManager-ref="sample_terminatingAuthenticationManager" />
 
-
-
   <!--
     This is the authentication manager responsible to validate the second factor credentials.
     Will use a second set of authentication handlers to verify credentials.
