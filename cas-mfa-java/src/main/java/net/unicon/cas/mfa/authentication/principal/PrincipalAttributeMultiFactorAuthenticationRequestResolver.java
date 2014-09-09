@@ -1,6 +1,6 @@
 package net.unicon.cas.mfa.authentication.principal;
 
-import net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfigurationProvider;
+import net.unicon.cas.mfa.authentication.AuthenticationMethodConfigurationProvider;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
@@ -45,7 +45,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     /**
      * The authn method loader.
      */
-    private final DefaultAuthenticationMethodConfigurationProvider authenticationMethodConfiguration;
+    private final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration;
 
     /**
      * Default principal attribute name for retrieving requested mfa authentication method.
@@ -59,7 +59,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * @param authenticationMethodConfiguration the authentication method loader
      */
     public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final MfaWebApplicationServiceFactory mfaServiceFactory,
-                    final DefaultAuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
+                    final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
         this(DEFAULT_MFA_METHOD_ATTRIBUTE_NAME, mfaServiceFactory, authenticationMethodConfiguration);
     }
 
@@ -72,7 +72,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      */
     public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final String mfaMethodAttributeName,
                final MfaWebApplicationServiceFactory mfaServiceFactory,
-               final DefaultAuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
+               final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
 
         this.mfaMethodAttributeName = mfaMethodAttributeName;
         this.mfaServiceFactory = mfaServiceFactory;
@@ -88,6 +88,12 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
                 logger.debug("Found mfa attribute [{}] with value [{}] for principal [{}]", this.mfaMethodAttributeName,
                         mfaMethod, authentication.getPrincipal().getId());
 
+                if (!this.authenticationMethodConfiguration.containsAuthenticationMethod(mfaMethod)) {
+                    logger.info("MFA attribute [{}] with value [{}] is not supported by the authentication method configuration.",
+                            this.mfaMethodAttributeName,
+                            mfaMethod);
+                    return null;
+                }
                 final int mfaMethodRank = this.authenticationMethodConfiguration.getAuthenticationMethod(mfaMethod).getRank();
                 final MultiFactorAuthenticationSupportingWebApplicationService svc =
                         this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),

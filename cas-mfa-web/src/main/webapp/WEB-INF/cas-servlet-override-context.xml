@@ -25,6 +25,16 @@
 
     <aop:aspectj-autoproxy/>
 
+    <bean id="abstractAuthenticationViaFormAction" abstract="true"
+          class="net.unicon.cas.mfa.web.flow.AbstractMultiFactorAuthenticationViaFormAction"
+          p:centralAuthenticationService-ref="centralAuthenticationService"
+          p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager"
+          c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"
+          c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
+          c:hostname="${server.prefix}"
+          c:authenticationSupport-ref="authenticationSupport"
+          c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver" />
+
     <bean id="validateInitialMfaRequestAction"
           class="net.unicon.cas.mfa.web.flow.ValidateInitialMultiFactorAuthenticationRequestAction"
           c:authSupport-ref="authenticationSupport"

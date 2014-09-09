@@ -99,19 +99,19 @@
 	<target name="copy" description="Copy artifacts over to tomcat" depends="install">
 		<copy overwrite="true"
 		      todir="${catalina.home}\webapps"
-		      file="webapp-overlay-example/target/${ant.project.name}.war"
+		      file="cas-mfa-overlay/target/${ant.project.name}.war"
 		      verbose="true"
 		/>
 
 		<mkdir dir="${cas.resources.dir}" />
 		<copy overwrite="true" verbose="true" todir="${cas.resources.dir}" flatten="true">
-			<fileset dir="${basedir}/webapp-overlay-example/etc" includes="*.conf" />
+			<fileset dir="${basedir}/cas-mfa-overlay/etc" includes="*.conf" />
 		</copy>
 		<copy overwrite="true" verbose="true" todir="${cas.resources.dir}" flatten="true">
-			<fileset dir="${basedir}/webapp-overlay-example/etc" includes="log4j.xml" />
+			<fileset dir="${basedir}/cas-mfa-overlay/etc" includes="log4j.xml" />
 		</copy>
 		<copy overwrite="true" verbose="true" todir="${cas.resources.dir}" flatten="true">
-			<fileset dir="${basedir}/webapp-overlay-example/etc" includes="cas.properties" />
+			<fileset dir="${basedir}/cas-mfa-overlay/etc" includes="cas.properties" />
 		</copy>
 	</target>
 
