@@ -35,7 +35,6 @@
   <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->
   <bean id="sample_terminatingTwoFactorAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction"
-        p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
         p:multiFactorAuthenticationManager-ref="sample_terminatingAuthenticationManager" />
 
   <!--
