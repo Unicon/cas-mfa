@@ -16,10 +16,6 @@
 
     <cas:default-authentication-support/>
 
-    <cas:json-attribute-repository/>
-
-    <cas:json-services-registry read-write="true"/>
-
     <context:component-scan base-package="net.unicon.cas.mfa" />
     <context:annotation-config />
 
