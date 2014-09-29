@@ -502,8 +502,9 @@
   <modules>
     <module>cas-mfa-java</module>
     <module>cas-mfa-web</module>
-    <module>webapp-overlay-example</module>
     <module>cas-mfa-duo</module>
+    <module>cas-mfa-duo-web</module>
+    <module>cas-mfa-overlay</module>
   </modules>
 
   <properties>

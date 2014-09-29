@@ -31,7 +31,7 @@ class OrderedMfaMethodRankingStrategyTests extends Specification {
     def "correct implementation of OrderedMfaMethodRankingStrategy#computeHighestRankingAuthenticationMethod"() {
         given:
         @Subject
-        def rankingStrategyUnderTest = new OrderedMfaMethodRankingStrategy([:])
+        def rankingStrategyUnderTest = new OrderedMfaMethodRankingStrategy(new DefaultAuthenticationMethodConfigurationProvider())
 
         expect:
         rankingStrategyUnderTest.computeHighestRankingAuthenticationMethod(mfaTransactionFixture).authenticationMethodSource == AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE
@@ -39,8 +39,13 @@ class OrderedMfaMethodRankingStrategyTests extends Specification {
 
     def "correct implementation of OrderedMfaMethodRankingStrategy#anyPreviouslyAchievedAuthenticationMethodsStrongerThanRequestedOne"() {
         given:
+        def s1 = [new AuthenticationMethod("highest_factor",1),
+                 new AuthenticationMethod("lower_factor",2),
+                 new AuthenticationMethod("lowest_factor",3)] as Set
+
+        def loader = new DefaultAuthenticationMethodConfigurationProvider(s1)
         @Subject
-        def rankingStrategyUnderTest = new OrderedMfaMethodRankingStrategy([highest_factor: 1, lower_factor: 2, lowest_factor: 3])
+        def rankingStrategyUnderTest = new OrderedMfaMethodRankingStrategy(loader)
 
         expect:
         rankingStrategyUnderTest.anyPreviouslyAchievedAuthenticationMethodsStrongerThanRequestedOne(['lower_factor', 'highest_factor'] as Set, 'lowest_factor')

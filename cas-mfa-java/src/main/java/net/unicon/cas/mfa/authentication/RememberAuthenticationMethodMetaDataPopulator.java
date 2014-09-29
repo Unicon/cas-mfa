@@ -21,7 +21,7 @@ import org.springframework.webflow.execution.RequestContextHolder;
  */
 public class RememberAuthenticationMethodMetaDataPopulator implements AuthenticationMetaDataPopulator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RememberAuthenticationMethodMetaDataPopulator.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public final Authentication populateAttributes(final Authentication authentication, final Credentials credentials) {
@@ -38,7 +38,7 @@ public class RememberAuthenticationMethodMetaDataPopulator implements Authentica
                         MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
                         mfaSvc.getAuthenticationMethod());
 
-                LOGGER.debug("Captured authentication method [{}] into the authentation context",
+                logger.debug("Captured authentication method [{}] into the authentation context",
                         mfaSvc.getAuthenticationMethod());
             }
         }

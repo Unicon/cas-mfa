@@ -1,15 +1,13 @@
 package net.unicon.cas.mfa.web.flow;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
+import net.unicon.cas.mfa.authentication.AuthenticationMethod;
+import net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfigurationProvider;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.Response;
@@ -25,8 +23,14 @@ import org.springframework.webflow.core.collection.ParameterMap;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
@@ -101,11 +105,15 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
     public void setup() {
         final AuthenticationSupport support = mock(AuthenticationSupport.class);
         when(support.getAuthenticationFrom(TGT_ID)).thenReturn(authentication);
-        final Map<String, Integer> mfaRankingConfig = new HashMap<String, Integer>(2);
-        mfaRankingConfig.put("strong_two_factor", 1);
-        mfaRankingConfig.put("sample_two_factor", 2);
 
-        this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support, new OrderedMfaMethodRankingStrategy(mfaRankingConfig));
+        final SortedSet<AuthenticationMethod> validAuthenticationMethods =
+                new TreeSet<AuthenticationMethod>();
+        validAuthenticationMethods.add(new AuthenticationMethod("sample_two_factor", 2));
+        validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
+
+        final DefaultAuthenticationMethodConfigurationProvider loader = new DefaultAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
+
+        this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support, new OrderedMfaMethodRankingStrategy(loader));
 
         mockFlowScope = mock(MutableAttributeMap.class);
         when(requestContext.getFlowScope()).thenReturn(mockFlowScope);

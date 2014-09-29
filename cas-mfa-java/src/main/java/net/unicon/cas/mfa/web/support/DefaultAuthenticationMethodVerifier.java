@@ -1,11 +1,11 @@
 package net.unicon.cas.mfa.web.support;
 
+import net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfigurationProvider;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * Default implementation of {@link net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier}.
@@ -14,8 +14,6 @@ import java.util.Map;
  * @author Unicon inc.
  */
 public final class DefaultAuthenticationMethodVerifier implements AuthenticationMethodVerifier {
-
-
     /**
      * The logger.
      */
@@ -24,23 +22,23 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
     /**
      * Supported authentication methods.
      */
-    private final Map<String, Integer> supportedAuthenticationMethods;
+    private final DefaultAuthenticationMethodConfigurationProvider supportedAuthenticationMethodsConfig;
 
     /**
      * Ctor.
      *
-     * @param supportedAuthenticationMethods list of supported authentication methods
+     * @param authenticationMethodConfiguration list of supported authentication methods
      */
-    public DefaultAuthenticationMethodVerifier(final Map<String, Integer> supportedAuthenticationMethods) {
-        this.supportedAuthenticationMethods = supportedAuthenticationMethods;
+    public DefaultAuthenticationMethodVerifier(final DefaultAuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
+        this.supportedAuthenticationMethodsConfig = authenticationMethodConfiguration;
     }
 
     @Override
-    public void verifyAuthenticationMethod(final String authenticationMethod,
+    public boolean verifyAuthenticationMethod(final String authenticationMethod,
                                            final WebApplicationService targetService,
                                            final HttpServletRequest request) {
 
-        if (!supportedAuthenticationMethods.containsKey(authenticationMethod)) {
+        if (!supportedAuthenticationMethodsConfig.containsAuthenticationMethod(authenticationMethod)) {
             logger.debug("CAS is not configured to support [{}] authentication method value [{}].",
                     MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
                     authenticationMethod);
@@ -56,7 +54,9 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
                 request.setAttribute(UnrecognizedAuthenticationMethodException.class.getName(), Boolean.TRUE.toString());
                 throw new UnrecognizedAuthenticationMethodException(authenticationMethod, targetService.getId());
             }
+            return false;
         }
-
+        return true;
     }
+
 }

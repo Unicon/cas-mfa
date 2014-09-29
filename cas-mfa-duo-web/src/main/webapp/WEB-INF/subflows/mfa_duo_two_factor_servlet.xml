@@ -31,25 +31,32 @@
        http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd
        http://unicon.net/schema/cas http://unicon.net/schema/cas/cas-addons.xsd">
 
-  <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->
-  <bean id="terminatingTwoFactorAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
-        class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction"
-        p:multiFactorAuthenticationManager-ref="terminatingAuthenticationManager" />
+    <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->
+    <bean id="duo_terminatingTwoFactorAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
+          class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction"
+          p:multiFactorAuthenticationManager-ref="duo_terminatingAuthenticationManager" />
+    <!-- Duo Login View -->
+    <bean id="casDuoLoginView" class="org.springframework.web.servlet.view.JstlView"
+        p:url="/WEB-INF/view/jsp/default/ui/casDuoLoginView.jsp" />
 
     <!--
       This is the authentication manager responsible to validate the second factor credentials.
       Will use a second set of authentication handlers to verify credentials.
     -->
-  <bean id="terminatingAuthenticationManager" parent="mfaAuthenticationManager"
-        p:authenticationHandlers-ref="listOfTwoFactorStrongAuthenticationHandlers" />
+    <bean id="duo_terminatingAuthenticationManager" parent="mfaAuthenticationManager"
+          p:authenticationHandlers-ref="duo_listOfTwoFactorStrongAuthenticationHandlers" />
 
-  <!-- Custom set of authentication handlers for the second factor authentication. -->
-  <util:list id="listOfTwoFactorStrongAuthenticationHandlers">
-    <bean class="org.jasig.cas.adaptors.generic.AcceptUsersAuthenticationHandler"
-        p:users-ref="casUsers" />
-  </util:list>
-  
-  <util:map id="casUsers">
-    <entry key="casuser" value="Mellon" />
-  </util:map>
+    <!-- Custom set of authentication handlers for the second factor authentication. Duo in this case. -->
+    <util:list id="duo_listOfTwoFactorStrongAuthenticationHandlers">
+        <bean class="net.unicon.cas.mfa.authentication.duo.DuoAuthenticationHandler"
+              c:duoAuthenticationService-ref="duoAuthenticationService" />
+    </util:list>
+
+    <bean id="duoAuthenticationService"
+          class="net.unicon.cas.mfa.authentication.duo.DuoAuthenticationService"
+          c:duoIntegrationKey="${duo.integration.key}"
+          c:duoSecretKey="${duo.secret.key}"
+          c:duoApplicationKey="${duo.application.key}"
+          c:duoApiHost="${duo.api.host}" />
+
 </beans>
