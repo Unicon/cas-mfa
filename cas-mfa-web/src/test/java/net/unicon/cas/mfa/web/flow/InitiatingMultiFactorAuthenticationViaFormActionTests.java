@@ -30,14 +30,14 @@ import org.springframework.binding.message.MessageContext;
 import org.springframework.web.util.CookieGenerator;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.core.collection.ParameterMap;
+import org.springframework.webflow.definition.TransitionDefinition;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -49,6 +49,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
     private static final String LOGIN_TICKET = "LT-1";
     private static final String TGT_ID = "TGT-1";
+    private static final String AUTHN_METHOD = "strong_two_factor";
 
     private InitiatingMultiFactorAuthenticationViaFormAction action;
 
@@ -105,7 +106,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         MultiFactorAuthenticationSupportingWebApplicationService svc = null;
         svc = mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
-        when(svc.getAuthenticationMethod()).thenReturn("strong_two_factor");
+        when(svc.getAuthenticationMethod()).thenReturn(AUTHN_METHOD);
 
         when(ctx.getFlowScope().get("service")).thenReturn(svc);
         when(ctx.getFlowScope().remove("loginTicket")).thenReturn(LOGIN_TICKET);
@@ -165,6 +166,12 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
     @Test()
     public void testSuccessfulMfaAuthentication() throws Exception {
+        final String id = ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_SUCCESS_EVENT_ID_PREFIX
+                + AUTHN_METHOD;
+        final TransitionDefinition def = mock(TransitionDefinition.class);
+        when(def.getId()).thenReturn(id);
+
+        when((this.ctx.getMatchingTransition(anyString()))).thenReturn(def);
         final Credentials credentials = getCredentials();
         final Event ev = this.action.submit(this.ctx, credentials, this.msgCtx, "id");
         assertNotNull(ev);
@@ -172,8 +179,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
                 (MultiFactorAuthenticationSupportingWebApplicationService) WebUtils.getService(this.ctx);
         assertNotNull(svc);
 
-        assertEquals(ev.getId(), ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_SUCCESS_EVENT_ID_PREFIX
-                + svc.getAuthenticationMethod());
+        assertEquals(ev.getId(), id);
     }
 
     private Credentials getCredentials() {
