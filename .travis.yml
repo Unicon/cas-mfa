@@ -1,12 +1,11 @@
 language: java
-
 env:
   global:
-  - secure: "WKD+T9FV5c7kTQ9QlF58NEz0SYvS1unXtttU4Aqe2cDS8ZEgg1Fgz7La+BP1CNcWTyws36J0Cos9nGYcJzns+0ETWp0EGQNTxLJFsyGcdalE3+OkcaRf6TvwdJV7aeZAZDSP/pBza7Qph01GNMk9DaGxL4u/iYnHTRT6CBetsd0="
-  - secure: "GzpcXCdgr7ak8DFVQ8cNh57dcuvfr3xJQUmhIyQJH6Be/3dFPCGaVc93nRE9oZGyZc0fXLpl0LvgufnnISqVEjF6P8OHXy2qf99l5u+BTA6Z3JAMA99b3FHfS9WrYocsAuSia1uj7fV31nK2ymulj6tUUo8QIqRVF7ax1h0WJO8="
+  - secure: HGkZ6LlYQDmC3ppP8UAOY6TmfddLZ5bt6UTdrh2SG3FDgBpA7L6tGyq4JyKco5OKO7N6oFcrbmYIAY2thEDxCrtcOGCvLhkxYv6uxqKt32Yeknosk5F4/JNHCu/bEFIoyIyz/RzW5QvoF27kTb7BZ3fdjPbU39k9V1rYIU6/Oqw=
+  - secure: FuhW99CpzFj/iPR9dgLhhkw6UFJltWb2HDLLXGMmLb/OKMAQjenV+yAIao5v5KaD6LTZqFe4Ugi+XIzepCSBFayJFsdLDNYb8Bp/bINaq9t3kmsSXE0e3LUGs8wO6rgHgmVv6WpscTjSt7uvZsiuKwYzaSnivcXTEfMxF72Q8mw=
 branches:
   only:
-    - master
+  - master
 before_install:
 - chmod -R 777 ./travis/init-travis-build.sh
 - ./travis/init-travis-build.sh
