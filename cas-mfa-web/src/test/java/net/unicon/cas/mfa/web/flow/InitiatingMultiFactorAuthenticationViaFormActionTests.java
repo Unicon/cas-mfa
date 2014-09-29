@@ -6,6 +6,8 @@ import net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfiguratio
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
+import net.unicon.cas.mfa.web.flow.event.ErroringMultiFactorAuthenticationSpringWebflowEventBuilder;
+import net.unicon.cas.mfa.web.flow.event.ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
@@ -142,7 +144,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         final Credentials credentials = getCredentials();
         final Event ev = this.action.submit(this.ctx, credentials, this.msgCtx, null);
         assertNotNull(ev);
-        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_ERROR_EVENT_ID);
+        assertEquals(ev.getId(), ErroringMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_ERROR_EVENT_ID);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -150,14 +152,15 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         final Credentials credentials = getCredentials();
         final Event ev = this.action.submit(this.ctx, credentials, this.msgCtx, null);
         assertNotNull(ev);
-        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_ERROR_EVENT_ID);
+        assertEquals(ev.getId(), ErroringMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_ERROR_EVENT_ID);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBadInvalidCredentials() throws Exception {
         final Event ev = this.action.submit(this.ctx, null, this.msgCtx, "someId");
         assertNotNull(ev);
-        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_ERROR_EVENT_ID);
+
+        assertEquals(ev.getId(), ErroringMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_ERROR_EVENT_ID);
     }
 
     @Test()
@@ -168,7 +171,8 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         final MultiFactorAuthenticationSupportingWebApplicationService svc =
                 (MultiFactorAuthenticationSupportingWebApplicationService) WebUtils.getService(this.ctx);
         assertNotNull(svc);
-        assertEquals(ev.getId(), AbstractMultiFactorAuthenticationViaFormAction.MFA_SUCCESS_EVENT_ID_PREFIX
+
+        assertEquals(ev.getId(), ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_SUCCESS_EVENT_ID_PREFIX
                 + svc.getAuthenticationMethod());
     }
 
