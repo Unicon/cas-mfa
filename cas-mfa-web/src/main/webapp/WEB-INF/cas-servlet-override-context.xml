@@ -73,7 +73,8 @@
     <bean id="initiatingAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
           class="net.unicon.cas.mfa.web.flow.InitiatingMultiFactorAuthenticationViaFormAction"
           c:wrapperAuthenticationAction-ref="authenticationViaFormAction"
-          p:warnCookieGenerator-ref="warnCookieGenerator"/>
+          p:warnCookieGenerator-ref="warnCookieGenerator"
+          p:destroyPreviousSingleSignOnSession="true"  />
 
     <bean id="principalMismatchExceptionHandler"
           class="net.unicon.cas.mfa.web.flow.ConfigurableSpringWebflowExceptionHandler"

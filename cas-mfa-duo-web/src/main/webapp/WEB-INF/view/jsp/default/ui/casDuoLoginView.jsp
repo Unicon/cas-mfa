@@ -16,6 +16,21 @@
     <div class="box fl-panel" id="login">
         <iframe id="duo_iframe" width="100%" height="360" frameborder="0"></iframe>
     </div>
+
+    <a href="javascript:void" onclick="redirectToLoginViewAndEndTheFlow();">
+        <spring:message code="screen.mfa.button.cancel" />
+    </a>
 </form:form>
+
+<script>
+    $(document).ready(function(){
+        $("input#password").focus();
+    });
+
+    function redirectToLoginViewAndEndTheFlow() {
+        var loginViewUrl = window.location.href;
+        window.location.replace(loginViewUrl);
+    }
+</script>
 
 <jsp:directive.include file="includes/bottom.jsp"/>

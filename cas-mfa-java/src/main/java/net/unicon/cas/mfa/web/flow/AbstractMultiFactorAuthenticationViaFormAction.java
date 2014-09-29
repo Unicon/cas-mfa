@@ -5,6 +5,9 @@ import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
+import net.unicon.cas.mfa.web.flow.event.ErroringMultiFactorAuthenticationSpringWebflowEventBuilder;
+import net.unicon.cas.mfa.web.flow.event.MultiFactorAuthenticationSpringWebflowEventBuilder;
+import net.unicon.cas.mfa.web.flow.event.ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
@@ -43,16 +46,6 @@ import javax.validation.constraints.NotNull;
  */
 @SuppressWarnings("deprecation")
 public abstract class AbstractMultiFactorAuthenticationViaFormAction extends AbstractAction {
-
-    /**
-     * The Constant MFA_ERROR_EVENT_ID.
-     */
-    public static final String MFA_ERROR_EVENT_ID = "error";
-
-    /**
-     * The Constant MFA_SUCCESS_EVENT_ID.
-     */
-    public static final String MFA_SUCCESS_EVENT_ID_PREFIX = "mfa_";
 
     /**
      * The logger.
@@ -103,6 +96,18 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * The CAS server hostname.
      */
     private final String hostname;
+
+    /**
+     * Prior to attempting to execute multifactor authentication,
+     * should the previous SSO session (TGT) be destroyed?
+     */
+    private boolean destroyPreviousSingleSignOnSession = true;
+
+    private final MultiFactorAuthenticationSpringWebflowEventBuilder successfulEventBuilder =
+            new ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder();
+
+    private final MultiFactorAuthenticationSpringWebflowEventBuilder errorEventBuilder =
+            new ErroringMultiFactorAuthenticationSpringWebflowEventBuilder();
 
     /**
      * Ctor.
@@ -183,10 +188,14 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
         Assert.notNull(credentials);
 
         try {
-            final String tgt = WebUtils.getTicketGrantingTicketId(context);
-            if (!StringUtils.isBlank(tgt)) {
-                this.cas.destroyTicketGrantingTicket(tgt);
+
+            if (this.destroyPreviousSingleSignOnSession) {
+                final String tgt = WebUtils.getTicketGrantingTicketId(context);
+                if (!StringUtils.isBlank(tgt)) {
+                    this.cas.destroyTicketGrantingTicket(tgt);
+                }
             }
+
             final Authentication auth = this.authenticationManager.authenticate(credentials);
             if (MultiFactorRequestContextUtils.getMultifactorWebApplicationService(context) == null) {
                 final MultiFactorAuthenticationRequestContext mfaRequest = getMfaRequestOrNull(auth, WebUtils.getService(context), context);
@@ -207,12 +216,12 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
             populateErrorsInstance(e.getCode(), messageContext);
             logger.error(e.getMessage(), e);
         }
-        return getErrorEvent();
+        return getErrorEvent(context);
     }
 
 
     /**
-     * In the event of a non-MFA request, return the result of {@link #getErrorEvent()} by default.
+     * In the event of a non-MFA request, return the result of {@link #getErrorEvent(RequestContext)} by default.
      * Implementations are expected to override this method if they wish to respond to authentication
      * requests.
      *
@@ -267,7 +276,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
             if (isValidLoginTicket(context, messageContext)) {
                 return doMultiFactorAuthentication(context, credentials, messageContext, id);
             }
-            return getErrorEvent();
+            return getErrorEvent(context);
         }
         return doAuthentication(context, credentials, messageContext, id);
     }
@@ -309,6 +318,15 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
     }
 
     /**
+     * Sets destroy previous single sign on session.
+     *
+     * @param destroyPreviousSingleSignOnSession the destroy previous single sign on session
+     */
+    public void setDestroyPreviousSingleSignOnSession(final boolean destroyPreviousSingleSignOnSession) {
+        this.destroyPreviousSingleSignOnSession = destroyPreviousSingleSignOnSession;
+    }
+
+    /**
      * Authentication manager instance to authenticate the user by its configured
      * handlers as the first leg of an multifactor authentication sequence.
      *
@@ -321,10 +339,11 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
     /**
      * The webflow error event id.
      *
+     * @param context the context
      * @return error event id
      */
-    protected final Event getErrorEvent() {
-        return new Event(this, MFA_ERROR_EVENT_ID);
+    protected final Event getErrorEvent(final RequestContext context) {
+        return this.errorEventBuilder.buildEvent(context);
     }
 
     /**
@@ -335,9 +354,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @return the webflow id
      */
     protected final Event getSuccessEvent(final RequestContext context) {
-        final MultiFactorAuthenticationSupportingWebApplicationService service = (MultiFactorAuthenticationSupportingWebApplicationService)
-                WebUtils.getService(context);
-        return new Event(this, MFA_SUCCESS_EVENT_ID_PREFIX + service.getAuthenticationMethod());
+        return this.successfulEventBuilder.buildEvent(context);
     }
 
     /* (non-Javadoc)

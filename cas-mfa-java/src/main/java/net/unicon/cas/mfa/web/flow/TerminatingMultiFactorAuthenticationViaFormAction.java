@@ -83,6 +83,6 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
     @Override
     protected final Event doAuthentication(final RequestContext context, final Credentials credentials,
             final MessageContext messageContext, final String id) throws Exception {
-        return super.getErrorEvent();
+        return super.getErrorEvent(context);
     }
 }

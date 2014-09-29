@@ -75,11 +75,6 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
         this.wrapperAuthenticationAction = wrapperAuthenticationAction;
     }
 
-    /* (non-Javadoc)
-         * @see AbstractMultiFactorAuthenticationViaFormAction#doAuthentication
-         * (org.springframework.webflow.execution.RequestContext, org.jasig.cas.authentication.principal.Credentials
-         *  org.springframework.binding.message.MessageContext, String)
-         */
     @Override
     protected final Event doAuthentication(final RequestContext context, final Credentials credentials,
                                            final MessageContext messageContext, final String id) throws Exception {
