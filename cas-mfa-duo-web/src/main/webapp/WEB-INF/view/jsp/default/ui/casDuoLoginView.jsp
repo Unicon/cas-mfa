@@ -17,9 +17,11 @@
         <iframe id="duo_iframe" width="100%" height="360" frameborder="0"></iframe>
     </div>
 
+    <p>
     <a href="javascript:void" onclick="redirectToLoginViewAndEndTheFlow();">
         <spring:message code="screen.mfa.button.cancel" />
     </a>
+    </p>
 </form:form>
 
 <script>
