@@ -7,10 +7,6 @@ env:
 branches:
   only:
     - master
-cache:
-  - bundler
-  directories:
-  - $HOME/.m2
 before_install:
 - chmod -R 777 ./travis/init-travis-build.sh
 - ./travis/init-travis-build.sh
