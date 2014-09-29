@@ -1,5 +1,9 @@
 language: java
 
+env:
+  global:
+  - secure: "WKD+T9FV5c7kTQ9QlF58NEz0SYvS1unXtttU4Aqe2cDS8ZEgg1Fgz7La+BP1CNcWTyws36J0Cos9nGYcJzns+0ETWp0EGQNTxLJFsyGcdalE3+OkcaRf6TvwdJV7aeZAZDSP/pBza7Qph01GNMk9DaGxL4u/iYnHTRT6CBetsd0="
+  - secure: "GzpcXCdgr7ak8DFVQ8cNh57dcuvfr3xJQUmhIyQJH6Be/3dFPCGaVc93nRE9oZGyZc0fXLpl0LvgufnnISqVEjF6P8OHXy2qf99l5u+BTA6Z3JAMA99b3FHfS9WrYocsAuSia1uj7fV31nK2ymulj6tUUo8QIqRVF7ax1h0WJO8="
 branches:
   only:
     - master
@@ -7,3 +11,9 @@ cache:
   - bundler
   directories:
   - $HOME/.m2
+before_install:
+- chmod -R 777 ./travis/init-travis-build.sh
+- ./travis/init-travis-build.sh
+after_success:
+- chmod -R 777 ./travis/deploy-to-sonatype.sh
+- ./travis/deploy-to-sonatype.sh
