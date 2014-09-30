@@ -439,8 +439,8 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
                                                      final RequestContext context) {
 
         MultiFactorAuthenticationTransactionContext mfaTx = MultiFactorRequestContextUtils.getMfaTransaction(context);
-        if (mfaTx == null) {
-            final WebApplicationService svc = MultiFactorRequestContextUtils.getMultifactorWebApplicationService(context);
+        if (mfaTx == null && mfaRequests.size() > 0) {
+            final WebApplicationService svc = mfaRequests.get(0).getMfaService();
             mfaTx = new MultiFactorAuthenticationTransactionContext(svc.getId());
         }
         for (final MultiFactorAuthenticationRequestContext mfaRequest : mfaRequests) {

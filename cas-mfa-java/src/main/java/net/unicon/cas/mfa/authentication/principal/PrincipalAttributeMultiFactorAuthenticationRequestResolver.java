@@ -1,8 +1,10 @@
 package net.unicon.cas.mfa.authentication.principal;
 
 import net.unicon.cas.mfa.authentication.AuthenticationMethodConfigurationProvider;
+import net.unicon.cas.mfa.authentication.AuthenticationMethodTranslator;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
+import net.unicon.cas.mfa.authentication.StubAuthenticationMethodTranslator;
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import org.apache.commons.lang.StringUtils;
@@ -54,6 +56,11 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * Default principal attribute name for retrieving requested mfa authentication method.
      */
     public static final String DEFAULT_MFA_METHOD_ATTRIBUTE_NAME = "authn_method";
+
+    /**
+     * The Authentication method translator.
+     */
+    private AuthenticationMethodTranslator authenticationMethodTranslator = new StubAuthenticationMethodTranslator();
 
     /**
      * Ctor.
@@ -112,14 +119,16 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     /**
      * Gets mfa request context.
      *
-     * @param mfaMethod the mfa method
+     * @param method the mfa method
      * @param authentication the authentication
      * @param targetService the target service
      * @return the mfa request context
      */
-    private MultiFactorAuthenticationRequestContext getMfaRequestContext(final String mfaMethod,
+    private MultiFactorAuthenticationRequestContext getMfaRequestContext(final String method,
                                                                          final Authentication authentication,
                                                                          final WebApplicationService targetService) {
+
+        final String mfaMethod = this.authenticationMethodTranslator.translate(targetService, method);
         if (StringUtils.isNotBlank(mfaMethod)) {
             logger.debug("Found mfa attribute [{}] with value [{}] for principal [{}]", this.mfaMethodAttributeName,
                     mfaMethod, authentication.getPrincipal().getId());
@@ -138,5 +147,9 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
             return new MultiFactorAuthenticationRequestContext(svc, mfaMethodRank);
         }
         return null;
+    }
+
+    public void setAuthenticationMethodTranslator(final AuthenticationMethodTranslator authenticationMethodTranslator) {
+        this.authenticationMethodTranslator = authenticationMethodTranslator;
     }
 }

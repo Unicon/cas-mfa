@@ -1,15 +1,18 @@
 package net.unicon.cas.mfa.web.support;
 
+import net.unicon.cas.mfa.authentication.AuthenticationMethodTranslator;
+import net.unicon.cas.mfa.authentication.StubAuthenticationMethodTranslator;
+import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.principal.WebApplicationService;
-
-import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.*;
-
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
+
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
 
 /**
  * Abstract extractor containing common functionality pertaining to authentication methods verification and target service extraction
@@ -42,6 +45,10 @@ public abstract class AbstractMultiFactorAuthenticationArgumentExtractor impleme
     private final AuthenticationMethodVerifier authenticationMethodVerifier;
 
     /**
+     * The Authentication method translator.
+     */
+    private AuthenticationMethodTranslator authenticationMethodTranslator = new StubAuthenticationMethodTranslator();
+    /**
      * Ctor.
      * @param supportedArgumentExtractors supportedArgumentExtractors
      * @param mfaWebApplicationServiceFactory mfaWebApplicationServiceFactory
@@ -61,10 +68,11 @@ public abstract class AbstractMultiFactorAuthenticationArgumentExtractor impleme
         if (targetService == null) {
             return null;
         }
-        final String authenticationMethod = getAuthenticationMethod(request, targetService);
-        if (authenticationMethod == null) {
+        String authenticationMethod = this.getAuthenticationMethod(request, targetService);
+        if (StringUtils.isBlank(authenticationMethod)) {
             return null;
         }
+        authenticationMethod = this.authenticationMethodTranslator.translate(targetService, authenticationMethod);
         this.authenticationMethodVerifier.verifyAuthenticationMethod(authenticationMethod, targetService, request);
 
         final MultiFactorAuthenticationSupportingWebApplicationService mfaService =
@@ -103,6 +111,10 @@ public abstract class AbstractMultiFactorAuthenticationArgumentExtractor impleme
             return null;
         }
         return targetService;
+    }
+
+    public void setAuthenticationMethodTranslator(final AuthenticationMethodTranslator authenticationMethodTranslator) {
+        this.authenticationMethodTranslator = authenticationMethodTranslator;
     }
 
     /**

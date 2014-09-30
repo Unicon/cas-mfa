@@ -17,7 +17,7 @@
 
     <!-- Overlays are processed using a first-win strategy. We want to have the cas-mfa-web overlay processed first so that
        any particular CAS files that are modified for the MFA functionality are copied to the work directory first. When the second
-       overlay is processed, it will ignore to overwrite the files that have already been copied and match the name. In order words:
+       overlay is processed, it will ignore to overwrite the files that have already been copied and match the name. In other words:
        - cas-mfa-web is an overlay to the local CAS overlay. - local CAS overlay is an overlay to the CAS original distribution. -->
     <build>
         <plugins>
@@ -28,10 +28,14 @@
                     <warName>cas</warName>
                     <packagingExcludes>WEB-INF/lib/stax-api-1.0-2.jar</packagingExcludes>
                     <overlays>
+                        <!-- Include to add support for Duo -->
+                        <!--
                         <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-duo-web</artifactId>
                         </overlay>
+                        -->
+
                         <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-web</artifactId>
