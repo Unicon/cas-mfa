@@ -35,6 +35,8 @@ import org.springframework.web.util.CookieGenerator;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
+import java.util.List;
+
 /**
  * The multifactor authentication service action that branches to an loa-defined
  * subflow state based on the service loa requirement. If the requesting service
@@ -85,13 +87,13 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
             return primaryAuthnEvent;
         }
 
-        final MultiFactorAuthenticationRequestContext mfaRequest =
+        final List<MultiFactorAuthenticationRequestContext> mfaRequests =
                 getMfaRequestOrNull(this.authenticationSupport.getAuthenticationFrom(WebUtils.getTicketGrantingTicketId(context)),
                         WebUtils.getService(context), context);
 
-        if (mfaRequest != null) {
+        if (mfaRequests != null) {
             MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context,
-                    addToMfaTransactionAndGetHighestRankedMfaRequest(mfaRequest, context));
+                    addToMfaTransactionAndGetHighestRankedMfaRequest(mfaRequests, context));
             return doMultiFactorAuthentication(context, credentials, messageContext, id);
         }
         return primaryAuthnEvent;

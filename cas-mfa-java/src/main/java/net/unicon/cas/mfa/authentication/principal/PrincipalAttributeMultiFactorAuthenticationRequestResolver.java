@@ -11,6 +11,9 @@ import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 
 /**
@@ -80,27 +83,59 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     }
 
     @Override
-    public MultiFactorAuthenticationRequestContext resolve(final Authentication authentication, final WebApplicationService targetService) {
+    public List<MultiFactorAuthenticationRequestContext> resolve(final Authentication authentication,
+                                                                 final WebApplicationService targetService) {
+        final List<MultiFactorAuthenticationRequestContext> list = new ArrayList<MultiFactorAuthenticationRequestContext>();
         if ((authentication != null) && (targetService != null)) {
-            final String mfaMethod = String.class.cast(authentication.getPrincipal().getAttributes().get(this.mfaMethodAttributeName));
-
-            if (StringUtils.isNotBlank(mfaMethod)) {
-                logger.debug("Found mfa attribute [{}] with value [{}] for principal [{}]", this.mfaMethodAttributeName,
-                        mfaMethod, authentication.getPrincipal().getId());
-
-                if (!this.authenticationMethodConfiguration.containsAuthenticationMethod(mfaMethod)) {
-                    logger.info("MFA attribute [{}] with value [{}] is not supported by the authentication method configuration.",
-                            this.mfaMethodAttributeName,
-                            mfaMethod);
-                    return null;
+            final Object mfaMethodAsObject = authentication.getPrincipal().getAttributes().get(this.mfaMethodAttributeName);
+            if (mfaMethodAsObject != null) {
+                if (mfaMethodAsObject instanceof String) {
+                    final String mfaMethod = mfaMethodAsObject.toString();
+                    final MultiFactorAuthenticationRequestContext ctx = getMfaRequestContext(mfaMethod, authentication, targetService);
+                    if (ctx != null) {
+                        list.add(ctx);
+                    }
+                } else if (mfaMethodAsObject instanceof List) {
+                    final List<String> mfaMethods = (List<String>) mfaMethodAsObject;
+                    for (final String mfaMethod : mfaMethods) {
+                        final MultiFactorAuthenticationRequestContext ctx = getMfaRequestContext(mfaMethod, authentication, targetService);
+                        if (ctx != null) {
+                            list.add(ctx);
+                        }
+                    }
                 }
-                final int mfaMethodRank = this.authenticationMethodConfiguration.getAuthenticationMethod(mfaMethod).getRank();
-                final MultiFactorAuthenticationSupportingWebApplicationService svc =
-                        this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
-                        targetService.getArtifactId(), mfaMethod, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
-
-                return new MultiFactorAuthenticationRequestContext(svc, mfaMethodRank);
             }
+        }
+        return list;
+    }
+
+    /**
+     * Gets mfa request context.
+     *
+     * @param mfaMethod the mfa method
+     * @param authentication the authentication
+     * @param targetService the target service
+     * @return the mfa request context
+     */
+    private MultiFactorAuthenticationRequestContext getMfaRequestContext(final String mfaMethod,
+                                                                         final Authentication authentication,
+                                                                         final WebApplicationService targetService) {
+        if (StringUtils.isNotBlank(mfaMethod)) {
+            logger.debug("Found mfa attribute [{}] with value [{}] for principal [{}]", this.mfaMethodAttributeName,
+                    mfaMethod, authentication.getPrincipal().getId());
+
+            if (!this.authenticationMethodConfiguration.containsAuthenticationMethod(mfaMethod)) {
+                logger.info("MFA attribute [{}] with value [{}] is not supported by the authentication method configuration.",
+                        this.mfaMethodAttributeName,
+                        mfaMethod);
+                return null;
+            }
+            final int mfaMethodRank = this.authenticationMethodConfiguration.getAuthenticationMethod(mfaMethod).getRank();
+            final MultiFactorAuthenticationSupportingWebApplicationService svc =
+                    this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
+                            targetService.getArtifactId(), mfaMethod, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
+
+            return new MultiFactorAuthenticationRequestContext(svc, mfaMethodRank);
         }
         return null;
     }

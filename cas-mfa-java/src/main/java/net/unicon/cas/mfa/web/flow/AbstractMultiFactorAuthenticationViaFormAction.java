@@ -33,6 +33,7 @@ import org.springframework.webflow.execution.RequestContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * An abstraction that specifies how the authentication flow should behave.
@@ -198,7 +199,8 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
 
             final Authentication auth = this.authenticationManager.authenticate(credentials);
             if (MultiFactorRequestContextUtils.getMultifactorWebApplicationService(context) == null) {
-                final MultiFactorAuthenticationRequestContext mfaRequest = getMfaRequestOrNull(auth, WebUtils.getService(context), context);
+                final List<MultiFactorAuthenticationRequestContext> mfaRequest =
+                        getMfaRequestOrNull(auth, WebUtils.getService(context), context);
                 //No principal attribute sourced mfa method request. Just get the highest ranked mfa service from existing ones
                 if (mfaRequest == null) {
                     MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context,
@@ -398,7 +400,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      *
      * @return mfa request or null
      */
-    protected MultiFactorAuthenticationRequestContext getMfaRequestOrNull(final Authentication authentication,
+    protected List<MultiFactorAuthenticationRequestContext> getMfaRequestOrNull(final Authentication authentication,
                                                                           final WebApplicationService service,
                                                                           final RequestContext context) {
 
@@ -407,39 +409,45 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
             serviceToUse = new SimpleWebApplicationServiceImpl(this.hostname, null);
         }
 
-        final MultiFactorAuthenticationRequestContext mfaRequest =
+        final List<MultiFactorAuthenticationRequestContext> mfaRequests =
                 this.multiFactorAuthenticationRequestResolver.resolve(authentication, serviceToUse);
-        if (mfaRequest != null) {
-            this.authenticationMethodVerifier.verifyAuthenticationMethod(mfaRequest.getMfaService().getAuthenticationMethod(),
-                    mfaRequest.getMfaService(),
-                    HttpServletRequest.class.cast(context.getExternalContext().getNativeRequest()));
+        if (mfaRequests != null) {
+            for (final MultiFactorAuthenticationRequestContext mfaRequest : mfaRequests) {
+                this.authenticationMethodVerifier.verifyAuthenticationMethod(mfaRequest.getMfaService().getAuthenticationMethod(),
+                        mfaRequest.getMfaService(),
+                        HttpServletRequest.class.cast(context.getExternalContext().getNativeRequest()));
 
-            logger.info("There is an existing mfa request for service [{}] with a requested authentication method of [{}]",
-                    mfaRequest.getMfaService().getId(), mfaRequest.getMfaService().getAuthenticationMethod());
+                logger.info("There is an existing mfa request for service [{}] with a requested authentication method of [{}]",
+                        mfaRequest.getMfaService().getId(), mfaRequest.getMfaService().getAuthenticationMethod());
+            }
+
         }
-        return mfaRequest;
+        return mfaRequests;
     }
 
 
     /**
      * Add the request to mfa transaction, re-rank and return the newly ranked one.
      *
-     * @param mfaRequest the mfaRequest
+     * @param mfaRequests the mfaRequest
      * @param context the context
      *
      * @return newly ranked mfa request in the current mfa transaction
      */
     protected MultiFactorAuthenticationSupportingWebApplicationService
-                addToMfaTransactionAndGetHighestRankedMfaRequest(final MultiFactorAuthenticationRequestContext mfaRequest,
+                addToMfaTransactionAndGetHighestRankedMfaRequest(final List<MultiFactorAuthenticationRequestContext> mfaRequests,
                                                      final RequestContext context) {
 
         MultiFactorAuthenticationTransactionContext mfaTx = MultiFactorRequestContextUtils.getMfaTransaction(context);
         if (mfaTx == null) {
-            mfaTx = new MultiFactorAuthenticationTransactionContext(mfaRequest.getMfaService().getId()).addMfaRequest(mfaRequest);
-            MultiFactorRequestContextUtils.setMfaTransaction(context, mfaTx);
-        } else {
+            final WebApplicationService svc = MultiFactorRequestContextUtils.getMultifactorWebApplicationService(context);
+            mfaTx = new MultiFactorAuthenticationTransactionContext(svc.getId());
+        }
+        for (final MultiFactorAuthenticationRequestContext mfaRequest : mfaRequests) {
             mfaTx.addMfaRequest(mfaRequest);
         }
+
+        MultiFactorRequestContextUtils.setMfaTransaction(context, mfaTx);
         return getHighestRankedMfaRequestFromMfaTransaction(context);
     }
 

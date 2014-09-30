@@ -510,7 +510,7 @@
   <properties>
     <!-- CAS Versions -->
     <cas.version>3.5.2.1</cas.version>
-    <cas-addons.version>1.11.1</cas-addons.version>
+    <cas-addons.version>1.13</cas-addons.version>
 
     <!-- Dependency Versions -->
     <spring.webflow.version>2.3.2.RELEASE</spring.webflow.version>

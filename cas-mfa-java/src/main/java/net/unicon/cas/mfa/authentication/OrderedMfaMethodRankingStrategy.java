@@ -1,7 +1,7 @@
 package net.unicon.cas.mfa.authentication;
 
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-import org.springframework.core.OrderComparator;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -37,8 +37,20 @@ public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationM
         final List<MultiFactorAuthenticationRequestContext> sortedRequests =
                 new ArrayList<MultiFactorAuthenticationRequestContext>(mfaTransaction.getMfaRequests());
 
-        OrderComparator.sort(sortedRequests);
+        AnnotationAwareOrderComparator.sort(sortedRequests);
         return sortedRequests.get(0).getMfaService();
+    }
+
+    /**
+     * Sort the list of requests.
+     *
+     * @param sortedRequests the sorted requests
+     * @return the list
+     */
+    protected List<MultiFactorAuthenticationRequestContext> sortRequests(
+            final List<MultiFactorAuthenticationRequestContext> sortedRequests) {
+        AnnotationAwareOrderComparator.sort(sortedRequests);
+        return sortedRequests;
     }
 
     @Override
@@ -75,7 +87,7 @@ public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationM
      * @throws IllegalStateException if the Map is mis-configured i.e. does not hold valid (mfaMethod -> rank) configuration data.
      *                               This is totally a config/deployment error as opposed to external input validation error.
      */
-    private Integer getRank(final String mfaMethod) throws IllegalStateException {
+    private Integer getRank(final String mfaMethod) {
         final Integer rank = this.authenticationMethodConfiguration.getAuthenticationMethod(mfaMethod).getRank();
         if (rank == null) {
             throw new IllegalStateException("The [mfaRankingConfig] Map is mis-configured. It does not have a ranking value mapping for the"

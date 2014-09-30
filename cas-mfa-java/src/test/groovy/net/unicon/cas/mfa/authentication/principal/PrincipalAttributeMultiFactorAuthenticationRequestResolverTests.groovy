@@ -26,7 +26,7 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
     def authenticationWithValidPrincipalAttributeFor_strong_two_factor = Stub(Authentication) {
         getPrincipal() >> Stub(Principal) {
             getId() >> 'test principal'
-            getAttributes() >> [authn_method: 'strong_two_factor']
+            getAttributes() >> [authn_method: ['strong_two_factor', 'lower_factor']]
         }
     }
 
@@ -61,9 +61,9 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
             new PrincipalAttributeMultiFactorAuthenticationRequestResolver(mfaWebApplicationServiceFactory, loader)
 
     @Unroll
-    def "either authentication OR service OR both null arguments OR no authn_method principal attribute SHOULD result in a null return value"() {
+    def "either authentication OR service OR both null arguments OR no authn_method principal attribute SHOULD result in empty list"() {
         expect:
-        mfaAuthnReqResolverUnderTest.resolve(authn, svc) == null
+        mfaAuthnReqResolverUnderTest.resolve(authn, svc).size() == 0
 
         where:
         authn                                                          | svc
@@ -77,14 +77,15 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
     def "correct MultiFactorAuthenticationRequestContext returned when valid target service is passed and THERE IS a principal attribute 'authn_method'"() {
         given:
         def mfaReq = mfaAuthnReqResolverUnderTest.resolve(authenticationWithValidPrincipalAttributeFor_strong_two_factor, targetService)
+        def mfaContext = mfaReq.get(0);
 
         expect:
-        mfaReq.mfaService.id == 'test target service'
+        mfaContext.mfaService.id == 'test target service'
 
         and:
-        mfaReq.mfaService.authenticationMethod == 'strong_two_factor'
+        mfaContext.mfaService.authenticationMethod == 'strong_two_factor'
 
         and:
-        mfaReq.mfaService.authenticationMethodSource == AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE
+        mfaContext.mfaService.authenticationMethodSource == AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE
     }
 }
