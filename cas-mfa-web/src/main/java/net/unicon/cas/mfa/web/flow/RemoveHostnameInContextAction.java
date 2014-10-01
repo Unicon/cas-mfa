@@ -1,4 +1,4 @@
-package net.unicon.cas.mfa.web;
+package net.unicon.cas.mfa.web.flow;
 
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;

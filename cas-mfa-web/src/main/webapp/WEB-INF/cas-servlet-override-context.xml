@@ -85,6 +85,9 @@
           class="net.unicon.cas.mfa.web.flow.view.MultifactorLoginViewPrincipalAttributeGreeter"
           c:greetingAttrName="${screen.mfa.greeting.userAttribute:cn}"/>
 
+    <bean id="checkHostnameServiceInContextAction"
+              class="net.unicon.cas.mfa.web.flow.RemoveHostnameInContextAction"
+              c:hostname="${server.prefix}" />
 
     <!-- MFA Views -->
     <bean id="casMfaLoginView" class="org.springframework.web.servlet.view.JstlView"
