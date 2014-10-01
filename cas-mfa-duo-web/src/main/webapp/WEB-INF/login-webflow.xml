@@ -31,8 +31,7 @@
 
     <action-state id="mfaTicketGrantingTicketExistsCheck">
         <evaluate expression="validateInitialMfaRequestAction" />
-        <transition on="mfa_strong_two_factor" to="mfa_strong_two_factor" />
-        <transition on="mfa_sample_two_factor" to="mfa_sample_two_factor" />
+        <transition on="mfa_duo_two_factor" to="mfa_duo_two_factor" />
         <transition on="requireTgt" to="ticketGrantingTicketExistsCheck" />
     </action-state>
          
