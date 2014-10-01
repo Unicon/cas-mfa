@@ -36,6 +36,14 @@
                         </overlay>
                         -->
 
+                        <!-- Include to add support for YubiKey -->
+                        <!--
+                        <overlay>
+                            <groupId>net.unicon</groupId>
+                            <artifactId>cas-mfa-yubikey-web</artifactId>
+                        </overlay>
+                        -->
+
                         <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-web</artifactId>
@@ -109,11 +117,25 @@
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
+
+        <!-- Include to add support for Duo -->
+        <!--
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-duo-web</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
+        -->
+
+        <!-- Include to add support for YubiKey -->
+        <!--
+        <dependency>
+            <groupId>net.unicon</groupId>
+            <artifactId>cas-mfa-yubikey-web</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        -->
     </dependencies>
 </project>

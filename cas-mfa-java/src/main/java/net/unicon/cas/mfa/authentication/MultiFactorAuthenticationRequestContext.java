@@ -4,8 +4,11 @@ import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebAppl
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -25,6 +28,8 @@ import java.io.Serializable;
  */
 public final class MultiFactorAuthenticationRequestContext implements Serializable, Ordered {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultiFactorAuthenticationRequestContext.class);
+
     private static final long serialVersionUID = 3895119051289676064L;
 
     private final MultiFactorAuthenticationSupportingWebApplicationService mfaService;
@@ -38,9 +43,9 @@ public final class MultiFactorAuthenticationRequestContext implements Serializab
      * @param rank the rank value of this request
      */
     public MultiFactorAuthenticationRequestContext(@NotNull final MultiFactorAuthenticationSupportingWebApplicationService mfaService,
-                                                   final int rank) {
+                                                   @Min(1) final int rank) {
         this.mfaService = mfaService;
-        this.rank = (rank <= 0) ? Integer.MAX_VALUE : rank;
+        this.rank = rank;
     }
 
     public MultiFactorAuthenticationSupportingWebApplicationService getMfaService() {

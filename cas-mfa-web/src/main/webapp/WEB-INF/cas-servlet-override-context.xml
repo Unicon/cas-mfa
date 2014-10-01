@@ -84,4 +84,15 @@
     <bean id="mfaLoginViewPrincipalGreeter"
           class="net.unicon.cas.mfa.web.flow.view.MultifactorLoginViewPrincipalAttributeGreeter"
           c:greetingAttrName="${screen.mfa.greeting.userAttribute:cn}"/>
+
+
+    <!-- MFA Views -->
+    <bean id="casMfaLoginView" class="org.springframework.web.servlet.view.JstlView"
+          p:url="/WEB-INF/view/jsp/default/ui/casMfaLoginView.jsp" />
+
+    <bean id="casMfaUnrecognizedAuthnMethodErrorView" class="org.springframework.web.servlet.view.JstlView"
+          p:url="/WEB-INF/view/jsp/default/ui/casMfaUnrecognizedAuthnMethodErrorView.jsp" />
+
+    <bean id="casUnknownPrincipalErrorView" class="org.springframework.web.servlet.view.JstlView"
+          p:url="/WEB-INF/view/jsp/default/ui/casUnknownPrincipalErrorView.jsp" />
 </beans>
