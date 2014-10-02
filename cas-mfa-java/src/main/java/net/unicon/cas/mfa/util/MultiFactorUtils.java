@@ -1,17 +1,17 @@
 package net.unicon.cas.mfa.util;
 
+import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
+import org.apache.commons.lang.StringUtils;
+import org.jasig.cas.authentication.Authentication;
+import org.jasig.cas.validation.Assertion;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-
-import org.apache.commons.lang.StringUtils;
-import org.jasig.cas.authentication.Authentication;
-import org.jasig.cas.validation.Assertion;
 
 /**
  * Utility methods to ease implementation of multifactor behavior.
@@ -31,13 +31,20 @@ public final class MultiFactorUtils {
      * @return the space-delimited list of authentication methods, or null if none is available
      */
     public static String getFulfilledAuthenticationMethodsAsString(final Assertion assertion) {
-        final int index = assertion.getChainedAuthentications().size() - 1;
-        final Authentication authentication = assertion.getChainedAuthentications().get(index);
+        final Authentication authentication = getAuthenticationFromAssertion(assertion);
+        return getFulfilledAuthenticationMethodsAsString(authentication);
+    }
 
+    /**
+     * Generate the string the indicates the list of satisfied authentication methods.
+     * Methods are separated by a space.
+     * @param authentication the authentication carrying the methods.
+     * @return the space-delimited list of authentication methods, or null if none is available
+     */
+    public static String getFulfilledAuthenticationMethodsAsString(final Authentication authentication) {
         final Set<String> previouslyAchievedAuthenticationMethods = getSatisfiedAuthenticationMethods(authentication);
         if (previouslyAchievedAuthenticationMethods.size() > 0) {
-            final String authnMethods = StringUtils.join(previouslyAchievedAuthenticationMethods, " ");
-            return authnMethods;
+            return StringUtils.join(previouslyAchievedAuthenticationMethods, " ");
         }
         return null;
     }
@@ -83,5 +90,21 @@ public final class MultiFactorUtils {
             }
         }
         return Collections.emptySet();
+    }
+
+
+    /**
+     * Gets authentication from assertionfinal.
+     *
+     * @param assertion the assertion
+     * @return the authentication from assertionfinal
+     */
+    public static Authentication getAuthenticationFromAssertion(final Assertion assertion) {
+        final List<Authentication> chainedAuthentications = assertion.getChainedAuthentications();
+        if (chainedAuthentications.size() > 0) {
+            final int index = chainedAuthentications.size() - 1;
+            return chainedAuthentications.get(index);
+        }
+        return null;
     }
 }

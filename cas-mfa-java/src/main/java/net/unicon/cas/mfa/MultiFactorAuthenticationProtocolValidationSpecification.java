@@ -1,18 +1,16 @@
 package net.unicon.cas.mfa;
 
-import java.util.List;
-import java.util.Set;
-
 import net.unicon.cas.mfa.ticket.UnacceptableMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
-
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.validation.Assertion;
 import org.jasig.cas.validation.Cas20ProtocolValidationSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Set;
 
 /**
  * Validate the requested protocol spec, primarily based on the requested authentication method.
@@ -79,11 +77,8 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
      */
     @Override
     protected final boolean isSatisfiedByInternal(final Assertion assertion) {
-        final List<Authentication> chainedAuthentications = assertion.getChainedAuthentications();
-        if (chainedAuthentications.size() > 0) {
-            final int index = chainedAuthentications.size() - 1;
-            final Authentication authentication = chainedAuthentications.get(index);
-
+        final Authentication authentication = MultiFactorUtils.getAuthenticationFromAssertion(assertion);
+        if (authentication != null) {
             final Set<String> previouslyAchievedAuthenticationMethods =
                     MultiFactorUtils.getSatisfiedAuthenticationMethods(authentication);
 
@@ -104,7 +99,7 @@ public class MultiFactorAuthenticationProtocolValidationSpecification extends Ca
                             getAuthenticationMethod());
                 }
             }
-            return validateProxyAuthenticationRequests ? true : chainedAuthentications.size() == 1;
+            return validateProxyAuthenticationRequests ? true : assertion.getChainedAuthentications().size() == 1;
         }
         logger.debug("No authentication context is available");
         return false;

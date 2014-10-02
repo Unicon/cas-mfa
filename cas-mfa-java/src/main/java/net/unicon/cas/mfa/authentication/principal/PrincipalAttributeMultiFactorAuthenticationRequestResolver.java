@@ -40,7 +40,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * Principal attribute name for requested mfa method.
      * Default value if not provided via constructor is <i>authn_method</i>
      */
-    private final String mfaMethodAttributeName;
+    private final String authenticationMethodAttributeName;
 
     /**
      * Mfa service factory.
@@ -76,15 +76,15 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     /**
      * Ctor.
      *
-     * @param mfaMethodAttributeName mfaMethodAttributeName
+     * @param authenticationMethodAttributeName attribute name for mfa
      * @param mfaServiceFactory mfaServiceFactory
      * @param authenticationMethodConfiguration the authentication method loader
      */
-    public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final String mfaMethodAttributeName,
+    public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final String authenticationMethodAttributeName,
                final MfaWebApplicationServiceFactory mfaServiceFactory,
                final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
 
-        this.mfaMethodAttributeName = mfaMethodAttributeName;
+        this.authenticationMethodAttributeName = authenticationMethodAttributeName;
         this.mfaServiceFactory = mfaServiceFactory;
         this.authenticationMethodConfiguration = authenticationMethodConfiguration;
     }
@@ -94,7 +94,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
                                                                  final WebApplicationService targetService) {
         final List<MultiFactorAuthenticationRequestContext> list = new ArrayList<MultiFactorAuthenticationRequestContext>();
         if ((authentication != null) && (targetService != null)) {
-            final Object mfaMethodAsObject = authentication.getPrincipal().getAttributes().get(this.mfaMethodAttributeName);
+            final Object mfaMethodAsObject = authentication.getPrincipal().getAttributes().get(this.authenticationMethodAttributeName);
             if (mfaMethodAsObject != null) {
                 if (mfaMethodAsObject instanceof String) {
                     final String mfaMethod = mfaMethodAsObject.toString();
@@ -130,12 +130,12 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
 
         final String mfaMethod = this.authenticationMethodTranslator.translate(targetService, method);
         if (StringUtils.isNotBlank(mfaMethod)) {
-            logger.debug("Found mfa attribute [{}] with value [{}] for principal [{}]", this.mfaMethodAttributeName,
+            logger.debug("Found mfa attribute [{}] with value [{}] for principal [{}]", this.authenticationMethodAttributeName,
                     mfaMethod, authentication.getPrincipal().getId());
 
             if (!this.authenticationMethodConfiguration.containsAuthenticationMethod(mfaMethod)) {
                 logger.info("MFA attribute [{}] with value [{}] is not supported by the authentication method configuration.",
-                        this.mfaMethodAttributeName,
+                        this.authenticationMethodAttributeName,
                         mfaMethod);
                 return null;
             }

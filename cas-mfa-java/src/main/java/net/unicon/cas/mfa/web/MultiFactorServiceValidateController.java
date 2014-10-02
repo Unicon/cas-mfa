@@ -18,18 +18,11 @@
  */
 package net.unicon.cas.mfa.web;
 
-import java.net.URL;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
-
 import net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification;
 import net.unicon.cas.mfa.ticket.UnacceptableMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.principal.Credentials;
@@ -50,6 +43,11 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
+import java.net.URL;
 
 /**
  * Process the /validate and /serviceValidate URL requests.
@@ -266,8 +264,17 @@ public class MultiFactorServiceValidateController extends DelegateController {
                                            final String authnMethod, final Object[] args) {
         final ModelAndView modelAndView = new ModelAndView(this.failureView);
         final String convertedDescription = getMessageSourceAccessor().getMessage(code, args, description);
+
+        final StringBuilder builder = new StringBuilder(convertedDescription);
+        if (StringUtils.isNotBlank(authnMethod)) {
+            builder.append(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
+            builder.append("=");
+            builder.append(authnMethod);
+        }
+
         modelAndView.addObject("code", code);
-        modelAndView.addObject("description", convertedDescription);
+        modelAndView.addObject("description", builder.toString());
+
         modelAndView.addObject(MODEL_AUTHN_METHOD, authnMethod);
         return modelAndView;
     }
@@ -348,5 +355,6 @@ public class MultiFactorServiceValidateController extends DelegateController {
     public final void setProxyHandler(final ProxyHandler proxyHandler) {
         this.proxyHandler = proxyHandler;
     }
+
 
 }

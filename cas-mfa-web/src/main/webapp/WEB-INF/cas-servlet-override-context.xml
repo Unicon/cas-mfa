@@ -21,6 +21,32 @@
 
     <aop:aspectj-autoproxy/>
 
+    <bean id="mfaValidationWithoutProxySupportSpec"
+          class="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
+          c:validateProxyAuthenticationRequests="false"/>
+
+    <bean id="mfaValidationWithProxySupportSpec"
+          class="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
+          c:validateProxyAuthenticationRequests="true"/>
+
+    <bean id="abstractValidateController" class="net.unicon.cas.mfa.web.MultiFactorServiceValidateController"
+          abstract="true"
+          p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
+          p:proxyHandler-ref="proxy20Handler"
+          p:validationSpecificationClass-ref="mfaValidationWithProxySupportSpec"
+          p:argumentExtractor-ref="casArgumentExtractor"/>
+
+    <bean id="proxyValidateController" parent="abstractValidateController"
+          p:validationSpecificationClass-ref="mfaValidationWithProxySupportSpec"  />
+
+    <bean id="serviceValidateController" parent="abstractValidateController"
+          p:validationSpecificationClass-ref="mfaValidationWithoutProxySupportSpec"/>
+
+    <bean id="samlValidateController" parent="serviceValidateController"
+          p:argumentExtractor-ref="samlArgumentExtractor"
+          p:successView="casSamlServiceSuccessView"
+          p:failureView="casSamlServiceFailureView"/>
+
     <bean id="validateInitialMfaRequestAction"
           class="net.unicon.cas.mfa.web.flow.ValidateInitialMultiFactorAuthenticationRequestAction"
           c:authSupport-ref="authenticationSupport"
@@ -37,6 +63,9 @@
           p:ticketGrantingTicketExpirationPolicy-ref="grantingTicketExpirationPolicy"
           p:ticketGrantingTicketUniqueTicketIdGenerator-ref="ticketGrantingTicketUniqueIdGenerator"
           p:centralAuthenticationServiceDelegate-ref="centralAuthenticationService"
+          p:servicesManager-ref="servicesManager"
+          p:authenticationMethodAttributeName="${mfa.method.userAttribute:authn_method}"
+          p:persistentIdGenerator-ref="persistentIdGenerator"
           p:authenticationManager-ref="mfaAuthenticationManager"/>
 
     <bean id="mfaAuthenticationManager" parent="authenticationManager">
@@ -49,7 +78,7 @@
 
     <bean id="principalAttributeMfaRequestResolver"
           class="net.unicon.cas.mfa.authentication.principal.PrincipalAttributeMultiFactorAuthenticationRequestResolver"
-          c:mfaMethodAttributeName="${mfa.method.userAttribute:authn_method}"
+          c:authenticationMethodAttributeName="${mfa.method.userAttribute:authn_method}"
           c:mfaServiceFactory-ref="mfaServiceFactory"
           c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
 
@@ -85,7 +114,7 @@
           class="net.unicon.cas.mfa.web.flow.view.MultifactorLoginViewPrincipalAttributeGreeter"
           c:greetingAttrName="${screen.mfa.greeting.userAttribute:cn}"/>
 
-    <bean id="checkHostnameServiceInContextAction"
+    <bean id="removeHostnameServiceInContextAction"
               class="net.unicon.cas.mfa.web.flow.RemoveHostnameInContextAction"
               c:hostname="${server.prefix}" />
 
@@ -98,4 +127,5 @@
 
     <bean id="casUnknownPrincipalErrorView" class="org.springframework.web.servlet.view.JstlView"
           p:url="/WEB-INF/view/jsp/default/ui/casUnknownPrincipalErrorView.jsp" />
+
 </beans>
