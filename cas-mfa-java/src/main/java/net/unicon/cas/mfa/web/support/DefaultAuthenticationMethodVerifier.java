@@ -1,6 +1,6 @@
 package net.unicon.cas.mfa.web.support;
 
-import net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfigurationProvider;
+import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +22,14 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
     /**
      * Supported authentication methods.
      */
-    private final DefaultAuthenticationMethodConfigurationProvider supportedAuthenticationMethodsConfig;
+    private final JsonBackedAuthenticationMethodConfigurationProvider supportedAuthenticationMethodsConfig;
 
     /**
      * Ctor.
      *
      * @param authenticationMethodConfiguration list of supported authentication methods
      */
-    public DefaultAuthenticationMethodVerifier(final DefaultAuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
+    public DefaultAuthenticationMethodVerifier(final JsonBackedAuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
         this.supportedAuthenticationMethodsConfig = authenticationMethodConfiguration;
     }
 

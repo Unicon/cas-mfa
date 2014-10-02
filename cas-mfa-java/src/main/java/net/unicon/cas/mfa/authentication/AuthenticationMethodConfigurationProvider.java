@@ -12,7 +12,7 @@ public interface AuthenticationMethodConfigurationProvider {
      * @param name the name
      * @return true if the method is found
      */
-    boolean containsAuthenticationMethod(final String name);
+    boolean containsAuthenticationMethod(String name);
 
     /**
      * Gets authentication method.
@@ -20,5 +20,5 @@ public interface AuthenticationMethodConfigurationProvider {
      * @param name the name
      * @return the authentication method, or null if none is found.
      */
-    AuthenticationMethod getAuthenticationMethod(final String name);
+    AuthenticationMethod getAuthenticationMethod(String name);
 }

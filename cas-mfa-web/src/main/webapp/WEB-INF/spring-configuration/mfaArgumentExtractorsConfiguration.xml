@@ -69,6 +69,6 @@
           c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
           c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
 
-    <bean id="authenticationMethodsConfig" class="net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfigurationProvider"
+    <bean id="authenticationMethodsConfig" class="net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider"
           c:configuration="${mfa.authn.methods.config.location:file:/etc/cas/authn-methods.conf}" />
 </beans>

@@ -1,7 +1,7 @@
 package net.unicon.cas.mfa.authentication.principal
 
 import net.unicon.cas.mfa.authentication.AuthenticationMethod
-import net.unicon.cas.mfa.authentication.DefaultAuthenticationMethodConfigurationProvider
+import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService
 
@@ -55,7 +55,7 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
               new AuthenticationMethod("lower_factor",2),
               new AuthenticationMethod("lowest_factor",3)] as Set
 
-    def loader = new DefaultAuthenticationMethodConfigurationProvider(s1)
+    def loader = new JsonBackedAuthenticationMethodConfigurationProvider(s1)
 
     def mfaAuthnReqResolverUnderTest =
             new PrincipalAttributeMultiFactorAuthenticationRequestResolver(mfaWebApplicationServiceFactory, loader)

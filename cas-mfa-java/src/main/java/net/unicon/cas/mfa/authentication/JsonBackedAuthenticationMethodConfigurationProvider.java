@@ -30,7 +30,7 @@ import java.util.TreeSet;
  * </p>
  * @author Misagh Moayyed
  */
-public final class DefaultAuthenticationMethodConfigurationProvider implements AuthenticationMethodConfigurationProvider {
+public final class JsonBackedAuthenticationMethodConfigurationProvider implements AuthenticationMethodConfigurationProvider {
 
     private final Set<AuthenticationMethod> authnMethods;
 
@@ -43,7 +43,7 @@ public final class DefaultAuthenticationMethodConfigurationProvider implements A
      * @param configuration the configuration
      * @throws IOException the iO exception
      */
-    public DefaultAuthenticationMethodConfigurationProvider(final Resource configuration) throws IOException {
+    public JsonBackedAuthenticationMethodConfigurationProvider(final Resource configuration) throws IOException {
         this.authnMethods = new TreeSet<AuthenticationMethod>();
         final String json = FileUtils.readFileToString(configuration.getFile());
         final Set<?> set = this.objectMapper.readValue(json, Set.class);
@@ -59,14 +59,14 @@ public final class DefaultAuthenticationMethodConfigurationProvider implements A
      *
      * @param authnMethods the authn methods
      */
-    public DefaultAuthenticationMethodConfigurationProvider(final Set<AuthenticationMethod> authnMethods) {
+    public JsonBackedAuthenticationMethodConfigurationProvider(final Set<AuthenticationMethod> authnMethods) {
         this.authnMethods = authnMethods;
     }
 
     /**
      * Instantiates a new Authentication method loader.
      */
-    public DefaultAuthenticationMethodConfigurationProvider() {
+    public JsonBackedAuthenticationMethodConfigurationProvider() {
         this.authnMethods = new TreeSet<AuthenticationMethod>();
     }
 
