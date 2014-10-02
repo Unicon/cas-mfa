@@ -1,7 +1,7 @@
 package net.unicon.cas.mfa.web.support;
 
 import net.unicon.cas.mfa.authentication.AuthenticationMethod;
-import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider;
+import net.unicon.cas.mfa.authentication.AuthenticationMethodConfigurationProvider;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import org.jasig.cas.authentication.principal.WebApplicationService;
@@ -31,7 +31,7 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
     /**
      * Configuration of authn methods loaded.
      */
-    private final JsonBackedAuthenticationMethodConfigurationProvider authenticationMethodConfiguration;
+    private final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration;
 
     /**
      * The Authentication method verifier.
@@ -47,7 +47,7 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
      */
     public MultiFactorAuthenticationRequestsCollectingArgumentExtractor(
             final Set<AbstractMultiFactorAuthenticationArgumentExtractor> mfaArgumentExstractors,
-            final JsonBackedAuthenticationMethodConfigurationProvider authenticationMethodConfiguration,
+            final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration,
             final AuthenticationMethodVerifier authenticationMethodVerifier) {
 
         this.mfaArgumentExstractors = mfaArgumentExstractors;
