@@ -10,7 +10,8 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 
-import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.*;
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
 
 /**
  * The multifactor authentication argument extractor, responsible to
@@ -30,6 +31,9 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
      * Services manager.
      */
     private final ServicesManager servicesManager;
+
+    /** The default authentication method to use/force, if service does not specify any. **/
+    private String defaultAuthenticationMethod = null;
 
     /**
      * Ctor.
@@ -61,9 +65,8 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
             return null;
         }
         if (!(registeredService instanceof RegisteredServiceWithAttributes)) {
-            logger.debug("Registered service is not capable of defining an mfa attribute. "
-                    + "Delegating to the next argument extractor in the chain...");
-            return null;
+            logger.debug("Registered service is not capable of defining an mfa attribute. ");
+            return determineDefaultAuthenticationMethod();
         }
 
         final String authenticationMethod =
@@ -72,10 +75,9 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
 
 
         if (!StringUtils.hasText(authenticationMethod)) {
-            logger.debug("Registered service does not define authentication method attribute [{}]. "
-                    + "Delegating to the next argument extractor in the chain...",
+            logger.debug("Registered service does not define authentication method attribute [{}]. ",
                     this.authenticationMethodAttribute);
-            return null;
+            return determineDefaultAuthenticationMethod();
         }
 
         return authenticationMethod;
@@ -84,5 +86,25 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
     @Override
     protected AuthenticationMethodSource getAuthenticationMethodSource() {
         return AuthenticationMethodSource.REGISTERED_SERVICE_DEFINITION;
+    }
+
+    public void setDefaultAuthenticationMethod(final String defaultAuthenticationMethod) {
+        this.defaultAuthenticationMethod = defaultAuthenticationMethod;
+    }
+
+    /**
+     * Determine default authentication method.
+     *
+     * @return the default authn method if one is specified, or null.
+     */
+    protected String determineDefaultAuthenticationMethod() {
+        if (!StringUtils.isEmpty(this.defaultAuthenticationMethod)) {
+            logger.debug("{} is configured to use the default authentication method [{}]. ",
+                    this.getClass().getSimpleName(),
+                    this.defaultAuthenticationMethod);
+            return this.defaultAuthenticationMethod;
+        }
+        logger.debug("No default authentication method is defined. Returning null...");
+        return null;
     }
 }

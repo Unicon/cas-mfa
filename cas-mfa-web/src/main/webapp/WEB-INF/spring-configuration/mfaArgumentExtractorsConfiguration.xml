@@ -55,7 +55,8 @@
 
     <bean id="registeredServiceAttributeMfaArgumentExtractor" parent="mfaArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
-          c:servicesManager-ref="servicesManager" />
+          c:servicesManager-ref="servicesManager"
+          p:defaultAuthenticationMethod="${mfa.default.authn.method}"/>
 
     <util:set id="mfaArgumentExtractors">
         <ref bean="registeredServiceAttributeMfaArgumentExtractor"/>
