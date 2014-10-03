@@ -96,7 +96,7 @@
             <param-value>
                 /WEB-INF/cas-servlet.xml
                 /WEB-INF/cas-servlet-*.xml
-                /WEB-INF/subflows/*_servlet.xml
+                /WEB-INF/subflows/**/*-servlet.xml
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
