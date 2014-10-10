@@ -1,4 +1,4 @@
-Copyright 2013, The Evergreen State College and/or the author or authors
+Copyright 2014, The Evergreen State College, University of Utah, Internet2 and/or the author or authors
 
 This project includes software developed by and/or licensed to Apereo,
 as per the copyright notice and license terms documented in the Jasig / Apereo CAS
@@ -23,3 +23,6 @@ This project includes or includes software based on:
   Jasig CAS Web Application under Apache 2
   Jasig Central Authentication Service under Apache 2
 
+This project was partially supported by the National Strategy for Trusted Identities
+in Cyberspace (NSTIC) National Program Office and the National
+Institute of Standards and Technology (NIST).
