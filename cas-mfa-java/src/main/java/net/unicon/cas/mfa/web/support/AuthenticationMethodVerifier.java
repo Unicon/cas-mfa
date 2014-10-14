@@ -19,7 +19,6 @@ public interface AuthenticationMethodVerifier {
      * @param targetService targetService
      * @param request Http request
      * @return true if the authn method is supported and verified
-     * @throws UnrecognizedAuthenticationMethodException if the passed in authentication method does not pass the verification
      */
     boolean verifyAuthenticationMethod(String authenticationMethod, WebApplicationService targetService, HttpServletRequest request);
 }

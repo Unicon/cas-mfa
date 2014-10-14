@@ -14,17 +14,18 @@
        http://unicon.net/schema/cas http://unicon.net/schema/cas/cas-addons.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <cas:default-authentication-support/>
+
 
     <context:component-scan base-package="net.unicon.cas.mfa" />
     <context:annotation-config />
 
     <aop:aspectj-autoproxy/>
 
+    <cas:default-authentication-support/>
+
     <webflow:flow-registry id="flowRegistry" flow-builder-services="builder" base-path="/WEB-INF/subflows">
         <webflow:flow-location-pattern value="**/*-webflow.xml"/>
     </webflow:flow-registry>
-
 
     <bean id="mfaValidationWithoutProxySupportSpec"
           class="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
