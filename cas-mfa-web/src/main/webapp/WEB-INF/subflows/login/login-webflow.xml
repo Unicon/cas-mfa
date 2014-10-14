@@ -139,9 +139,6 @@
     </action-state>
 
     <decision-state id="serviceCheck">
-        <on-entry>
-            <evaluate expression="removeHostnameServiceInContextAction"  />
-        </on-entry>
         <if test="flowScope.service != null" then="generateServiceTicket" else="viewGenericLoginSuccess" />
     </decision-state>
     

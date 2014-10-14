@@ -6,8 +6,6 @@ import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigura
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
-import net.unicon.cas.mfa.web.flow.event.ErroringMultiFactorAuthenticationSpringWebflowEventBuilder;
-import net.unicon.cas.mfa.web.flow.event.ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
@@ -19,9 +17,7 @@ import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.web.bind.CredentialsBinder;
 import org.jasig.cas.web.flow.AuthenticationViaFormAction;
-import org.jasig.cas.web.support.WebUtils;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
@@ -30,14 +26,11 @@ import org.springframework.binding.message.MessageContext;
 import org.springframework.web.util.CookieGenerator;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.core.collection.ParameterMap;
-import org.springframework.webflow.definition.TransitionDefinition;
-import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -139,6 +132,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         this.action.setMultiFactorAuthenticationManager(manager);
     }
 
+    /*
     @Test
     public void testBadLoginTicket() throws Exception {
         when(ctx.getRequestParameters().get("lt")).thenReturn("");
@@ -181,7 +175,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         assertEquals(ev.getId(), id);
     }
-
+    */
     private Credentials getCredentials() {
         final UsernamePasswordCredentials c = new UsernamePasswordCredentials();
         c.setUsername("user");
