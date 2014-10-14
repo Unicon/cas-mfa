@@ -1,6 +1,8 @@
 package net.unicon.cas.mfa.authentication;
 
+import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.flow.NoAuthenticationContextAvailable;
+import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
 import org.jasig.cas.authentication.AuthenticationManager;
 import org.jasig.cas.web.support.ArgumentExtractor;
@@ -10,29 +12,40 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.binding.convert.ConversionExecutor;
+import org.springframework.binding.convert.service.RuntimeBindingConversionExecutor;
+import org.springframework.binding.expression.EvaluationException;
 import org.springframework.binding.expression.Expression;
+import org.springframework.binding.expression.ExpressionParser;
 import org.springframework.binding.expression.ParserContext;
+import org.springframework.binding.expression.support.AbstractGetValueExpression;
 import org.springframework.binding.expression.support.FluentParserContext;
 import org.springframework.binding.expression.support.LiteralExpression;
-import org.springframework.context.ApplicationContext;
+import org.springframework.binding.mapping.Mapper;
+import org.springframework.binding.mapping.impl.DefaultMapper;
+import org.springframework.binding.mapping.impl.DefaultMapping;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.webflow.action.EvaluateAction;
 import org.springframework.webflow.action.ViewFactoryActionAdapter;
 import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
 import org.springframework.webflow.engine.ActionState;
+import org.springframework.webflow.engine.DecisionState;
 import org.springframework.webflow.engine.EndState;
 import org.springframework.webflow.engine.Flow;
+import org.springframework.webflow.engine.SubflowAttributeMapper;
+import org.springframework.webflow.engine.SubflowState;
 import org.springframework.webflow.engine.TargetStateResolver;
 import org.springframework.webflow.engine.Transition;
 import org.springframework.webflow.engine.builder.support.FlowBuilderServices;
 import org.springframework.webflow.engine.support.DefaultTargetStateResolver;
 import org.springframework.webflow.engine.support.DefaultTransitionCriteria;
+import org.springframework.webflow.engine.support.GenericSubflowAttributeMapper;
 import org.springframework.webflow.engine.support.TransitionExecutingFlowExecutionExceptionHandler;
 import org.springframework.webflow.execution.Action;
 import org.springframework.webflow.execution.ViewFactory;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,9 +61,6 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
     @Autowired
     @Qualifier("builder")
     private FlowBuilderServices flowBuilderServices;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Autowired
     @Qualifier("authenticationManager")
@@ -87,7 +97,7 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
         LOGGER.debug("Configuring application context with [{}]",
                 mfaRequestsCollectingArgumentExtractor.getClass().getName());
 
-        final List<ArgumentExtractor> list = this.applicationContext.getBean("argumentExtractors", List.class);
+        final List<ArgumentExtractor> list = this.flowBuilderServices.getApplicationContext().getBean("argumentExtractors", List.class);
         list.add(0, mfaRequestsCollectingArgumentExtractor);
     }
 
@@ -106,6 +116,8 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
             addMultiFactorOutcomeTransitionsToSubmissionActionState(flow);
             addMultiFactorViewEndStates(flow);
             addMultiFactorGlobalTransitionsForExceptionHandling(flow);
+            addOnEntryActionToServiceCheckState(flow);
+            createMultiFactorSubflowStateDefinitions(flow);
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -191,17 +203,41 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
         final Action existingAction = actionState.getActionList().get(0);
         actionState.getActionList().remove(existingAction);
 
-        final ParserContext ctx = new FluentParserContext();
-        final Expression action = this.flowBuilderServices.getExpressionParser()
-                .parseExpression("initiatingAuthenticationViaFormAction", ctx);
-        final EvaluateAction newAction = new EvaluateAction(action, null);
-        actionState.getActionList().add(newAction);
+        final EvaluateAction action = createEvaluateAction("initiatingAuthenticationViaFormAction");
+        actionState.getActionList().add(action);
+        LOGGER.debug("Set action {} for action state {}", actionState.getId());
 
         addTransitionToActionState(actionState, "mfa_strong_two_factor", "mfa_strong_two_factor");
         addTransitionToActionState(actionState, "mfa_sample_two_factor", "mfa_sample_two_factor");
-
     }
 
+    /**
+     * Add on entry action to service check state.
+     *
+     * @param flow the flow
+     */
+    private void addOnEntryActionToServiceCheckState(final Flow flow) {
+        final DecisionState state = (DecisionState) flow.getState("serviceCheck");
+
+        final EvaluateAction action = createEvaluateAction("removeHostnameServiceInContextAction");
+        state.getEntryActionList().add(action);
+        LOGGER.debug("Set on-entry action for decision state {}", state.getId());
+    }
+    /**
+     * Create evaluate action.
+     *
+     * @param expression the expression
+     * @return the evaluate action
+     */
+    private EvaluateAction createEvaluateAction(final String expression) {
+        final ParserContext ctx = new FluentParserContext();
+        final Expression action = this.flowBuilderServices.getExpressionParser()
+                .parseExpression(expression, ctx);
+        final EvaluateAction newAction = new EvaluateAction(action, null);
+
+        LOGGER.debug("Created evaluate action for expression", action.getExpressionString());
+        return newAction;
+    }
     /**
      * Add multi factor view end states.
      *
@@ -221,10 +257,7 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
         try {
             final ActionState actionState = new ActionState(flow, "mfaTicketGrantingTicketExistsCheck");
             LOGGER.debug("Created action state {}", actionState.getId());
-
-            final Action action = this.applicationContext.getBean("validateInitialMfaRequestAction", Action.class);
-            LOGGER.debug("Retrieved action {}", action.getClass());
-            actionState.getActionList().add(action);
+            actionState.getActionList().add(createEvaluateAction("validateInitialMfaRequestAction"));
             LOGGER.debug("Added action to the action state {} list of actions: {}", actionState.getId(), actionState.getActionList());
 
             addTransitionToActionState(actionState, "mfa_strong_two_factor", "mfa_strong_two_factor");
@@ -292,6 +325,144 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
             LOGGER.debug("Created end state state {} on flow id {}, backed by view {}", id, flow.getId(), viewId);
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Create multi factor subflow state definitions.
+     *
+     * @param flow the flow
+     */
+    private void createMultiFactorSubflowStateDefinitions(final Flow flow) {
+        createMultiFactorSubflowStateDefinitionsByAuthenticationMethod(flow);
+    }
+
+    /**
+     * Create multi factor parent subflow state definitions.
+     *
+     * @param flow the flow
+     * @param id the id
+     */
+    private void createMultiFactorParentSubflowStateDefinitions(final Flow flow, final String id) {
+        final String EXP =
+                "generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)";
+        final EvaluateAction action =
+                createEvaluateAction(EXP);
+        final SubflowState subflowState = createSubflowState(flow, id, id, action);
+
+        final List<DefaultMapping> mappings = new ArrayList<DefaultMapping>();
+        mappings.add(createMappingToSubflowState("mfaCredentials", "flowScope.mfaCredentials", true,
+                MultiFactorCredentials.class));
+        mappings.add(createMappingToSubflowState("mfaService", "flowScope.service", true,
+                MultiFactorAuthenticationSupportingWebApplicationService.class));
+
+        final Mapper inputMapper = createMapperToSubflowState(mappings);
+        final SubflowAttributeMapper subflowMapper = createSubflowAttributeMapper(inputMapper, null);
+        subflowState.setAttributeMapper(subflowMapper);
+
+        subflowState.getTransitionSet().add(createTransition("mfaSuccess", "sendTicketGrantingTicket"));
+        subflowState.getTransitionSet().add(createTransition("unknownPrincipalError", "viewUnknownPrincipalErrorView"));
+        subflowState.getTransitionSet().add(createTransition("mfaUnrecognizedAuthnMethodError", "viewMfaUnrecognizedAuthnMethodErrorView"));
+    }
+
+    /**
+     * Create multi factor subflow state definitions by authentication method.
+     *
+     * @param flow the flow
+     */
+    private void createMultiFactorSubflowStateDefinitionsByAuthenticationMethod(final Flow flow) {
+
+        createMultiFactorParentSubflowStateDefinitions(flow, "mfa_strong_two_factor");
+        createMultiFactorParentSubflowStateDefinitions(flow, "mfa_sample_two_factor");
+
+    }
+
+    /**
+     * Create subflow state.
+     *
+     * @param flow the flow
+     * @param id the id
+     * @param subflow the subflow
+     * @param entryAction the entry action
+     * @return the subflow state
+     */
+    private SubflowState createSubflowState(final Flow flow, final String id, final String subflow,
+                                            final Action entryAction) {
+
+        final SubflowState state = new SubflowState(flow, id, new BasicSubflowExpression(subflow));
+        if (entryAction != null) {
+            state.getEntryActionList().add(entryAction);
+        }
+
+        return state;
+    }
+
+    /**
+     * Create mapper to subflow state.
+     *
+     * @param mappings the mappings
+     * @return the mapper
+     */
+    private Mapper createMapperToSubflowState(final List<DefaultMapping> mappings) {
+        final DefaultMapper inputMapper = new DefaultMapper();
+        for (final DefaultMapping mapping : mappings) {
+            inputMapper.addMapping(mapping);
+        }
+        return inputMapper;
+    }
+
+    /**
+     * Create mapping to subflow state.
+     *
+     * @param name the name
+     * @param value the value
+     * @param required the required
+     * @param type the type
+     * @return the default mapping
+     */
+    private DefaultMapping createMappingToSubflowState(final String name, final String value,
+                                                 final boolean required, final Class type) {
+
+        final ExpressionParser parser = this.flowBuilderServices.getExpressionParser();
+
+        final Expression source = parser.parseExpression(value, new FluentParserContext());
+        final Expression target = parser.parseExpression(name, new FluentParserContext());
+
+        final DefaultMapping mapping = new DefaultMapping(source, target);
+        mapping.setRequired(required);
+
+        final ConversionExecutor typeConverter =
+                new RuntimeBindingConversionExecutor(type, this.flowBuilderServices.getConversionService());
+        mapping.setTypeConverter(typeConverter);
+        return mapping;
+    }
+
+    /**
+     * Create subflow attribute mapper.
+     *
+     * @param inputMapper the input mapper
+     * @param outputMapper the output mapper
+     * @return the subflow attribute mapper
+     */
+    private SubflowAttributeMapper createSubflowAttributeMapper(final Mapper inputMapper, final Mapper outputMapper) {
+        return new GenericSubflowAttributeMapper(inputMapper, outputMapper);
+    }
+
+    private class BasicSubflowExpression extends AbstractGetValueExpression {
+        private final String subflowId;
+
+        /**
+         * Instantiates a new Basic subflow expression.
+         *
+         * @param subflowId the subflow id
+         */
+        public BasicSubflowExpression(final String subflowId) {
+            this.subflowId = subflowId;
+        }
+
+        @Override
+        public Object getValue(final Object context) throws EvaluationException {
+            return CasMultiFactorApplicationContextAware.this.flowDefinitionRegistry.getFlowDefinition(this.subflowId);
         }
     }
 }

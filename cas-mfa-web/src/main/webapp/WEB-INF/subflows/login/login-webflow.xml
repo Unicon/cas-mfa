@@ -146,7 +146,7 @@
         The "subflow" is required by SWF at this point, otherwise a parsing error occurrs. 
         We are nonetheless not using the subflow here, and the parent only serves as an abstract
         definition to minimize config of other "real" subflows.
-    -->
+
     
     <subflow-state id="mfa_parent_abstract_subflow" subflow="mfaParentAbstractWebflow">
         <on-entry>
@@ -165,7 +165,8 @@
     
     <subflow-state id="mfa_strong_two_factor" subflow="mfa_strong_two_factor" parent="#mfa_parent_abstract_subflow" />
     <subflow-state id="mfa_sample_two_factor" subflow="mfa_sample_two_factor" parent="#mfa_parent_abstract_subflow" />
-    
+    -->
+
     <action-state id="generateServiceTicket">
         <evaluate expression="generateServiceTicketAction" />
         <transition on="success" to ="warn" />
