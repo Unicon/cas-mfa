@@ -271,7 +271,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      *
      * @throws Exception the exception
      */
-    public final Event submit(final RequestContext context, final Credentials credentials, final MessageContext messageContext,
+    private Event submit(final RequestContext context, final Credentials credentials, final MessageContext messageContext,
                               final String id) throws Exception {
 
         if (isMultiFactorAuthenticationRequest(context)) {
@@ -381,8 +381,11 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
     }
 
     @Override
-    protected final Event doExecute(final RequestContext arg0) throws Exception {
-        throw new UnsupportedOperationException();
+    protected final Event doExecute(final RequestContext ctx) throws Exception {
+        final Credentials credentials = (Credentials) ctx.getFlowScope().get("credentials");
+        final MessageContext messageContext = ctx.getMessageContext();
+        final String id = credentials.toString();
+        return submit(ctx, credentials, messageContext, id);
     }
 
     /**

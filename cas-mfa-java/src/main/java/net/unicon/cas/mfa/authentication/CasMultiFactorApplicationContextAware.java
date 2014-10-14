@@ -9,18 +9,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.springframework.binding.convert.ConversionExecutor;
+import org.springframework.binding.expression.Expression;
+import org.springframework.binding.expression.ParserContext;
+import org.springframework.binding.expression.support.FluentParserContext;
 import org.springframework.binding.expression.support.LiteralExpression;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import org.springframework.webflow.action.EvaluateAction;
 import org.springframework.webflow.action.ViewFactoryActionAdapter;
 import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
 import org.springframework.webflow.engine.ActionState;
 import org.springframework.webflow.engine.EndState;
 import org.springframework.webflow.engine.Flow;
-
 import org.springframework.webflow.engine.TargetStateResolver;
 import org.springframework.webflow.engine.Transition;
 import org.springframework.webflow.engine.builder.support.FlowBuilderServices;
@@ -64,13 +66,18 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
     @Override
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
-        LOGGER.debug("Configuring application context for multifactor authentication...");
-        addMultifactorArgumentExtractorConfiguration();
+        try {
+            LOGGER.debug("Configuring application context for multifactor authentication...");
+            addMultifactorArgumentExtractorConfiguration();
+            LOGGER.debug("Configured application context for multifactor authentication.");
 
-        LOGGER.debug("Configuring webflow for multifactor authentication...");
-        setupWebflow();
+            LOGGER.debug("Configuring webflow for multifactor authentication...");
+            setupWebflow();
+            LOGGER.debug("Configured webflow for multifactor authentication.");
 
-        LOGGER.debug("Configured application context for multifactor authentication.");
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 
     /**
@@ -119,16 +126,25 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
     /**
      * Add global transition if exception is thrown.
      *
-     * @param flow the flow
+     * @param flow          the flow
      * @param targetStateId the target state id
-     * @param clazz the exception class
+     * @param clazz         the exception class
      */
     private void addGlobalTransitionIfExceptionIsThrown(final Flow flow, final String targetStateId, final Class<?> clazz) {
-        final TransitionExecutingFlowExecutionExceptionHandler handler = new TransitionExecutingFlowExecutionExceptionHandler();
-        final TargetStateResolver targetStateResolver = (TargetStateResolver) fromStringTo(TargetStateResolver.class)
-                .execute(targetStateId);
-        handler.add(clazz, targetStateResolver);
-        flow.getExceptionHandlerSet().add(handler);
+
+        try {
+            final TransitionExecutingFlowExecutionExceptionHandler handler = new TransitionExecutingFlowExecutionExceptionHandler();
+            final TargetStateResolver targetStateResolver = (TargetStateResolver) fromStringTo(TargetStateResolver.class)
+                    .execute(targetStateId);
+            handler.add(clazz, targetStateResolver);
+
+            LOGGER.debug("Added transition {} to execute on the occurrence of {}", targetStateId, clazz.getName());
+            flow.getExceptionHandlerSet().add(handler);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
+
     }
 
     /**
@@ -165,11 +181,21 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
 
     /**
      * Add multi factor outcome transitions to submission action state.
+     *
      * @param flow the flow
      */
     private void addMultiFactorOutcomeTransitionsToSubmissionActionState(final Flow flow) {
         final ActionState actionState = (ActionState) flow.getState("realSubmit");
         LOGGER.debug("Retrieved action state {}", actionState.getId());
+
+        final Action existingAction = actionState.getActionList().get(0);
+        actionState.getActionList().remove(existingAction);
+
+        final ParserContext ctx = new FluentParserContext();
+        final Expression action = this.flowBuilderServices.getExpressionParser()
+                .parseExpression("initiatingAuthenticationViaFormAction", ctx);
+        final EvaluateAction newAction = new EvaluateAction(action, null);
+        actionState.getActionList().add(newAction);
 
         addTransitionToActionState(actionState, "mfa_strong_two_factor", "mfa_strong_two_factor");
         addTransitionToActionState(actionState, "mfa_sample_two_factor", "mfa_sample_two_factor");
@@ -178,12 +204,14 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
 
     /**
      * Add multi factor view end states.
+     *
      * @param flow the flow
      */
     private void addMultiFactorViewEndStates(final Flow flow) {
         addEndStateBackedByView(flow, "viewMfaUnrecognizedAuthnMethodErrorView", "casMfaUnrecognizedAuthnMethodErrorView");
         addEndStateBackedByView(flow, "viewUnknownPrincipalErrorView", "casUnknownPrincipalErrorView");
     }
+
     /**
      * Add ticket granting ticket exists check.
      *
@@ -213,9 +241,9 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
     /**
      * Add transition to action state.
      *
-     * @param actionState the action state
+     * @param actionState     the action state
      * @param criteriaOutcome the criteria outcome
-     * @param targetState the target state
+     * @param targetState     the target state
      */
     private void addTransitionToActionState(final ActionState actionState,
                                             final String criteriaOutcome, final String targetState) {
@@ -233,7 +261,7 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
      * Create transition.
      *
      * @param criteriaOutcome the criteria outcome
-     * @param targetState the target state
+     * @param targetState     the target state
      * @return the transition
      */
     private Transition createTransition(final String criteriaOutcome, final String targetState) {
@@ -246,21 +274,24 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
     /**
      * Add end state backed by view.
      *
-     * @param flow the flow
-     * @param id the id
+     * @param flow   the flow
+     * @param id     the id
      * @param viewId the view id
      */
     private void addEndStateBackedByView(final Flow flow, final String id, final String viewId) {
-        final EndState endState = new EndState(flow, id);
+        try {
+            final EndState endState = new EndState(flow, id);
+            final ViewFactory viewFactory = this.flowBuilderServices.getViewFactoryCreator().createViewFactory(
+                    new LiteralExpression(viewId),
+                    this.flowBuilderServices.getExpressionParser(),
+                    this.flowBuilderServices.getConversionService(),
+                    null, this.flowBuilderServices.getValidator());
 
-        final ViewFactory viewFactory = this.flowBuilderServices.getViewFactoryCreator().createViewFactory(
-                new LiteralExpression(viewId),
-                this.flowBuilderServices.getExpressionParser(),
-                this.flowBuilderServices.getConversionService(),
-                null, this.flowBuilderServices.getValidator());
-
-        final Action finalResponseAction = new ViewFactoryActionAdapter(viewFactory);
-        endState.setFinalResponseAction(finalResponseAction);
-        LOGGER.debug("Created end state state {} on flow id {}, backed by view {}", id, flow.getId(), viewId);
+            final Action finalResponseAction = new ViewFactoryActionAdapter(viewFactory);
+            endState.setFinalResponseAction(finalResponseAction);
+            LOGGER.debug("Created end state state {} on flow id {}, backed by view {}", id, flow.getId(), viewId);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 }

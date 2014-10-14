@@ -68,8 +68,7 @@
             <set name="flowScope.mfaCredentials" value="mfaCredentials" 
                  type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
         </on-entry>
-        <evaluate expression="terminatingTwoFactorAuthenticationViaFormAction.submit(flowRequestContext, flowScope.credentials, 
-                              messageContext, flowScope.credentials.username)" />
+        <evaluate expression="terminatingTwoFactorAuthenticationViaFormAction" />
         <transition on="mfa_strong_two_factor" to="mfaSuccess" />
         <transition on="error" to="generateLoginTicket" />
         <exception-handler bean="principalMismatchExceptionHandler"/>
@@ -84,3 +83,4 @@
                     on-exception="net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException" />
     </global-transitions>
 </flow>
+

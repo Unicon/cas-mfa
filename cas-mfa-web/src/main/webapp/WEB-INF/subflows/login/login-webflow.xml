@@ -121,8 +121,7 @@
     </view-state>
 
     <action-state id="realSubmit">
-        <evaluate expression="initiatingAuthenticationViaFormAction.submit(flowRequestContext,
-                              flowScope.credentials, messageContext, flowScope.credentials.username)" />
+        <evaluate expression="authenticationViaFormAction.submit(flowRequestContext, flowScope.credentials, messageContext)" />
         <transition on="warn" to="warn" />
         <transition on="success" to="sendTicketGrantingTicket" />
         <transition on="error" to="generateLoginTicket" />
