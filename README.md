@@ -12,13 +12,4 @@ Please review [the project wiki](https://github.com/Unicon/cas-mfa/wiki) for add
 * [![Build Status](https://secure.travis-ci.org/Unicon/cas-mfa.png)](http://travis-ci.org/Unicon/cas-mfa)
 * [ ![Codeship Status for Unicon/cas-mfa](https://www.codeship.io/projects/0bbd72d0-b74c-0130-d193-1eff452fc99e/status?branch=master)](https://www.codeship.io/projects/4315)
 
-# Live Demo
-Snapshots are automatically deployed to [heroku.com](http://heroku.com). This is accomodated by the [codeship](http://codeship.io) plugin
-configured for the repository to auto build the `heroku` branch.
 
-You may experiment with the live demo at the following url:
-[https://casmfa.herokuapp.com](https://casmfa.herokuapp.com) (Note: If you receive an "Application Error" upon initial access,
-try refreshing the page once)
-ding in terms of the code being adopted into CAS server, but we'll consider successful adoption as a CAS extension equally successful.
-
-The point is to add value to eventually numerous CAS implementations through adoption of this functionality, regardless of how the extension is factored.
