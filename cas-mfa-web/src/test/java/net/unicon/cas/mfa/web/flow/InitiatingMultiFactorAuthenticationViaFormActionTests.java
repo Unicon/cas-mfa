@@ -6,6 +6,8 @@ import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigura
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
+import net.unicon.cas.mfa.web.flow.event.ErroringMultiFactorAuthenticationSpringWebflowEventBuilder;
+import net.unicon.cas.mfa.web.flow.event.ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
@@ -17,7 +19,9 @@ import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.web.bind.CredentialsBinder;
 import org.jasig.cas.web.flow.AuthenticationViaFormAction;
+import org.jasig.cas.web.support.WebUtils;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
@@ -26,12 +30,15 @@ import org.springframework.binding.message.MessageContext;
 import org.springframework.web.util.CookieGenerator;
 import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.core.collection.ParameterMap;
+import org.springframework.webflow.definition.TransitionDefinition;
+import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 /**
  * @author Misagh Moayyed
@@ -96,6 +103,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         when(ctx.getFlowScope()).thenReturn(flowScope);
         when(ctx.getRequestScope()).thenReturn(flowScope);
         when(ctx.getConversationScope()).thenReturn(flowScope);
+        when(ctx.getMessageContext()).thenReturn(this.msgCtx);
 
         MultiFactorAuthenticationSupportingWebApplicationService svc = null;
         svc = mock(MultiFactorAuthenticationSupportingWebApplicationService.class);
@@ -106,6 +114,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         when(ctx.getRequestScope().get("ticketGrantingTicketId")).thenReturn(TGT_ID);
         when(ctx.getFlowScope().get("ticketGrantingTicketId")).thenReturn(TGT_ID);
+        when(ctx.getFlowScope().get("credentials")).thenReturn(getCredentials());
 
         when(ctx.getRequestParameters()).thenReturn(mock(ParameterMap.class));
         when(ctx.getRequestParameters().get("lt")).thenReturn(LOGIN_TICKET);
@@ -132,33 +141,26 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         this.action.setMultiFactorAuthenticationManager(manager);
     }
 
-    /*
+
     @Test
     public void testBadLoginTicket() throws Exception {
         when(ctx.getRequestParameters().get("lt")).thenReturn("");
-        final Credentials credentials = getCredentials();
-        final Event ev = this.action.submit(this.ctx, credentials, this.msgCtx, null);
+
+        final Event ev = this.action.doExecute(ctx);
         assertNotNull(ev);
         assertEquals(ev.getId(), ErroringMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_ERROR_EVENT_ID);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testBadInvalidCredentialsId() throws Exception {
-        final Credentials credentials = getCredentials();
-        final Event ev = this.action.submit(this.ctx, credentials, this.msgCtx, null);
-        assertNotNull(ev);
-        assertEquals(ev.getId(), ErroringMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_ERROR_EVENT_ID);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBadInvalidCredentials() throws Exception {
-        final Event ev = this.action.submit(this.ctx, null, this.msgCtx, "someId");
+        when(ctx.getFlowScope().get("credentials")).thenReturn(null);
+        final Event ev = this.action.doExecute(this.ctx);
         assertNotNull(ev);
 
         assertEquals(ev.getId(), ErroringMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_ERROR_EVENT_ID);
     }
 
-    @Test()
+    @Test
     public void testSuccessfulMfaAuthentication() throws Exception {
         final String id = ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_SUCCESS_EVENT_ID_PREFIX
                 + AUTHN_METHOD;
@@ -166,8 +168,8 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         when(def.getId()).thenReturn(id);
 
         when((this.ctx.getMatchingTransition(anyString()))).thenReturn(def);
-        final Credentials credentials = getCredentials();
-        final Event ev = this.action.submit(this.ctx, credentials, this.msgCtx, "id");
+
+        final Event ev = this.action.doExecute(this.ctx);
         assertNotNull(ev);
         final MultiFactorAuthenticationSupportingWebApplicationService svc =
                 (MultiFactorAuthenticationSupportingWebApplicationService) WebUtils.getService(this.ctx);
@@ -175,7 +177,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         assertEquals(ev.getId(), id);
     }
-    */
+
     private Credentials getCredentials() {
         final UsernamePasswordCredentials c = new UsernamePasswordCredentials();
         c.setUsername("user");

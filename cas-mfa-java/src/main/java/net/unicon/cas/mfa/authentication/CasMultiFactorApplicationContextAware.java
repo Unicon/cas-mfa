@@ -344,10 +344,8 @@ public final class CasMultiFactorApplicationContextAware implements Initializing
      * @param id the id
      */
     private void createMultiFactorParentSubflowStateDefinitions(final Flow flow, final String id) {
-        final String EXP =
-                "generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)";
-        final EvaluateAction action =
-                createEvaluateAction(EXP);
+        final EvaluateAction action = createEvaluateAction("generateMfaCredentialsAction");
+
         final SubflowState subflowState = createSubflowState(flow, id, id, action);
 
         final List<DefaultMapping> mappings = new ArrayList<DefaultMapping>();

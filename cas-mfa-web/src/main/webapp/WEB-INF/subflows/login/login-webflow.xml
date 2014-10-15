@@ -24,6 +24,12 @@
       xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
 
+    <!--
+    This flow should never  be modified manually for mfa, unless there is a definite and evident need.
+    All mfa states, actions and subflows are defined automatically, and this flow xml file is only
+    kept here to allow the flow definitions to be loaded by a pattern definition.
+    -->
+
     <var name="credentials" class="org.jasig.cas.authentication.principal.UsernamePasswordCredentials" />
     <on-start>
         <evaluate expression="initialFlowSetupAction" />
@@ -141,31 +147,6 @@
     <decision-state id="serviceCheck">
         <if test="flowScope.service != null" then="generateServiceTicket" else="viewGenericLoginSuccess" />
     </decision-state>
-    
-    <!-- 
-        The "subflow" is required by SWF at this point, otherwise a parsing error occurrs. 
-        We are nonetheless not using the subflow here, and the parent only serves as an abstract
-        definition to minimize config of other "real" subflows.
-
-    
-    <subflow-state id="mfa_parent_abstract_subflow" subflow="mfaParentAbstractWebflow">
-        <on-entry>
-            <evaluate expression="generateMfaCredentialsAction.createCredentials(flowRequestContext, credentials, credentials.username)"/>
-        </on-entry>
-        
-        <input name="mfaCredentials" value="flowScope.mfaCredentials" required="true"
-               type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
-        <input name="mfaService" value="flowScope.service" required="true"
-               type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService" />
-                       
-        <transition on="mfaSuccess" to="sendTicketGrantingTicket" />
-        <transition on="unknownPrincipalError" to="viewUnknownPrincipalErrorView" />
-        <transition on="mfaUnrecognizedAuthnMethodError" to="viewMfaUnrecognizedAuthnMethodErrorView"/>
-    </subflow-state>
-    
-    <subflow-state id="mfa_strong_two_factor" subflow="mfa_strong_two_factor" parent="#mfa_parent_abstract_subflow" />
-    <subflow-state id="mfa_sample_two_factor" subflow="mfa_sample_two_factor" parent="#mfa_parent_abstract_subflow" />
-    -->
 
     <action-state id="generateServiceTicket">
         <evaluate expression="generateServiceTicketAction" />

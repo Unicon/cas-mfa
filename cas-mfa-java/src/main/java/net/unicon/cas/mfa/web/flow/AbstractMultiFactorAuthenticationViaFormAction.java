@@ -18,6 +18,7 @@ import org.jasig.cas.authentication.AuthenticationManager;
 import org.jasig.cas.authentication.handler.AuthenticationException;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;
+import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.web.bind.CredentialsBinder;
@@ -157,11 +158,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @return true, if this is a MFA request.
      */
     private boolean isMultiFactorAuthenticationRequest(final RequestContext context) {
-        final MultiFactorAuthenticationTransactionContext mfaTx = MultiFactorRequestContextUtils.getMfaTransaction(context);
-        return (mfaTx != null);
-
-        /*final Service service = WebUtils.getService(context);
-        return (service != null && service instanceof MultiFactorAuthenticationSupportingWebApplicationService);*/
+        return MultiFactorRequestContextUtils.getMfaTransaction(context) != null;
     }
 
     /**
@@ -382,10 +379,14 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
 
     @Override
     protected final Event doExecute(final RequestContext ctx) throws Exception {
-        final Credentials credentials = (Credentials) ctx.getFlowScope().get("credentials");
+        final UsernamePasswordCredentials credentials = (UsernamePasswordCredentials) ctx.getFlowScope().get("credentials");
         final MessageContext messageContext = ctx.getMessageContext();
-        final String id = credentials.toString();
-        return submit(ctx, credentials, messageContext, id);
+
+        if (credentials != null && StringUtils.isNotBlank(credentials.getUsername())) {
+            final String id = credentials.getUsername();
+            return submit(ctx, credentials, messageContext, id);
+        }
+        return getErrorEvent(ctx);
     }
 
     /**

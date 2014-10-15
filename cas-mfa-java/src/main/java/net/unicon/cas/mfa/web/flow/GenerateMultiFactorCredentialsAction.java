@@ -1,17 +1,22 @@
 package net.unicon.cas.mfa.web.flow;
 
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang.StringUtils;
-import org.jasig.cas.authentication.Authentication;
-import org.jasig.cas.authentication.principal.Credentials;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.webflow.execution.RequestContext;
-
 import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
+import org.apache.commons.lang.StringUtils;
+import org.jasig.cas.authentication.Authentication;
+import org.jasig.cas.authentication.principal.Credentials;
+import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.webflow.action.AbstractAction;
+import org.springframework.webflow.core.collection.AttributeMap;
+import org.springframework.webflow.core.collection.LocalAttributeMap;
+import org.springframework.webflow.execution.Event;
+import org.springframework.webflow.execution.FlowSession;
+import org.springframework.webflow.execution.RequestContext;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * An action to obtain/construct the {@link MultiFactorCredentials} instance and pass it along
@@ -19,7 +24,7 @@ import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
  * credentials need to be reconstructed before moving on to the next flow.
  * @author Misagh Moayyed
  */
-public final class GenerateMultiFactorCredentialsAction {
+public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateMultiFactorCredentialsAction.class);
 
@@ -45,7 +50,7 @@ public final class GenerateMultiFactorCredentialsAction {
      * @throws NoAuthenticationContextAvailable if the authentication cannot be established from the flow context
      * from what has already been authenticated as the principal
      */
-    public Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials,
+    private Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials,
             @NotNull final String id) throws NoAuthenticationContextAvailable {
         final Authentication authentication = getCasAuthentication(context);
         if (authentication == null) {
@@ -106,5 +111,19 @@ public final class GenerateMultiFactorCredentialsAction {
         }
         return c;
 
+    }
+
+    @Override
+    protected Event doExecute(final RequestContext context) throws Exception {
+        final FlowSession session = context.getFlowExecutionContext().getActiveSession();
+        LOGGER.debug("Authentication has entered the flow [{}] executing state [{}",
+                context.getActiveFlow().getId(), session.getState().getId());
+        final UsernamePasswordCredentials creds = (UsernamePasswordCredentials)
+                session.getScope().getRequired("credentials", UsernamePasswordCredentials.class);
+        final String id = creds != null ? creds.getUsername() : null;
+
+        final Credentials mfaCreds = createCredentials(context, creds, id);
+        final AttributeMap map = new LocalAttributeMap("mfaCredentials", mfaCreds);
+        return new Event(this, "success", map);
     }
 }
