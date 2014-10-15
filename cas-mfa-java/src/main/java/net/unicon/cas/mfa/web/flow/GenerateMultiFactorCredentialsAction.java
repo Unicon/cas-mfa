@@ -28,8 +28,18 @@ public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateMultiFactorCredentialsAction.class);
 
+    private static final String EVENT_ID_SUCCESS = "success";
+
+    /**
+     * The constant ATTRIBUTE_ID_MFA_CREDENTIALS
+     * that indicates the {@link MultiFactorCredentials} instance created
+     * and put into the scope;
+     */
+    protected static final String ATTRIBUTE_ID_MFA_CREDENTIALS= "mfaCredentials";
+
     /** The authentication support. */
     private AuthenticationSupport authenticationSupport;
+
 
     /**
      * Sets the authentication support.
@@ -114,7 +124,7 @@ public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
     }
 
     @Override
-    protected Event doExecute(final RequestContext context) throws Exception {
+    protected Event doExecute(final RequestContext context) {
         final FlowSession session = context.getFlowExecutionContext().getActiveSession();
         LOGGER.debug("Authentication has entered the flow [{}] executing state [{}",
                 context.getActiveFlow().getId(), session.getState().getId());
@@ -123,7 +133,7 @@ public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
         final String id = creds != null ? creds.getUsername() : null;
 
         final Credentials mfaCreds = createCredentials(context, creds, id);
-        final AttributeMap map = new LocalAttributeMap("mfaCredentials", mfaCreds);
-        return new Event(this, "success", map);
+        final AttributeMap map = new LocalAttributeMap(ATTRIBUTE_ID_MFA_CREDENTIALS, mfaCreds);
+        return new Event(this, EVENT_ID_SUCCESS, map);
     }
 }
