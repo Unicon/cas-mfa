@@ -180,7 +180,6 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
         LOGGER.debug("Set action {} for action state {}", actionState.getId());
 
         addTransitionToActionState(actionState, "mfa_strong_two_factor", "mfa_strong_two_factor");
-        addTransitionToActionState(actionState, "mfa_sample_two_factor", "mfa_sample_two_factor");
     }
 
     /**
@@ -233,7 +232,6 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
             LOGGER.debug("Added action to the action state {} list of actions: {}", actionState.getId(), actionState.getActionList());
 
             addTransitionToActionState(actionState, "mfa_strong_two_factor", "mfa_strong_two_factor");
-            addTransitionToActionState(actionState, "mfa_sample_two_factor", "mfa_sample_two_factor");
             addTransitionToActionState(actionState, "requireTgt", "ticketGrantingTicketExistsCheck");
 
             flow.setStartState(actionState);
@@ -343,7 +341,6 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
     private void createMultiFactorSubflowStateDefinitionsByAuthenticationMethod(final Flow flow) {
 
         createMultiFactorParentSubflowStateDefinitions(flow, "mfa_strong_two_factor");
-        createMultiFactorParentSubflowStateDefinitions(flow, "mfa_sample_two_factor");
 
     }
 
