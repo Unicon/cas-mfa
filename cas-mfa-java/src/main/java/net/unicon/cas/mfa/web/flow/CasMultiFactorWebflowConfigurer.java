@@ -3,6 +3,7 @@ package net.unicon.cas.mfa.web.flow;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,6 +43,7 @@ import org.springframework.webflow.execution.ViewFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,6 +56,8 @@ import java.util.List;
 public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CasMultiFactorWebflowConfigurer.class);
 
+    private static final String FLOW_ID_LOGIN = "login";
+
     @Autowired
     private FlowBuilderServices flowBuilderServices;
 
@@ -64,8 +68,16 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
         try {
+
+            String[] flowIds = flowDefinitionRegistry.getFlowDefinitionIds();
+            flowIds = (String[]) ArrayUtils.removeElement(flowIds, FLOW_ID_LOGIN);
+
+            LOGGER.debug("Detected {} flow configurations: [{}]",
+                    flowIds.length,
+                    Arrays.toString(flowIds));
+
             LOGGER.debug("Configuring webflow for multifactor authentication...");
-            setupWebflow();
+            setupWebflow(flowIds);
             LOGGER.debug("Configured webflow for multifactor authentication.");
 
         } catch (final Exception e) {
@@ -75,21 +87,22 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
 
     /**
      * Sets webflow.
+     * @param flowIds the flow ids
      */
 
-    private void setupWebflow() {
+    private void setupWebflow(final String[] flowIds) {
         try {
             LOGGER.debug("Starting to configure webflow...");
 
-            final Flow flow = (Flow) this.flowDefinitionRegistry.getFlowDefinition("login");
+            final Flow flow = (Flow) this.flowDefinitionRegistry.getFlowDefinition(FLOW_ID_LOGIN);
             LOGGER.debug("Retrieved flow id {} from flow definition registry", flow.getId());
 
-            addTicketGrantingTicketExistsCheck(flow);
-            addMultiFactorOutcomeTransitionsToSubmissionActionState(flow);
+            addTicketGrantingTicketExistsCheck(flow, flowIds);
+            addMultiFactorOutcomeTransitionsToSubmissionActionState(flow, flowIds);
             addMultiFactorViewEndStates(flow);
             addMultiFactorGlobalTransitionsForExceptionHandling(flow);
             addOnEntryActionToServiceCheckState(flow);
-            createMultiFactorSubflowStateDefinitions(flow);
+            createMultiFactorSubflowStateDefinitions(flow, flowIds);
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -167,8 +180,9 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * Add multi factor outcome transitions to submission action state.
      *
      * @param flow the flow
+     * @param flowIds the flow ids
      */
-    private void addMultiFactorOutcomeTransitionsToSubmissionActionState(final Flow flow) {
+    private void addMultiFactorOutcomeTransitionsToSubmissionActionState(final Flow flow, final String[] flowIds) {
         final ActionState actionState = (ActionState) flow.getState("realSubmit");
         LOGGER.debug("Retrieved action state {}", actionState.getId());
 
@@ -179,7 +193,10 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
         actionState.getActionList().add(action);
         LOGGER.debug("Set action {} for action state {}", actionState.getId());
 
-        addTransitionToActionState(actionState, "mfa_strong_two_factor", "mfa_strong_two_factor");
+        for (final String flowId : flowIds) {
+            addTransitionToActionState(actionState, flowId, flowId);
+        }
+
     }
 
     /**
@@ -223,15 +240,19 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * Add ticket granting ticket exists check.
      *
      * @param flow the flow
+     * @param flowIds the flow ids
      */
-    private void addTicketGrantingTicketExistsCheck(final Flow flow) {
+    private void addTicketGrantingTicketExistsCheck(final Flow flow, final String[] flowIds) {
         try {
             final ActionState actionState = new ActionState(flow, "mfaTicketGrantingTicketExistsCheck");
             LOGGER.debug("Created action state {}", actionState.getId());
             actionState.getActionList().add(createEvaluateAction("validateInitialMfaRequestAction"));
             LOGGER.debug("Added action to the action state {} list of actions: {}", actionState.getId(), actionState.getActionList());
 
-            addTransitionToActionState(actionState, "mfa_strong_two_factor", "mfa_strong_two_factor");
+            for (final String flowId : flowIds) {
+                addTransitionToActionState(actionState, flowId, flowId);
+            }
+
             addTransitionToActionState(actionState, "requireTgt", "ticketGrantingTicketExistsCheck");
 
             flow.setStartState(actionState);
@@ -302,9 +323,10 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * Create multi factor subflow state definitions.
      *
      * @param flow the flow
+     * @param flowIds the flow ids
      */
-    private void createMultiFactorSubflowStateDefinitions(final Flow flow) {
-        createMultiFactorSubflowStateDefinitionsByAuthenticationMethod(flow);
+    private void createMultiFactorSubflowStateDefinitions(final Flow flow, final String[] flowIds) {
+        createMultiFactorSubflowStateDefinitionsByAuthenticationMethod(flow, flowIds);
     }
 
     /**
@@ -337,10 +359,13 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * Create multi factor subflow state definitions by authentication method.
      *
      * @param flow the flow
+     * @param flowIds the flow ids
      */
-    private void createMultiFactorSubflowStateDefinitionsByAuthenticationMethod(final Flow flow) {
+    private void createMultiFactorSubflowStateDefinitionsByAuthenticationMethod(final Flow flow, final String[] flowIds) {
+        for (final String flowId : flowIds) {
+            createMultiFactorParentSubflowStateDefinitions(flow, flowId);
+        }
 
-        createMultiFactorParentSubflowStateDefinitions(flow, "mfa_strong_two_factor");
 
     }
 

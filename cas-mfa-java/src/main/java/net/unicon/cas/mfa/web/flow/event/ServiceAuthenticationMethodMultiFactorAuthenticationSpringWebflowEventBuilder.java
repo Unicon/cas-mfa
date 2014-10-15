@@ -15,10 +15,6 @@ import org.springframework.webflow.execution.RequestContext;
  */
 public class ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder
         implements MultiFactorAuthenticationSpringWebflowEventBuilder {
-    /**
-     * The Constant MFA_SUCCESS_EVENT_ID.
-     */
-    public static final String MFA_SUCCESS_EVENT_ID_PREFIX = "mfa_";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -26,7 +22,7 @@ public class ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEv
     public Event buildEvent(final RequestContext context) {
         final MultiFactorAuthenticationSupportingWebApplicationService service = (MultiFactorAuthenticationSupportingWebApplicationService)
                 WebUtils.getService(context);
-        final Event event = new Event(this, MFA_SUCCESS_EVENT_ID_PREFIX + service.getAuthenticationMethod());
+        final Event event = new Event(this, MFA_EVENT_ID_PREFIX + service.getAuthenticationMethod());
         final TransitionDefinition def = context.getMatchingTransition(event.getId());
         if (def == null) {
             logger.warn("Transition definition cannot be found for event {}", event.getId());

@@ -7,7 +7,7 @@ import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolve
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.web.flow.event.ErroringMultiFactorAuthenticationSpringWebflowEventBuilder;
-import net.unicon.cas.mfa.web.flow.event.ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder;
+import net.unicon.cas.mfa.web.flow.event.MultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
@@ -37,8 +37,8 @@ import org.springframework.webflow.execution.RequestContext;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Misagh Moayyed
@@ -162,7 +162,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
     @Test
     public void testSuccessfulMfaAuthentication() throws Exception {
-        final String id = ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder.MFA_SUCCESS_EVENT_ID_PREFIX
+        final String id = MultiFactorAuthenticationSpringWebflowEventBuilder.MFA_EVENT_ID_PREFIX
                 + AUTHN_METHOD;
         final TransitionDefinition def = mock(TransitionDefinition.class);
         when(def.getId()).thenReturn(id);

@@ -11,6 +11,11 @@ import org.springframework.webflow.execution.RequestContext;
 public interface MultiFactorAuthenticationSpringWebflowEventBuilder {
 
     /**
+     * The Constant MFA_EVENT_ID_PREFIX.
+     */
+    String MFA_EVENT_ID_PREFIX = "mfa-";
+
+    /**
      * Builds the MFA event required for the next transition to occur.
      *
      * @param context the context

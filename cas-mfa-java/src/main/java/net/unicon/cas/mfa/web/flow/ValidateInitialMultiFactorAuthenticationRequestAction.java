@@ -4,6 +4,7 @@ import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
+import net.unicon.cas.mfa.web.flow.event.MultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import org.apache.commons.lang.StringUtils;
@@ -53,11 +54,6 @@ import java.util.Set;
 public final class ValidateInitialMultiFactorAuthenticationRequestAction extends AbstractAction {
 
     private final Logger logger = LoggerFactory.getLogger(ValidateInitialMultiFactorAuthenticationRequestAction.class);
-
-    /**
-     * The Constant EVENT_ID_REQUIRE_MFA.
-     */
-    public static final String EVENT_ID_REQUIRE_MFA = "mfa_";
 
     /**
      * The Constant EVENT_ID_REQUIRE_TGT.
@@ -165,10 +161,11 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
      *
      * @param authnMethod the authentication method provided
      *
-     * @return the next event in the flow, that is effectively the value of {@link #EVENT_ID_REQUIRE_MFA}
+     * @return the next event in the flow, that is effectively the value of
+     * {@link MultiFactorAuthenticationSpringWebflowEventBuilder#MFA_EVENT_ID_PREFIX}
      * prepended to the authentication method.
      */
     private String getMultiFactorEventIdByAuthenticationMethod(final String authnMethod) {
-        return EVENT_ID_REQUIRE_MFA + authnMethod;
+        return MultiFactorAuthenticationSpringWebflowEventBuilder.MFA_EVENT_ID_PREFIX + authnMethod;
     }
 }
