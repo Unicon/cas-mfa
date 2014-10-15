@@ -33,7 +33,7 @@ public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
     /**
      * The constant ATTRIBUTE_ID_MFA_CREDENTIALS
      * that indicates the {@link MultiFactorCredentials} instance created
-     * and put into the scope;
+     * and put into the scope.
      */
     protected static final String ATTRIBUTE_ID_MFA_CREDENTIALS= "mfaCredentials";
 
