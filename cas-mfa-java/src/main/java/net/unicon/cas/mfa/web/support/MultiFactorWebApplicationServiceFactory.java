@@ -9,7 +9,7 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
  */
-public interface MfaWebApplicationServiceFactory {
+public interface MultiFactorWebApplicationServiceFactory {
 
 
     /**

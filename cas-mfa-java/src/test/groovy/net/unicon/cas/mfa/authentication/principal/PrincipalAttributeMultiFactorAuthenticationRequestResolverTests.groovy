@@ -2,7 +2,7 @@ package net.unicon.cas.mfa.authentication.principal
 
 import net.unicon.cas.mfa.authentication.AuthenticationMethod
 import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider
-import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory
+import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService
 
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource
@@ -41,7 +41,7 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
     WebApplicationService targetService = new SimpleWebApplicationServiceImpl('test target service')
 
     @Shared
-    MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory = Stub(MfaWebApplicationServiceFactory) {
+    MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory = Stub(MultiFactorWebApplicationServiceFactory) {
         create('test target service', 'test target service', null, 'strong_two_factor', AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE) >>
                 Stub(MultiFactorAuthenticationSupportingWebApplicationService) {
                     getId() >> 'test target service'

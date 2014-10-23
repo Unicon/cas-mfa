@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Set;
+import java.util.List;
 
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
@@ -27,12 +27,12 @@ public abstract class AbstractMultiFactorAuthenticationArgumentExtractor impleme
     /**
      * Target argument extractors.
      */
-    private final Set<ArgumentExtractor> supportedArgumentExtractors;
+    private final List<ArgumentExtractor> supportedArgumentExtractors;
 
     /**
      * Factory for mfa services.
      */
-    private final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory;
+    private final MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory;
 
     /**
      * This log would be replaced by the superclass's log if CAS-1332 realized.
@@ -54,8 +54,8 @@ public abstract class AbstractMultiFactorAuthenticationArgumentExtractor impleme
      * @param mfaWebApplicationServiceFactory mfaWebApplicationServiceFactory
      * @param authenticationMethodVerifier authenticationMethodVerifier
      */
-    public AbstractMultiFactorAuthenticationArgumentExtractor(final Set<ArgumentExtractor> supportedArgumentExtractors,
-                                                              final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory,
+    public AbstractMultiFactorAuthenticationArgumentExtractor(final List<ArgumentExtractor> supportedArgumentExtractors,
+                                                              final MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory,
                                                               final AuthenticationMethodVerifier authenticationMethodVerifier) {
         this.supportedArgumentExtractors = supportedArgumentExtractors;
         this.mfaWebApplicationServiceFactory = mfaWebApplicationServiceFactory;

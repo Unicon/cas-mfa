@@ -126,7 +126,6 @@
 		<exec dir="${basedir}" executable="${mavenExecutable}">
             <arg value="--projects" />
             <arg value="${cas.build.modules}"/>
-            <arg value="package" />
             <arg value="install" />
 			<arg value="-Dmaven.test.skip=true" />
 		</exec>

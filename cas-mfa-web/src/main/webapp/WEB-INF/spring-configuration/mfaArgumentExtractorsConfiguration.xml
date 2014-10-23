@@ -27,28 +27,19 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <bean id="baseArgumentExtractor"
-          p:httpClient-ref="noRedirectHttpClient"
-          p:disableSingleSignOut="${slo.callbacks.disabled:false}"
-          abstract="true"/>
+    <bean id="mfaServiceFactory" class="net.unicon.cas.mfa.web.support.DefaultMultiFactorWebApplicationServiceFactory"
+          c:httpClient-ref="noRedirectHttpClient"
+          c:disableSingleSignOut="${slo.callbacks.disabled:true}"/>
 
     <bean id="authenticationMethodVerifier" class="net.unicon.cas.mfa.web.support.DefaultAuthenticationMethodVerifier"
           c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
 
     <bean id="mfaArgumentExtractor" abstract="true"
           class="net.unicon.cas.mfa.web.support.AbstractMultiFactorAuthenticationArgumentExtractor"
-          c:supportedProtocols-ref="supportedProtocolsForMultifactorAuthentication"
+          c:supportedArgumentExtractors-ref="argumentExtractors"
           c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
           c:authenticationMethodVerifier-ref="authenticationMethodVerifier" />
 
-    <util:set id="supportedProtocolsForMultifactorAuthentication">
-        <ref bean="casArgumentExtractor"/>
-        <ref bean="samlArgumentExtractor"/>
-    </util:set>
-
-    <bean id="mfaServiceFactory" class="net.unicon.cas.mfa.web.support.DefaultMfaWebApplicationServiceFactory"
-          c:httpClient-ref="noRedirectHttpClient"
-          c:disableSingleSignOut="${slo.callbacks.disabled:true}"/>
 
     <bean id="requestParamMfaArgumentExtractor" parent="mfaArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.RequestParameterMultiFactorAuthenticationArgumentExtractor"/>
@@ -56,7 +47,7 @@
     <bean id="registeredServiceAttributeMfaArgumentExtractor" parent="mfaArgumentExtractor"
           class="net.unicon.cas.mfa.web.support.RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor"
           c:servicesManager-ref="servicesManager"
-          p:defaultAuthenticationMethod="${mfa.default.authn.method}"/>
+          p:defaultAuthenticationMethod="${mfa.default.authn.method:}"/>
 
     <util:set id="mfaArgumentExtractors">
         <ref bean="registeredServiceAttributeMfaArgumentExtractor"/>

@@ -5,7 +5,7 @@ import net.unicon.cas.mfa.authentication.AuthenticationMethodTranslator;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.StubAuthenticationMethodTranslator;
-import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
+import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
@@ -45,7 +45,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     /**
      * Mfa service factory.
      */
-    private final MfaWebApplicationServiceFactory mfaServiceFactory;
+    private final MultiFactorWebApplicationServiceFactory mfaServiceFactory;
 
     /**
      * The authn method loader.
@@ -68,7 +68,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * @param mfaServiceFactory mfaServiceFactory
      * @param authenticationMethodConfiguration the authentication method loader
      */
-    public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final MfaWebApplicationServiceFactory mfaServiceFactory,
+    public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
                     final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
         this(DEFAULT_MFA_METHOD_ATTRIBUTE_NAME, mfaServiceFactory, authenticationMethodConfiguration);
     }
@@ -81,7 +81,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * @param authenticationMethodConfiguration the authentication method loader
      */
     public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final String authenticationMethodAttributeName,
-               final MfaWebApplicationServiceFactory mfaServiceFactory,
+               final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
                final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
 
         this.authenticationMethodAttributeName = authenticationMethodAttributeName;

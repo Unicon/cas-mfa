@@ -11,27 +11,26 @@ import org.junit.runners.JUnit4;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
 public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
-    private final Set<ArgumentExtractor> supportedArgumentExtractors;
+    private final List<ArgumentExtractor> supportedArgumentExtractors;
 
-    private final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory;
+    private final MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory;
 
     public RequestParameterMultiFactorAuthenticationArgumentExtractorTests() {
-        this.supportedArgumentExtractors = new HashSet<ArgumentExtractor>();
+        this.supportedArgumentExtractors = new ArrayList<ArgumentExtractor>();
         this.supportedArgumentExtractors.add(new CasArgumentExtractor());
         this.supportedArgumentExtractors.add(new SamlArgumentExtractor());
-        this.mfaWebApplicationServiceFactory = new DefaultMfaWebApplicationServiceFactory(true, null);
+        this.mfaWebApplicationServiceFactory = new DefaultMultiFactorWebApplicationServiceFactory(true, null);
     }
 
     /**

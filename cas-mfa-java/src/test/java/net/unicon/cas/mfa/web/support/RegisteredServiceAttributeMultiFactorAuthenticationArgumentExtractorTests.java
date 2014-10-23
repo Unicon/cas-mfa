@@ -1,25 +1,22 @@
 package net.unicon.cas.mfa.web.support;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.*;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
-
 import org.jasig.cas.authentication.principal.Service;
 import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.jasig.cas.web.support.CasArgumentExtractor;
 import org.junit.Test;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 
 public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractorTests {
@@ -41,10 +38,10 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
     
     @Test
     public void testServiceWithDefaultMfaAttribute() {
-        final Set<ArgumentExtractor> set = new HashSet<ArgumentExtractor>();
+        final List<ArgumentExtractor> set = new ArrayList<ArgumentExtractor>();
         set.add(new CasArgumentExtractor());
         
-        final MfaWebApplicationServiceFactory factory = mock(MfaWebApplicationServiceFactory.class);
+        final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
         when(factory.create(anyString(), anyString(), anyString(), anyString(), any(AuthenticationMethodSource.class)))
             .thenReturn(getMfaService());
         
@@ -72,10 +69,10 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
     
     @Test
     public void testServiceWithNoAttributeValue() {
-        final Set<ArgumentExtractor> set = new HashSet<ArgumentExtractor>();
+        final List<ArgumentExtractor> set = new ArrayList<ArgumentExtractor>();
         set.add(new CasArgumentExtractor());
         
-        final MfaWebApplicationServiceFactory factory = mock(MfaWebApplicationServiceFactory.class);
+        final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
         final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
         
         final Map<String, Object> attrs = new HashMap<String, Object>();
@@ -100,10 +97,10 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
     
     @Test
     public void testServiceWithDifferentServiceType() {
-        final Set<ArgumentExtractor> set = new HashSet<ArgumentExtractor>();
+        final List<ArgumentExtractor> set = new ArrayList<ArgumentExtractor>();
         set.add(new CasArgumentExtractor());
         
-        final MfaWebApplicationServiceFactory factory = mock(MfaWebApplicationServiceFactory.class);
+        final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
         final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
         
         final RegisteredService svc = mock(RegisteredService.class);

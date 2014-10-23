@@ -9,7 +9,7 @@ import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
 import net.unicon.cas.mfa.web.flow.event.ErroringMultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.flow.event.MultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
-import net.unicon.cas.mfa.web.support.MfaWebApplicationServiceFactory;
+import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.Authentication;
@@ -84,7 +84,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
     private AuthenticationSupport authenticationSupport;
 
     @Mock
-    private MfaWebApplicationServiceFactory factory;
+    private MultiFactorWebApplicationServiceFactory factory;
 
     @Mock
     private AuthenticationMethodVerifier verifier;

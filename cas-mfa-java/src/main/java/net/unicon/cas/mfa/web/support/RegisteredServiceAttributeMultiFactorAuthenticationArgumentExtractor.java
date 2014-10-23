@@ -8,7 +8,7 @@ import org.jasig.cas.web.support.ArgumentExtractor;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Set;
+import java.util.List;
 
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
@@ -38,16 +38,16 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
     /**
      * Ctor.
      *
-     * @param supportedProtocols supported protocols
+     * @param supportedArgumentExtractors supported protocols by argument extractors
      * @param mfaWebApplicationServiceFactory mfaWebApplicationServiceFactory
      * @param servicesManager services manager
      * @param authenticationMethodVerifier authenticationMethodVerifier
      */
-    public RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor(final Set<ArgumentExtractor> supportedProtocols,
-                                                              final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory,
+    public RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor(final List<ArgumentExtractor> supportedArgumentExtractors,
+                                                              final MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory,
                                                               final ServicesManager servicesManager,
                                                               final AuthenticationMethodVerifier authenticationMethodVerifier) {
-        super(supportedProtocols, mfaWebApplicationServiceFactory, authenticationMethodVerifier);
+        super(supportedArgumentExtractors, mfaWebApplicationServiceFactory, authenticationMethodVerifier);
         this.servicesManager = servicesManager;
     }
 

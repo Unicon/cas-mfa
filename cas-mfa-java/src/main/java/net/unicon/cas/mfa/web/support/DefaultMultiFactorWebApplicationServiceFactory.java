@@ -13,7 +13,7 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
  */
-public final class DefaultMfaWebApplicationServiceFactory implements MfaWebApplicationServiceFactory {
+public final class DefaultMultiFactorWebApplicationServiceFactory implements MultiFactorWebApplicationServiceFactory {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -33,7 +33,7 @@ public final class DefaultMfaWebApplicationServiceFactory implements MfaWebAppli
      * @param disableSingleSignOut disableSingleSignOut flag
      * @param httpClient httpClient
      */
-    public DefaultMfaWebApplicationServiceFactory(final boolean disableSingleSignOut, final HttpClient httpClient) {
+    public DefaultMultiFactorWebApplicationServiceFactory(final boolean disableSingleSignOut, final HttpClient httpClient) {
         this.disableSingleSignOut = disableSingleSignOut;
         this.httpClient = httpClient;
     }

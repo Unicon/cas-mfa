@@ -1,12 +1,11 @@
 package net.unicon.cas.mfa.web.support;
 
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 
@@ -27,15 +26,15 @@ public final class RequestParameterMultiFactorAuthenticationArgumentExtractor ex
     /**
      * Ctor.
      *
-     * @param supportedProtocols supportedProtocols
+     * @param supportedArgumentExtractors supported protocols by argument extractors
      * @param mfaWebApplicationServiceFactory mfaWebApplicationServiceFactory
      * @param authenticationMethodVerifier authenticationMethodVerifier
      */
-    public RequestParameterMultiFactorAuthenticationArgumentExtractor(final Set<ArgumentExtractor> supportedProtocols,
-                                                                      final MfaWebApplicationServiceFactory mfaWebApplicationServiceFactory,
-                                                                      final AuthenticationMethodVerifier authenticationMethodVerifier) {
+    public RequestParameterMultiFactorAuthenticationArgumentExtractor(final List<ArgumentExtractor> supportedArgumentExtractors,
+           final MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory,
+           final AuthenticationMethodVerifier authenticationMethodVerifier) {
 
-        super(supportedProtocols, mfaWebApplicationServiceFactory, authenticationMethodVerifier);
+        super(supportedArgumentExtractors, mfaWebApplicationServiceFactory, authenticationMethodVerifier);
     }
 
     @Override
