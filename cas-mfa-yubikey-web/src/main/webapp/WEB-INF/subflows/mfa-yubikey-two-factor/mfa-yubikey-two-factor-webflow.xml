@@ -69,7 +69,7 @@
                  type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
         </on-entry>
         <evaluate expression="yubikey_terminatingTwoFactorAuthenticationViaFormAction" />
-        <transition on="mfa_yubikey_two_factor" to="mfaSuccess" />
+        <transition on="mfa-yubikey-two-factor" to="mfaSuccess" />
         <transition on="error" to="generateLoginTicket" />
         <exception-handler bean="principalMismatchExceptionHandler"/>
     </action-state>
