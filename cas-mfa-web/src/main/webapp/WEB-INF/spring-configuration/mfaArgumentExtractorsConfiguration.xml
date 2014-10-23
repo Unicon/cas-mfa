@@ -27,6 +27,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <util:list id="supportedProtocols">
+        <ref bean="casArgumentExtractor" />
+        <ref bean="samlArgumentExtractor" />
+    </util:list>
+
     <bean id="mfaServiceFactory" class="net.unicon.cas.mfa.web.support.DefaultMultiFactorWebApplicationServiceFactory"
           c:httpClient-ref="noRedirectHttpClient"
           c:disableSingleSignOut="${slo.callbacks.disabled:true}"/>
@@ -36,7 +41,7 @@
 
     <bean id="mfaArgumentExtractor" abstract="true"
           class="net.unicon.cas.mfa.web.support.AbstractMultiFactorAuthenticationArgumentExtractor"
-          c:supportedArgumentExtractors-ref="argumentExtractors"
+          c:supportedArgumentExtractors-ref="supportedProtocols"
           c:mfaWebApplicationServiceFactory-ref="mfaServiceFactory"
           c:authenticationMethodVerifier-ref="authenticationMethodVerifier" />
 

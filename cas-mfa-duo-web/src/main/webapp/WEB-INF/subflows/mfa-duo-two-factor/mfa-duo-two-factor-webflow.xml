@@ -24,7 +24,7 @@
       xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
 
-    <var name="duoCredentials" class="net.unicon.cas.mfa.authentication.duo.DuoCredentials" />
+    <var name="credentials" class="net.unicon.cas.mfa.authentication.duo.DuoCredentials" />
     <input name="mfaCredentials" required="true"
            type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
     <input name="mfaService" required="true"
@@ -42,17 +42,17 @@
     </action-state>
 
 
-    <view-state id="viewLoginFormDuo" view="casDuoLoginView" model="duoCredentials">
+    <view-state id="viewLoginFormDuo" view="casDuoLoginView" model="credentials">
         <binder>
             <binding property="signedDuoResponse"/>
         </binder>
         <on-entry>
-            <set name="duoCredentials.username" value="mfaCredentials.principal.id"/>
+            <set name="credentials.username" value="mfaCredentials.principal.id"/>
             <set name="viewScope.sigRequest" value="duoAuthenticationService.generateSignedRequestToken(mfaCredentials.principal.id)" />
             <set name="viewScope.apiHost" value="duoAuthenticationService.getDuoApiHost()" />
-            <set name="viewScope.commandName" value="'duoCredentials'" />
+            <set name="viewScope.commandName" value="'credentials'" />
         </on-entry>
-        <transition on="submit" bind="true" to="realSubmitDuo"/>
+        <transition on="submit" bind="true" validate="false" to="realSubmitDuo"/>
 
     </view-state>
 
@@ -61,8 +61,7 @@
             <set name="flowScope.mfaCredentials" value="mfaCredentials"
                  type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
         </on-entry>
-        <evaluate expression="duo_terminatingTwoFactorAuthenticationViaFormAction.submit(flowRequestContext, duoCredentials,
-                              messageContext, mfaCredentials.principal.id)" />
+        <evaluate expression="duo_terminatingTwoFactorAuthenticationViaFormAction" />
         <transition on="mfa_duo_two_factor" to="mfaSuccess" />
         <transition on="error" to="generateLoginTicket" />
         <exception-handler bean="principalMismatchExceptionHandler"/>

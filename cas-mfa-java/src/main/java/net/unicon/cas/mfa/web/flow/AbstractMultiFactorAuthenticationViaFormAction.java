@@ -342,6 +342,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @return error event id
      */
     protected final Event getErrorEvent(final RequestContext context) {
+        logger.debug("Returning an error event in the active flow id {}", context.getActiveFlow().getId());
         return this.errorEventBuilder.buildEvent(context);
     }
 
@@ -386,6 +387,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
             final String id = credentials.getUsername();
             return submit(ctx, credentials, messageContext, id);
         }
+        logger.warn("Credentials could not be determined, or no username was associated with the request.");
         return getErrorEvent(ctx);
     }
 
