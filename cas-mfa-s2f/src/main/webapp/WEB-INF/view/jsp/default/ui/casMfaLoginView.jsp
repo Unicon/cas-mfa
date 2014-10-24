@@ -21,9 +21,9 @@
 
 <div id="msg" class="info">
   <h2><spring:message code="service.mfa.service.mfa.inprogress.header" /></h2>
-  <h4><spring:message code="service.mfa.service.mfa.inprogress.message" 
-                      arguments="${service.authenticationMethod},${service}"
-                      htmlEscape="true" /></h4>
+<h4><spring:message code="service.mfa.service.mfa.inprogress.message"
+                    arguments="${service.authenticationMethod},${service}"
+                    htmlEscape="true" /></h4>
 </div>
 
 <div class="box fl-panel" id="login">

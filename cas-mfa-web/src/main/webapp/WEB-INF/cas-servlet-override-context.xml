@@ -125,8 +125,6 @@
               c:hostname="${server.prefix}" />
 
     <!-- MFA Views -->
-    <bean id="casMfaLoginView" class="org.springframework.web.servlet.view.JstlView"
-          p:url="/WEB-INF/view/jsp/default/ui/casMfaLoginView.jsp" />
 
     <bean id="casMfaUnrecognizedAuthnMethodErrorView" class="org.springframework.web.servlet.view.JstlView"
           p:url="/WEB-INF/view/jsp/default/ui/casMfaUnrecognizedAuthnMethodErrorView.jsp" />

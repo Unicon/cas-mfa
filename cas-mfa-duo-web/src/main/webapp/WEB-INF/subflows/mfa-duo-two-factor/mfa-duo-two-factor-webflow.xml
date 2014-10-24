@@ -51,6 +51,9 @@
             <set name="viewScope.sigRequest" value="duoAuthenticationService.generateSignedRequestToken(mfaCredentials.principal.id)" />
             <set name="viewScope.apiHost" value="duoAuthenticationService.getDuoApiHost()" />
             <set name="viewScope.commandName" value="'credentials'" />
+
+            <evaluate expression="mfaLoginViewPrincipalGreeter.getPersonToGreet(mfaCredentials.principal, messageContext)"
+                      result="viewScope.greetingPrincipalAttribute" />
         </on-entry>
         <transition on="submit" bind="true" validate="false" to="realSubmitDuo"/>
 
