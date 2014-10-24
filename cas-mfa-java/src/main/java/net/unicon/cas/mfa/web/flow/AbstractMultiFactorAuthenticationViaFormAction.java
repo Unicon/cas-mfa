@@ -29,6 +29,7 @@ import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.util.Assert;
 import org.springframework.webflow.action.AbstractAction;
+import org.springframework.webflow.definition.FlowDefinition;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
@@ -342,7 +343,8 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @return error event id
      */
     protected final Event getErrorEvent(final RequestContext context) {
-        logger.debug("Returning an error event in the active flow id {}", context.getActiveFlow().getId());
+        final FlowDefinition flow = context.getActiveFlow();
+        logger.debug("Returning an error event in the active flow id {}", flow != null ? flow.getId() : "[none]");
         return this.errorEventBuilder.buildEvent(context);
     }
 
