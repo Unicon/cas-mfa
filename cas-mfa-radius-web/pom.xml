@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <artifactId>cas-mfa</artifactId>
+      <groupId>net.unicon</groupId>
+      <version>1.0.0-M6-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>cas-mfa-radius-web</artifactId>
+   <name>CAS MFA Radius Web Support</name>
+   <description>
+      This is the multifactor extensions for CAS sub-module for Radius components.
+  </description>
+   <packaging>war</packaging>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <configuration>
+               <failOnMissingWebXml>false</failOnMissingWebXml>
+            </configuration>
+         </plugin>
+      </plugins>
+      <finalName>cas-mfa-radius-web</finalName>
+   </build>
+
+   <dependencies>
+      <dependency>
+         <groupId>net.unicon</groupId>
+         <artifactId>cas-mfa-java</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+       <dependency>
+           <groupId>org.jasig.cas</groupId>
+           <artifactId>cas-server-support-radius</artifactId>
+           <version>${cas.version}</version>
+           <scope>compile</scope>
+           <exclusions>
+               <exclusion>
+                   <artifactId>ehcache</artifactId>
+                   <groupId>net.sf.ehcache</groupId>
+               </exclusion>
+           </exclusions>
+       </dependency>
+   </dependencies>
+</project>

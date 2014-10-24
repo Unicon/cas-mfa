@@ -27,7 +27,7 @@
 	<property name="catalina.home" value="${env.CATALINA_HOME}" />
 	<property name="tomcat.log.patterns" value="**/*.log, **/*.txt" />
 	<property name="cas.resources.dir" value="/etc/cas" />
-    <property name="cas.build.modules" value="cas-mfa-java,cas-mfa-web,cas-mfa-s2f,cas-mfa-duo-web, cas-mfa-duo,cas-mfa-overlay"  />
+    <property name="cas.build.modules" value="cas-mfa-java,cas-mfa-web,cas-mfa-s2f,cas-mfa-overlay"  />
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
 	<!-- ******************* MAVEN PROPERTIES******************** -->

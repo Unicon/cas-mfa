@@ -29,12 +29,21 @@
                     <packagingExcludes>WEB-INF/lib/stax-api-1.0-2.jar</packagingExcludes>
                     <overlays>
 
-                        <!-- Include to add support for strong-two-factor -->
+                        <!-- Include to add support for radius-two-factor -->
+                        <!--
+                        <overlay>
+                            <groupId>net.unicon</groupId>
+                            <artifactId>cas-mfa-radius-web</artifactId>
+                        </overlay>
+                        -->
 
+                        <!-- Include to add support for strong-two-factor -->
+                        <!--
                         <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-s2f</artifactId>
                         </overlay>
+                        -->
 
                         <!-- Include to add support for Duo -->
                         <!--
@@ -63,10 +72,14 @@
                         <overlay>
                             <groupId>org.jasig.cas</groupId>
                             <artifactId>cas-server-webapp</artifactId>
+                            <includes>
+                                <include>WEB-INF/classes/messages_en.properties</include>
+                            </includes>
                             <excludes>
                                 <exclude>WEB-INF/cas.properties</exclude>
                                 <exclude>WEB-INF/login-webflow.xml</exclude>
                                 <exclude>WEB-INF/classes/log4j.xml</exclude>
+                                <exclude>WEB-INF/classes/messages_*.properties</exclude>
                                 <exclude>WEB-INF/restlet-servlet.xml</exclude>
                                 <exclude>**/commons-beanutils-1.7.0.jar</exclude>
                                 <exclude>**/commons-codec-1.4.jar</exclude>
@@ -120,6 +133,8 @@
             <artifactId>cas-server-webapp</artifactId>
             <type>war</type>
         </dependency>
+
+        <!-- This is required. Do not remove! -->
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-web</artifactId>
@@ -128,16 +143,16 @@
         </dependency>
 
         <!-- Include to add support for strong-two-factor -->
-
+        <!--
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-s2f</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
+        -->
 
-
-        <!-- Include to add support for Duo -->
+        <!-- Include to add support for Duo Security -->
         <!--
         <dependency>
             <groupId>net.unicon</groupId>
@@ -152,6 +167,16 @@
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-yubikey-web</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        -->
+
+        <!-- Include to add support for Radius -->
+        <!--
+        <dependency>
+            <groupId>net.unicon</groupId>
+            <artifactId>cas-mfa-radius-web</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>

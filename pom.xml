@@ -9,7 +9,7 @@
   <groupId>net.unicon</groupId>
   <artifactId>cas-mfa</artifactId>
   <packaging>pom</packaging>
-  <name>CAS Multifactor Authentication</name>
+  <name>CAS MFA Parent</name>
   <description>Jasig CAS SSO server multifactor authentication libraries and web application.</description>
   <version>1.0.0-M6-SNAPSHOT</version>
   <url>https://github.com/Unicon/cas-mfa</url>
@@ -506,6 +506,7 @@
     <module>cas-mfa-duo-web</module>
     <module>cas-mfa-yubikey-web</module>
     <module>cas-mfa-s2f</module>
+    <module>cas-mfa-radius-web</module>
     <module>cas-mfa-overlay</module>
   </modules>
 

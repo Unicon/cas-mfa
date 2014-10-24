@@ -32,19 +32,19 @@
        http://unicon.net/schema/cas http://unicon.net/schema/cas/cas-addons.xsd">
 
   <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->
-  <bean id="terminatingTwoFactorAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
+  <bean id="s2f_terminatingTwoFactorAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
         class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction"
-        p:multiFactorAuthenticationManager-ref="terminatingAuthenticationManager" />
+        p:multiFactorAuthenticationManager-ref="s2f_terminatingAuthenticationManager" />
 
     <!--
       This is the authentication manager responsible to validate the second factor credentials.
       Will use a second set of authentication handlers to verify credentials.
     -->
-  <bean id="terminatingAuthenticationManager" parent="mfaAuthenticationManager"
-        p:authenticationHandlers-ref="listOfTwoFactorStrongAuthenticationHandlers" />
+  <bean id="s2f_terminatingAuthenticationManager" parent="mfaAuthenticationManager"
+        p:authenticationHandlers-ref="s2f_listOfTwoFactorStrongAuthenticationHandlers" />
 
   <!-- Custom set of authentication handlers for the second factor authentication. -->
-  <util:list id="listOfTwoFactorStrongAuthenticationHandlers">
+  <util:list id="s2f_listOfTwoFactorStrongAuthenticationHandlers">
     <bean class="org.jasig.cas.adaptors.generic.AcceptUsersAuthenticationHandler"
         p:users-ref="casUsers" />
   </util:list>

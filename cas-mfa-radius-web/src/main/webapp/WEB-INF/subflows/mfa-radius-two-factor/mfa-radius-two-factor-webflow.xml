@@ -23,25 +23,25 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
-    
-    <var name="credentials" class="org.jasig.cas.authentication.principal.UsernamePasswordCredentials" />    
-    <input name="mfaCredentials" required="true" 
+
+    <var name="credentials" class="org.jasig.cas.authentication.principal.UsernamePasswordCredentials" />
+    <input name="mfaCredentials" required="true"
            type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
     <input name="mfaService" required="true"
-               type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService" />
-               
+           type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService" />
+
     <on-start>
         <evaluate expression="initialFlowSetupAction" />
-        <set name="flowScope.service" value="mfaService" 
-                 type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService"/>
+        <set name="flowScope.service" value="mfaService"
+             type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService"/>
     </on-start>
-      
+
     <action-state id="generateLoginTicket">
         <evaluate expression="generateLoginTicketAction.generate(flowRequestContext)" />
         <transition on="generated" to="viewMfaLoginForm" />
     </action-state>
-    
-    <view-state id="viewMfaLoginForm" view="casMfaLoginView" model="credentials">
+
+    <view-state id="viewMfaLoginForm" view="casRadiusLoginView" model="credentials">
         <binder>
             <binding property="username" />
             <binding property="password" />
@@ -53,7 +53,7 @@
                       result="viewScope.greetingPrincipalAttribute" />
         </on-entry>
         <transition on="submit" bind="true" validate="true" to="realSubmit">
-            <evaluate expression="s2f_terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
+            <evaluate expression="radius_terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
         <!-- 
             Handling "cancel" events in the event that the user wishes to return to the original
@@ -61,19 +61,19 @@
             by the JSP itself, that is responsible to make the redirection happen.
         -->
     </view-state>
-    
+
 
     <action-state id="realSubmit">
         <on-entry>
-            <set name="flowScope.mfaCredentials" value="mfaCredentials" 
+            <set name="flowScope.mfaCredentials" value="mfaCredentials"
                  type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
         </on-entry>
-        <evaluate expression="s2f_terminatingTwoFactorAuthenticationViaFormAction" />
-        <transition on="mfa-strong-two-factor" to="mfaSuccess" />
+        <evaluate expression="radius_terminatingTwoFactorAuthenticationViaFormAction" />
+        <transition on="mfa-radius-two-factor" to="mfaSuccess" />
         <transition on="error" to="generateLoginTicket" />
         <exception-handler bean="principalMismatchExceptionHandler"/>
     </action-state>
-      
+
     <end-state id="mfaSuccess" />
     <end-state id="unknownPrincipalError" />
     <end-state id="mfaUnrecognizedAuthnMethodError" />

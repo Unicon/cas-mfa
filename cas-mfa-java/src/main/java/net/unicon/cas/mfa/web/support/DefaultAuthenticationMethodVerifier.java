@@ -40,7 +40,8 @@ public final class DefaultAuthenticationMethodVerifier implements Authentication
                                            final HttpServletRequest request) {
 
         if (!supportedAuthenticationMethodsConfig.containsAuthenticationMethod(authenticationMethod)) {
-            logger.debug("CAS is not configured to support [{}] authentication method value [{}].",
+            logger.debug("CAS is not configured to support [{}] authentication method value [{}]."
+                         + "The configuration of supported authentication methods is likely missing this method.",
                     MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
                     authenticationMethod);
             /**
