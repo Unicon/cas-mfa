@@ -1,5 +1,7 @@
 package net.unicon.cas.mfa.web.flow.event;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
@@ -9,6 +11,9 @@ import org.springframework.webflow.execution.RequestContext;
  */
 public class ErroringMultiFactorAuthenticationSpringWebflowEventBuilder
     implements MultiFactorAuthenticationSpringWebflowEventBuilder {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     /**
      * The Constant MFA_ERROR_EVENT_ID.
      */
@@ -16,6 +21,7 @@ public class ErroringMultiFactorAuthenticationSpringWebflowEventBuilder
 
     @Override
     public Event buildEvent(final RequestContext context) {
+        logger.debug("Building event id {}", MFA_ERROR_EVENT_ID);
         return new Event(this, MFA_ERROR_EVENT_ID);
     }
 }
