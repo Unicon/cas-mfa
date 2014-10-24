@@ -15,6 +15,7 @@ The intention is to develop a solution that can be adopted by current CAS adopte
 ## MultiFactor Support
 * `duo-two-factor` (via DuoSecurity)
 * `yubikey-two-factor` (via YubiKey)
+* `radius-two-factor` (via RADIUS OTP)
 * `strong-two-factor` (Custom)
 
 ## Documentation
