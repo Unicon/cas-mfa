@@ -87,7 +87,17 @@
         <appender-ref ref="cas" />
     </logger>
 
+    <logger name="net.jradius" additivity="true">
+        <level value="DEBUG" />
+        <appender-ref ref="cas" />
+    </logger>
+
     <logger name="com.duosecurity" additivity="true">
+        <level value="DEBUG" />
+        <appender-ref ref="cas" />
+    </logger>
+
+    <logger name="com.toopher" additivity="true">
         <level value="DEBUG" />
         <appender-ref ref="cas" />
     </logger>
