@@ -1,4 +1,5 @@
 <%--
+
     Licensed to Jasig under one or more contributor license
     agreements. See the NOTICE file distributed with this work
     for additional information regarding copyright ownership.
@@ -18,25 +19,14 @@
 
 --%>
 <jsp:directive.include file="includes/top.jsp" />
-
-<link type="text/css" rel="stylesheet" href="<c:url value='/css/toopher-cas.css'/>" />
-<script src="<c:url value='/js/jquery-1.11.0.min.js'/>" ></script>
-<script src="<c:url value='/js/jquery.cookie.min.js'/>" ></script>
-<script src="<c:url value='/js/toopher-web.js'/>" ></script>
-
-
-<div id="msg" class="info">
-  <h2><spring:message code="service.mfa.service.mfa.inprogress.header" /></h2>
-  <h4><spring:message code="service.mfa.service.mfa.inprogress.message"
-                    arguments="${service.authenticationMethod},${service}"
-                    htmlEscape="true" /></h4>
+<div class="errors">
+  <p><h2><spring:message code="service.mfa.generic.error.heading" text="Error with Toopher integration" /></h2></p>
+  <p><spring:message code="service.mfa.generic.error.message" text="There was an error processing the request" /></p>
+  <form method="post">
+    <input type="hidden" name="lt" value="${loginTicket}" />
+    <input type="hidden" name="execution" value="${flowExecutionKey}" />
+    <input type="hidden" name="_eventId" value="retry" />
+    <input type="submit" value="retry"></input>
+  </form>
 </div>
-
-
-<iframe id='toopher_iframe' toopher_req='${toopherIframeSrc}' toopher_postback='' framework_post_args='{"lt":"${loginTicket}","execution":"${flowExecutionKey}","_eventId":"toopher-api-response"}'></iframe>
-
-<script>
-    toopher.init('#toopher_iframe');
-</script>
-
-
+<jsp:directive.include file="includes/bottom.jsp" />

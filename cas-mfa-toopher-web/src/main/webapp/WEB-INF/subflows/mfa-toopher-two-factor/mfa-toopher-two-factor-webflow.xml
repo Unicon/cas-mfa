@@ -24,7 +24,7 @@
       xsi:schemaLocation="http://www.springframework.org/schema/webflow
                           http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
     
-    <var name="credentials" class="org.jasig.cas.authentication.principal.UsernamePasswordCredentials" />    
+    <var name="credentials" class="com.toopher.integrations.cas.authentication.principal.ToopherCredentials" />
     <input name="mfaCredentials" required="true" 
            type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
     <input name="mfaService" required="true"
@@ -40,28 +40,25 @@
         <evaluate expression="generateLoginTicketAction.generate(flowRequestContext)" />
         <transition on="generated" to="viewMfaLoginForm" />
     </action-state>
-    
+
     <view-state id="viewMfaLoginForm" view="casToopherLoginView" model="credentials">
         <binder>
-            <binding property="username" />
-            <binding property="password" />
+            <binding property="toopher_sig" />
         </binder>
         <on-entry>
             <set name="viewScope.commandName" value="'credentials'" />
 
             <evaluate expression="mfaLoginViewPrincipalGreeter.getPersonToGreet(mfaCredentials.principal, messageContext)"
                       result="viewScope.greetingPrincipalAttribute" />
+
+            <evaluate expression="toopherCAS.authIframeUrl(mfaCredentials.principal.id, flowScope.loginTicket)"
+                      result="viewScope.toopherIframeSrc" />
         </on-entry>
-        <transition on="submit" bind="true" validate="true" to="realSubmit">
+        <transition on="toopher-api-response" bind="true" validate="true" to="realSubmitToopherAuth">
+            <set name="credentials.username" value="mfaCredentials.principal.id"/>
             <evaluate expression="toopher_terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
-        <!-- 
-            Handling "cancel" events in the event that the user wishes to return to the original
-            login screen, reset and present the initial set of credentials all over again is handled
-            by the JSP itself, that is responsible to make the redirection happen.
-        -->
     </view-state>
-    
 
     <action-state id="realSubmit">
         <on-entry>
@@ -70,10 +67,39 @@
         </on-entry>
         <evaluate expression="toopher_terminatingTwoFactorAuthenticationViaFormAction" />
         <transition on="mfa-toopher-two-factor" to="mfaSuccess" />
+        <transition on="toopherAuthenticationDenied" to="generateLoginTicket" />
+        <transition on="toopherUserUnknown" to="serveToopherPair" />
+        <transition on="toopherPairingDeactivated" to="serveToopherPair" />
+        <transition on="toopherUserOptOut" to="serveToopherPair" />
+        <transition on="toopherUserUnknown" to="serveToopherPair" />
+        <transition on="toopherPairingNotAuthorized" to="serveToopherPairingNotAuthorized" />
+        <transition on="toopherUnknownError" to="serveToopherUnknownError" />
+        <transition on="toopherInvalidSignature" to="serveToopherInvalidSignature" />
         <transition on="error" to="generateLoginTicket" />
         <exception-handler bean="principalMismatchExceptionHandler"/>
     </action-state>
-      
+
+    <view-state id="serveToopherPair" view="casToopherLoginView" model="credentials">
+        <binder>
+            <binding property="toopher_sig" />
+        </binder>
+        <on-entry>
+            <evaluate expression="toopherCAS.pairIframeUrl(mfaCredentials.principal.id)"
+                      result="viewScope.toopherIframeSrc" />
+        </on-entry>
+        <transition on="toopher-api-response" bind="true" validate="true" to="generateLoginTicket" />
+    </view-state>
+
+    <view-state id="serveToopherPairingNotAuthorized" view="casToopherPairingNotAuthorizedView">
+        <transition on="retry" to="serveToopherPair" />
+    </view-state>
+    <view-state id="serveToopherUnknownError" view="casToopherErrorView">
+        <transition on="retry" to="generateLoginTicket" />
+    </view-state>
+    <view-state id="serveToopherInvalidSignature" view="casToopherErrorView">
+        <transition on="retry" to="generateLoginTicket" />
+    </view-state>
+
     <end-state id="mfaSuccess" />
     <end-state id="unknownPrincipalError" />
     <end-state id="mfaUnrecognizedAuthnMethodError" />

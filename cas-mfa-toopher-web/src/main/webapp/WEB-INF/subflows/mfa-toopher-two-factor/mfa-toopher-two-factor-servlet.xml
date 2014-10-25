@@ -21,38 +21,71 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:webflow="http://www.springframework.org/schema/webflow-config"
        xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:cas="http://unicon.net/schema/cas"
-       xmlns:c="http://www.springframework.org/schema/c"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
-       http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd
-       http://unicon.net/schema/cas http://unicon.net/schema/cas/cas-addons.xsd">
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-  <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->
-  <bean id="toopher_terminatingTwoFactorAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
-        class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction"
-        p:multiFactorAuthenticationManager-ref="toopher_terminatingAuthenticationManager" />
+    <!-- Terminate the multifactor authentication sequence. Will resolve the principal. -->
+    <bean id="toopher_terminatingTwoFactorAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
+          class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction"
+          p:multiFactorAuthenticationManager-ref="toopher_terminatingAuthenticationManager"
+          p:credentialsBinder-ref="toopherResponseCredentialsBinder"  />
 
     <!--
       This is the authentication manager responsible to validate the second factor credentials.
       Will use a second set of authentication handlers to verify credentials.
     -->
-  <bean id="toopher_terminatingAuthenticationManager" parent="mfaAuthenticationManager"
-        p:authenticationHandlers-ref="toopher_listOfTwoFactorStrongAuthenticationHandlers" />
+    <bean id="toopher_terminatingAuthenticationManager" parent="mfaAuthenticationManager"
+          p:authenticationHandlers-ref="toopher_listOfTwoFactorStrongAuthenticationHandlers"
+          p:credentialsToPrincipalResolvers-ref="toopher_listOfTwoFactorStrongPrincipalResolvers"/>
 
-  <!-- Custom set of authentication handlers for the second factor authentication. -->
-  <util:list id="toopher_listOfTwoFactorStrongAuthenticationHandlers">
-    <bean class="org.jasig.cas.adaptors.generic.AcceptUsersAuthenticationHandler"
-        p:users-ref="casUsers" />
-  </util:list>
-  
-  <util:map id="casUsers">
-    <entry key="casuser" value="Mellon" />
-  </util:map>
+    <!-- Custom set of authentication handlers for the second factor authentication. -->
+    <util:list id="toopher_listOfTwoFactorStrongAuthenticationHandlers">
+        <bean class="com.toopher.integrations.cas.authentication.handler.ToopherAuthenticationHandler">
+            <property name="toopherConfig" ref="toopherConfig"/>
+        </bean>
+    </util:list>
 
+    <util:list id="toopher_listOfTwoFactorStrongPrincipalResolvers">
+        <bean class="com.toopher.integrations.cas.authentication.principal.ToopherCredentialsToPrincipalResolver">
+            <property name="toopherConfig" ref="toopherConfig" />
+        </bean>
+    </util:list>
+
+    <!-- Toopher API beans -->
+    <bean id="toopherResponseCredentialsBinder"
+          class="com.toopher.integrations.cas.authentication.principal.ToopherResponseCredentialsBinder" />
+
+    <bean id="toopherConfig" class="com.toopher.integrations.cas.ToopherConfig">
+        <property name="consumerKey" value="${toopher.consumer.key}"/>
+        <property name="consumerSecret" value="${toopher.consumer.secret}"/>
+        <property name="apiUrl" value="${toopher.apiurl}"/>
+    </bean>
+
+    <bean id="simpleUsernameToEmailMapper"
+          class="com.toopher.integrations.cas.authentication.principal.SimpleUsernameToEmailMapper">
+        <property name="userDefinitions">
+            <map>
+                <entry key="casuser" value="user.one@example.edu" />
+            </map>
+        </property>
+        <property name="defaultEmailDomain" value="unicon.net" />
+    </bean>
+
+    <bean id="toopherCAS" class="com.toopher.integrations.cas.ToopherCAS">
+        <property name="toopherConfig" ref="toopherConfig"/>
+        <property name="usernameToEmailMapper" ref="simpleUsernameToEmailMapper" />
+    </bean>
+
+    <!-- Toopher Views -->
     <bean id="casToopherLoginView" class="org.springframework.web.servlet.view.JstlView"
-          p:url="/WEB-INF/view/jsp/default/ui/casToopherLoginView.jsp" />
+          p:url="/WEB-INF/view/jsp/default/ui/casToopherLoginView.jsp"/>
+
+    <bean id="casToopherPairingNotAuthorizedView" class="org.springframework.web.servlet.view.JstlView"
+          p:url="/WEB-INF/view/jsp/default/ui/casToopherPairingNotAuthorizedView.jsp"/>
+
+    <bean id="casToopherErrorView" class="org.springframework.web.servlet.view.JstlView"
+          p:url="/WEB-INF/view/jsp/default/ui/casToopherErrorView.jsp"/>
+
 </beans>

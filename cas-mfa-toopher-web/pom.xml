@@ -7,7 +7,7 @@
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <artifactId>cas-mfa-toopher-web</artifactId>
-   <name>CAS MFA Strong Toopher Web Support</name>
+   <name>CAS MFA Toopher Web Support</name>
    <description>
     This is the multifactor extensions for CAS sub-module that provides
     an authentication method for "toopher-two-factor". Module is intended

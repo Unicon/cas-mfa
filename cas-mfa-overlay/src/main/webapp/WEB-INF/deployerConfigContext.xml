@@ -2,7 +2,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:c="http://www.springframework.org/schema/c"
        xmlns:sec="http://www.springframework.org/schema/security"
        xmlns:cas="http://unicon.net/schema/cas"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -11,21 +10,21 @@
                            http://www.springframework.org/schema/security/spring-security-3.1.xsd
                            http://unicon.net/schema/cas
                            http://unicon.net/schema/cas/cas-addons.xsd">
-    
+
     <bean id="authenticationManager" class="org.jasig.cas.authentication.AuthenticationManagerImpl">
         <property name="credentialsToPrincipalResolvers">
             <list>
                 <bean
-                    class="org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver"
-                    p:attributeRepository-ref="attributeRepository"/>
-                <bean class="org.jasig.cas.authentication.principal.HttpBasedServiceCredentialsToPrincipalResolver" />
+                        class="org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver"
+                        p:attributeRepository-ref="attributeRepository"/>
+                <bean class="org.jasig.cas.authentication.principal.HttpBasedServiceCredentialsToPrincipalResolver"/>
             </list>
         </property>
         <property name="authenticationHandlers">
             <list>
                 <bean class="org.jasig.cas.authentication.handler.support.HttpBasedServiceCredentialsAuthenticationHandler"
-                      p:httpClient-ref="httpClient" />
-                <bean class="org.jasig.cas.authentication.handler.support.SimpleTestUsernamePasswordAuthenticationHandler" />
+                      p:httpClient-ref="httpClient"/>
+                <bean class="org.jasig.cas.authentication.handler.support.SimpleTestUsernamePasswordAuthenticationHandler"/>
             </list>
         </property>
     </bean>

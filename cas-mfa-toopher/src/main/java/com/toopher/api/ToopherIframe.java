@@ -1,40 +1,33 @@
 package com.toopher.api;
 
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeSet;
-import java.net.URLEncoder;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.http.client.utils.URLEncodedUtils;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthException;
-import java.io.UnsupportedEncodingException;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.log4j.Logger;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.NoSuchAlgorithmException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.InvalidKeyException;
-
-import org.apache.log4j.Logger;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 public final class ToopherIframe {
     private static final String IFRAME_VERSION = "2";
     private static Logger logger = Logger.getLogger("com.toopher.api");
 
-    public static final String pairIframeUrl(String userName, String resetEmail, long ttl, String baseUrl, String key, String secret) {
-        final List<NameValuePair> params = new ArrayList<NameValuePair>(4);
-        params.add(new BasicNameValuePair("v", IFRAME_VERSION));
-        params.add(new BasicNameValuePair("username", userName));
-        params.add(new BasicNameValuePair("reset_email", resetEmail));
-        params.add(new BasicNameValuePair("expires", String.valueOf((new Date().getTime() / 1000) + ttl)));
-        return getOAuthUrl(baseUrl + "web/pair", params, key, secret);
-    }
-
-    public static final String authIframeUrl(String userName, String resetEmail, String actionName, boolean automationAllowed, boolean challengeRequired, String sessionToken, String requesterMetadata, long ttl, String baseUrl, String key, String secret) {
+    public static final String authIframeUrl(String userName, String resetEmail, String actionName,
+                                             boolean automationAllowed, boolean challengeRequired,
+                                             String sessionToken, String requesterMetadata, long ttl,
+                                             String baseUrl, String key, String secret) {
         final List<NameValuePair> params = new ArrayList<NameValuePair>(9);
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
@@ -64,7 +57,7 @@ public final class ToopherIframe {
                 }
                 return null;
             }
-            
+
             String maybeSig = data.get("toopher_sig");
             data.remove("toopher_sig");
             boolean signatureValid;
@@ -80,7 +73,7 @@ public final class ToopherIframe {
 
             boolean ttlValid = (new Date().getTime() / 1000) - ttl < Long.parseLong(data.get("timestamp"));
             logger.debug("ttlValid is " + ttlValid);
-            if(signatureValid && ttlValid) {
+            if (signatureValid && ttlValid) {
                 return data;
             } else {
                 return null;
@@ -94,7 +87,7 @@ public final class ToopherIframe {
     private static String signature(String secret, Map<String, String> data) throws NoSuchAlgorithmException, InvalidKeyException {
         TreeSet<String> sortedKeys = new TreeSet<String>(data.keySet());
         List<NameValuePair> sortedParams = new ArrayList<NameValuePair>(data.size());
-        for(String key : sortedKeys) {
+        for (String key : sortedKeys) {
             sortedParams.add(new BasicNameValuePair(key, data.get(key)));
         }
         String toSign = URLEncodedUtils.format(sortedParams, "UTF-8");

@@ -74,13 +74,12 @@
           p:persistentIdGenerator-ref="persistentIdGenerator"
           p:authenticationManager-ref="mfaAuthenticationManager"/>
 
-    <bean id="mfaAuthenticationManager" parent="authenticationManager">
-        <property name="authenticationMetaDataPopulators">
-            <util:list>
-                <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator"/>
-            </util:list>
-        </property>
-    </bean>
+    <bean id="mfaAuthenticationManager" parent="authenticationManager"
+        p:authenticationMetaDataPopulators-ref="listOfMfaAuthenticationMetadataPopulators"/>
+
+    <util:list id="listOfMfaAuthenticationMetadataPopulators">
+        <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator"/>
+    </util:list>
 
     <bean id="principalAttributeMfaRequestResolver"
           class="net.unicon.cas.mfa.authentication.principal.PrincipalAttributeMultiFactorAuthenticationRequestResolver"
@@ -109,7 +108,7 @@
           class="net.unicon.cas.mfa.web.flow.InitiatingMultiFactorAuthenticationViaFormAction"
           c:wrapperAuthenticationAction-ref="authenticationViaFormAction"
           p:warnCookieGenerator-ref="warnCookieGenerator"
-          p:destroyPreviousSingleSignOnSession="true"  />
+          p:destroyPreviousSingleSignOnSession="${mfa.destroy.prev.sso:true}"  />
 
     <bean id="principalMismatchExceptionHandler"
           class="net.unicon.cas.mfa.web.flow.ConfigurableSpringWebflowExceptionHandler"
