@@ -7,10 +7,11 @@ import org.jasig.cas.authentication.principal.CredentialsToPrincipalResolver;
 import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.SimplePrincipal;
 import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ToopherCredentialsToPrincipalResolver implements CredentialsToPrincipalResolver {
 
-    private static Logger logger = Logger.getLogger("com.toopher.integrations.cas");
+    private org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
     private ToopherConfig toopherConfig;
 
     @Override

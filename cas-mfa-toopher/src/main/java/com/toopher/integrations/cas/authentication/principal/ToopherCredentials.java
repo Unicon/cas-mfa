@@ -56,4 +56,9 @@ public class ToopherCredentials implements Credentials {
     public void setUsername(final String username) {
         this.username = username;
     }
+
+    @Override
+    public String toString() {
+        return "[username: " + this.username + "]";
+    }
 }

@@ -12,11 +12,17 @@ public class ToopherCAS {
     private UsernameToEmailMapper usernameToEmailMapper;
     private int iframeTtl = 60;
 
+    public String pairIframeUrl(String username) {
+        final String url =  ToopherIframe.pairIframeUrl(username, getEmailForUsername(username), iframeTtl, toopherConfig.getApiUrl(), toopherConfig.getConsumerKey(), toopherConfig.getConsumerSecret());
+        return url;
+    }
+
     public String authIframeUrl(String username, String loginTicketId) {
-        return ToopherIframe.authIframeUrl(username, getEmailForUsername(username), "Log In",
-                true, true,
+        final String url = ToopherIframe.authIframeUrl(username, getEmailForUsername(username), "Log In",
+                false, false,
                 loginTicketId, "metadata", iframeTtl, toopherConfig.getApiUrl(),
                 toopherConfig.getConsumerKey(), toopherConfig.getConsumerSecret());
+        return url;
     }
 
     private String getEmailForUsername(String username) {

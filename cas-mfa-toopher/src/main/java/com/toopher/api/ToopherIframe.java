@@ -6,7 +6,8 @@ import oauth.signpost.exception.OAuthException;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -22,7 +23,16 @@ import java.util.TreeSet;
 
 public final class ToopherIframe {
     private static final String IFRAME_VERSION = "2";
-    private static Logger logger = Logger.getLogger("com.toopher.api");
+    private static Logger logger = LoggerFactory.getLogger(ToopherIframe.class);
+
+    public static final String pairIframeUrl(String userName, String resetEmail, long ttl, String baseUrl, String key, String secret) {
+        final List<NameValuePair> params = new ArrayList<NameValuePair>(4);
+        params.add(new BasicNameValuePair("v", IFRAME_VERSION));
+        params.add(new BasicNameValuePair("username", userName));
+        params.add(new BasicNameValuePair("reset_email", resetEmail));
+        params.add(new BasicNameValuePair("expires", String.valueOf((new Date().getTime() / 1000) + ttl)));
+        return getOAuthUrl(baseUrl + "web/pair", params, key, secret);
+    }
 
     public static final String authIframeUrl(String userName, String resetEmail, String actionName,
                                              boolean automationAllowed, boolean challengeRequired,

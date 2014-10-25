@@ -18,7 +18,6 @@ import org.jasig.cas.authentication.AuthenticationManager;
 import org.jasig.cas.authentication.handler.AuthenticationException;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;
-import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.web.bind.CredentialsBinder;
@@ -382,11 +381,12 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
 
     @Override
     protected final Event doExecute(final RequestContext ctx) throws Exception {
-        final UsernamePasswordCredentials credentials = (UsernamePasswordCredentials) ctx.getFlowScope().get("credentials");
+        final Credentials credentials = (Credentials) ctx.getFlowScope().get("credentials");
         final MessageContext messageContext = ctx.getMessageContext();
 
-        if (credentials != null && StringUtils.isNotBlank(credentials.getUsername())) {
-            final String id = credentials.getUsername();
+
+        if (credentials != null) {
+            final String id = credentials.toString();
             return submit(ctx, credentials, messageContext, id);
         }
         logger.warn("Credentials could not be determined, or no username was associated with the request.");

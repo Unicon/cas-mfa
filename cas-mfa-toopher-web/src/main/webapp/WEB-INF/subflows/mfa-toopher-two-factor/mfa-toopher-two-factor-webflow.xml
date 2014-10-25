@@ -54,7 +54,7 @@
             <evaluate expression="toopherCAS.authIframeUrl(mfaCredentials.principal.id, flowScope.loginTicket)"
                       result="viewScope.toopherIframeSrc" />
         </on-entry>
-        <transition on="toopher-api-response" bind="true" validate="true" to="realSubmitToopherAuth">
+        <transition on="toopher-api-response" bind="true" validate="true" to="realSubmit">
             <set name="credentials.username" value="mfaCredentials.principal.id"/>
             <evaluate expression="toopher_terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
         </transition>
