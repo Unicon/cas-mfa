@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to Jasig under one or more contributor license
+    agreements. See the NOTICE file distributed with this work
+    for additional information regarding copyright ownership.
+    Jasig licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file
+    except in compliance with the License.  You may obtain a
+    copy of the License at the following location:
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<flow xmlns="http://www.springframework.org/schema/webflow"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+    
+    <var name="credentials" class="org.jasig.cas.authentication.principal.UsernamePasswordCredentials" />    
+    <input name="mfaCredentials" required="true" 
+           type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
+    <input name="mfaService" required="true"
+               type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService" />
+               
+    <on-start>
+        <evaluate expression="initialFlowSetupAction" />
+        <set name="flowScope.service" value="mfaService" 
+                 type="net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService"/>
+    </on-start>
+      
+    <action-state id="generateLoginTicket">
+        <evaluate expression="generateLoginTicketAction.generate(flowRequestContext)" />
+        <transition on="generated" to="viewMfaLoginForm" />
+    </action-state>
+    
+    <view-state id="viewMfaLoginForm" view="casToopherLoginView" model="credentials">
+        <binder>
+            <binding property="username" />
+            <binding property="password" />
+        </binder>
+        <on-entry>
+            <set name="viewScope.commandName" value="'credentials'" />
+
+            <evaluate expression="mfaLoginViewPrincipalGreeter.getPersonToGreet(mfaCredentials.principal, messageContext)"
+                      result="viewScope.greetingPrincipalAttribute" />
+        </on-entry>
+        <transition on="submit" bind="true" validate="true" to="realSubmit">
+            <evaluate expression="toopher_terminatingTwoFactorAuthenticationViaFormAction.doBind(flowRequestContext, flowScope.credentials)" />
+        </transition>
+        <!-- 
+            Handling "cancel" events in the event that the user wishes to return to the original
+            login screen, reset and present the initial set of credentials all over again is handled
+            by the JSP itself, that is responsible to make the redirection happen.
+        -->
+    </view-state>
+    
+
+    <action-state id="realSubmit">
+        <on-entry>
+            <set name="flowScope.mfaCredentials" value="mfaCredentials" 
+                 type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
+        </on-entry>
+        <evaluate expression="toopher_terminatingTwoFactorAuthenticationViaFormAction" />
+        <transition on="mfa-toopher-two-factor" to="mfaSuccess" />
+        <transition on="error" to="generateLoginTicket" />
+        <exception-handler bean="principalMismatchExceptionHandler"/>
+    </action-state>
+      
+    <end-state id="mfaSuccess" />
+    <end-state id="unknownPrincipalError" />
+    <end-state id="mfaUnrecognizedAuthnMethodError" />
+
+    <global-transitions>
+        <transition to="mfaUnrecognizedAuthnMethodError"
+                    on-exception="net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException" />
+    </global-transitions>
+</flow>
+

@@ -513,6 +513,7 @@
         <module>cas-mfa-duo</module>
         <module>cas-mfa-toopher</module>
         <module>cas-mfa-duo-web</module>
+        <module>cas-mfa-toopher-web</module>
         <module>cas-mfa-yubikey-web</module>
         <module>cas-mfa-s2f</module>
         <module>cas-mfa-radius-web</module>
