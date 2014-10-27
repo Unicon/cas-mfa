@@ -23,6 +23,7 @@ import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
 import org.jasig.cas.authentication.Authentication;
+import org.jasig.cas.authentication.handler.AuthenticationException;
 import org.springframework.webflow.execution.RequestContext;
 
 /**
@@ -51,6 +52,9 @@ public final class MultiFactorRequestContextUtils {
      * Attribute name by which the required authentication method can be retrieved/placed in the flow.
      */
     public static final String CAS_MFA_REQ_AUTHN_METHOD = "requiredAuthenticationMethod";
+
+
+    private static final String CAS_EXCEPTION_ATTR_NAME = "authenticationException";
 
     /**
      * Instantiates a new multi factor request context utils.
@@ -189,5 +193,27 @@ public final class MultiFactorRequestContextUtils {
     public static void setMfaTransaction(final RequestContext context,
                                          final MultiFactorAuthenticationTransactionContext mfaTransaction) {
         context.getConversationScope().put(MultiFactorAuthenticationTransactionContext.class.getSimpleName(), mfaTransaction);
+    }
+
+    /**
+     * Sets exception in flow scope.
+     *
+     * @param context the context
+     * @param e the e
+     */
+    public static void setAuthenticationExceptionInFlowScope(final RequestContext context, final AuthenticationException e) {
+        context.getFlowScope().put(CAS_EXCEPTION_ATTR_NAME, e);
+    }
+
+    /**
+     * Gets authentication exception in flow scope.
+     *
+     * @param <T> the generic type to note the exception class
+     * @param context the context
+     * @param clazz the clazz
+     * @return the authentication exception in flow scope
+     */
+    public static <T> T getAuthenticationExceptionInFlowScope(final RequestContext context, final Class<T> clazz) {
+        return (T) context.getFlowScope().get(CAS_EXCEPTION_ATTR_NAME, clazz);
     }
 }

@@ -30,7 +30,8 @@
     <bean id="toopher_terminatingTwoFactorAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
           class="net.unicon.cas.mfa.web.flow.TerminatingMultiFactorAuthenticationViaFormAction"
           p:multiFactorAuthenticationManager-ref="toopher_terminatingAuthenticationManager"
-          p:credentialsBinder-ref="toopherResponseCredentialsBinder"  />
+          p:credentialsBinder-ref="toopherResponseCredentialsBinder"
+          p:errorEventBuilder-ref="toopherErrorEventBuilder"  />
 
     <!--
       This is the authentication manager responsible to validate the second factor credentials.
@@ -57,26 +58,27 @@
     <bean id="toopherResponseCredentialsBinder"
           class="com.toopher.integrations.cas.authentication.principal.ToopherResponseCredentialsBinder" />
 
-    <bean id="toopherConfig" class="com.toopher.integrations.cas.ToopherConfig">
-        <property name="consumerKey" value="${toopher.consumer.key}"/>
-        <property name="consumerSecret" value="${toopher.consumer.secret}"/>
-        <property name="apiUrl" value="${toopher.apiurl}"/>
-    </bean>
+    <bean id="toopherConfig" class="com.toopher.integrations.cas.ToopherConfig"
+            p:consumerKey="${toopher.consumer.key}"
+            p:consumerSecret="${toopher.consumer.secret}"
+            p:apiUrl="${toopher.apiurl}" />
 
     <bean id="simpleUsernameToEmailMapper"
-          class="com.toopher.integrations.cas.authentication.principal.SimpleUsernameToEmailMapper">
+          class="com.toopher.integrations.cas.authentication.principal.SimpleUsernameToEmailMapper"
+          p:defaultEmailDomain="unicon.net"  >
         <property name="userDefinitions">
             <map>
                 <entry key="casuser" value="user.one@example.edu" />
             </map>
         </property>
-        <property name="defaultEmailDomain" value="unicon.net" />
     </bean>
 
-    <bean id="toopherCAS" class="com.toopher.integrations.cas.ToopherCAS">
-        <property name="toopherConfig" ref="toopherConfig"/>
-        <property name="usernameToEmailMapper" ref="simpleUsernameToEmailMapper" />
-    </bean>
+    <bean id="toopherCAS" class="com.toopher.integrations.cas.ToopherCAS"
+        p:toopherConfig-ref="toopherConfig"
+        p:usernameToEmailMapper-ref="simpleUsernameToEmailMapper" />
+
+    <bean id="toopherErrorEventBuilder"
+          class="net.unicon.cas.mfa.web.flow.event.ToopherErroringMultiFactorAuthenticationSpringWebflowEventBuilder" />
 
     <!-- Toopher Views -->
     <bean id="casToopherLoginView" class="org.springframework.web.servlet.view.JstlView"

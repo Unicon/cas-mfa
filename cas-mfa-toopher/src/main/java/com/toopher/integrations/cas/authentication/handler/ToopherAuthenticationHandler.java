@@ -14,15 +14,6 @@ import java.util.Map;
 
 public class ToopherAuthenticationHandler implements AuthenticationHandler {
 
-    public class ToopherAuthenticationException extends AuthenticationException {
-
-        private static final long serialVersionUID = 355117992040392653L;
-
-        public ToopherAuthenticationException(final String code, final String message, final String type) {
-            super(code, message, type);
-        }
-    }
-
     private ToopherConfig toopherConfig;
     private static final String PAIRING_DEACTIVATED = "707";
     private static final String USER_OPT_OUT = "704";
@@ -35,14 +26,14 @@ public class ToopherAuthenticationHandler implements AuthenticationHandler {
     @Override
     public boolean authenticate(final Credentials credentials) throws AuthenticationException {
         final ToopherCredentials toopherCredentials = (ToopherCredentials) credentials;
-        logger.debug("Authenticate: username=" + toopherCredentials.getUsername());
+        logger.debug("Authenticate: username={}", toopherCredentials.getUsername());
 
         checkAndThrowToopherAuthenticationExceptions(toopherCredentials.getRequestParameters());
 
-        final Map<String, String> validatedData = ToopherIframe.validate(toopherConfig.getConsumerSecret(), toopherCredentials.getRequestParameters(), 100);
+        final Map<String, String> validatedData = ToopherIframe.validate(toopherConfig.getConsumerSecret(),
+                toopherCredentials.getRequestParameters(), 100);
         if (validatedData == null) {
-            throw new ToopherAuthenticationException("toopher.authentication.error.invalid_signature",
-                    "Invalid signature returned by Toopher API", "toopherInvalidSignature");
+            throw ToopherAuthenticationException.InvalidSignatureToopherException.getInstance();
         }
         if (validatedData.containsKey("session_token")) {
             final String toopherAuthSessionToken = validatedData.get("session_token");
@@ -88,16 +79,16 @@ public class ToopherAuthenticationHandler implements AuthenticationHandler {
             logger.error("Received error flag from Toopher [{}]:[{}]", errorCode, errorMessage);
 
             if (errorCode.equals(PAIRING_DEACTIVATED)) {
-                throw new ToopherAuthenticationException("toopher.authentication.error.pairing_deactivated", "Pairing has been deactivated", "toopherPairingDeactivated");
+                throw ToopherAuthenticationException.PairingDeactivatedToopherException.getInstance();
             } else if (errorCode.equals(USER_OPT_OUT)) {
-                throw new ToopherAuthenticationException("toopher.authentication.error.user_opt_out", "User has opted-out of Toopher Authentication", "toopherUserOptOut");
+                throw ToopherAuthenticationException.UserOptOutToopherException.getInstance();
             } else if (errorCode.equals(USER_UNKNOWN)) {
-                throw new ToopherAuthenticationException("toopher.authentication.error.user_unknown", "No matching user found in Toopher API", "toopherUserUnknown");
+                throw ToopherAuthenticationException.UnknownUserToopherException.getInstance();
             } else if (errorCode.equals(OTHER_ERROR) && errorMessage.contains(PAIRING_NOT_AUTHORIZED_SIG)) {
-                throw new ToopherAuthenticationException("toopher.authentication.error.pairing_not_authorized", "Pairing has not been authorized on the mobile device", "toopherPairingNotAuthorized");
+                throw ToopherAuthenticationException.PairingNotAuthorizedToopherException.getInstance();
             } else {
                 logger.warn("Unknown error returned by Toopher API: error_code = " + errorCode + ", error_message = \'" + errorMessage + "\'");
-                throw new ToopherAuthenticationException("toopher.authentication.error.unknown", "Unknown error returned by Toopher API", "toopherUnknownError");
+                throw ToopherAuthenticationException.getInstance();
             }
         }
     }

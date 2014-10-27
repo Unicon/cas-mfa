@@ -105,10 +105,10 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      */
     private boolean destroyPreviousSingleSignOnSession = true;
 
-    private final MultiFactorAuthenticationSpringWebflowEventBuilder successfulEventBuilder =
+    private MultiFactorAuthenticationSpringWebflowEventBuilder successfulEventBuilder =
             new ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder();
 
-    private final MultiFactorAuthenticationSpringWebflowEventBuilder errorEventBuilder =
+    private MultiFactorAuthenticationSpringWebflowEventBuilder errorEventBuilder =
             new ErroringMultiFactorAuthenticationSpringWebflowEventBuilder();
 
     /**
@@ -213,6 +213,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
             return result;
         } catch (final AuthenticationException e) {
             populateErrorsInstance(e.getCode(), messageContext);
+            MultiFactorRequestContextUtils.setAuthenticationExceptionInFlowScope(context, e);
             logger.error(e.getMessage(), e);
         }
         return getErrorEvent(context);
@@ -314,6 +315,15 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      */
     public final void setCentralAuthenticationService(final CentralAuthenticationService centralAuthenticationService) {
         this.cas = centralAuthenticationService;
+    }
+
+
+    public void setSuccessfulEventBuilder(final MultiFactorAuthenticationSpringWebflowEventBuilder successfulEventBuilder) {
+        this.successfulEventBuilder = successfulEventBuilder;
+    }
+
+    public void setErrorEventBuilder(final MultiFactorAuthenticationSpringWebflowEventBuilder errorEventBuilder) {
+        this.errorEventBuilder = errorEventBuilder;
     }
 
     /**
