@@ -1,8 +1,7 @@
 package com.toopher.integrations.cas.authentication.principal;
 
-/**
- * Created by drew on 2/27/14.
- */
+import org.jasig.cas.authentication.principal.Principal;
+
 public interface UsernameToEmailMapper {
-    String getEmailForUsername(String username);
+    String getEmailForUsername(Principal principal);
 }

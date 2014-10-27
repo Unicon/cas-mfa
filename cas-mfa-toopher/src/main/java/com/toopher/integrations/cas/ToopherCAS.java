@@ -4,64 +4,74 @@ package com.toopher.integrations.cas;
 import com.toopher.api.ToopherIframe;
 import com.toopher.integrations.cas.authentication.principal.UsernameToEmailMapper;
 import org.apache.log4j.Logger;
+import org.jasig.cas.authentication.principal.Principal;
 
-public class ToopherCAS {
+public final class ToopherCAS {
 
     private Logger logger = Logger.getLogger(ToopherCAS.class);
+
     private ToopherConfig toopherConfig;
+
     private UsernameToEmailMapper usernameToEmailMapper;
+
     private int iframeTtl = 60;
 
-    public String pairIframeUrl(String username) {
-        final String url =  ToopherIframe.pairIframeUrl(username, getEmailForUsername(username), iframeTtl, toopherConfig.getApiUrl(), toopherConfig.getConsumerKey(), toopherConfig.getConsumerSecret());
+    private boolean automationAllowed = false;
+    private boolean challengeRequired = false;
+
+
+    public ToopherCAS(final ToopherConfig toopherConfig, final UsernameToEmailMapper usernameToEmailMapper) {
+        this.toopherConfig = toopherConfig;
+        this.usernameToEmailMapper = usernameToEmailMapper;
+    }
+
+    public String pairIframeUrl(final Principal principal) {
+        final String url =  ToopherIframe.pairIframeUrl(principal.getId(), getEmailForUsername(principal),
+                iframeTtl, toopherConfig.getApiUrl(), toopherConfig.getConsumerKey(), toopherConfig.getConsumerSecret());
         return url;
     }
 
-    public String authIframeUrl(String username, String loginTicketId) {
-        final String url = ToopherIframe.authIframeUrl(username, getEmailForUsername(username), "Log In",
+    public String authIframeUrl(final Principal principal, final String loginTicketId) {
+        final String url = ToopherIframe.authIframeUrl(principal.getId(), getEmailForUsername(principal), "Log In",
                 false, false,
                 loginTicketId, "metadata", iframeTtl, toopherConfig.getApiUrl(),
                 toopherConfig.getConsumerKey(), toopherConfig.getConsumerSecret());
         return url;
     }
 
-    private String getEmailForUsername(String username) {
-        if (usernameToEmailMapper != null) {
-            return usernameToEmailMapper.getEmailForUsername(username);
-        } else {
-            // default - use username for reset email field.  Obviously this will only work
-            // if users login using their email addresses
-            return username;
-        }
+    private String getEmailForUsername(final Principal principal) {
+        return usernameToEmailMapper.getEmailForUsername(principal);
     }
 
-    @java.lang.SuppressWarnings("all")
     public ToopherConfig getToopherConfig() {
         return this.toopherConfig;
     }
 
-    @java.lang.SuppressWarnings("all")
-    public void setToopherConfig(final ToopherConfig toopherConfig) {
-        this.toopherConfig = toopherConfig;
-    }
-
-    @java.lang.SuppressWarnings("all")
     public UsernameToEmailMapper getUsernameToEmailMapper() {
         return this.usernameToEmailMapper;
     }
 
-    @java.lang.SuppressWarnings("all")
-    public void setUsernameToEmailMapper(final UsernameToEmailMapper usernameToEmailMapper) {
-        this.usernameToEmailMapper = usernameToEmailMapper;
-    }
-
-    @java.lang.SuppressWarnings("all")
     public int getIframeTtl() {
         return this.iframeTtl;
     }
 
-    @java.lang.SuppressWarnings("all")
     public void setIframeTtl(final int iframeTtl) {
         this.iframeTtl = iframeTtl;
+    }
+
+    public boolean isAutomationAllowed() {
+        return automationAllowed;
+    }
+
+    public void setAutomationAllowed(final boolean automationAllowed) {
+        this.automationAllowed = automationAllowed;
+    }
+
+    public boolean isChallengeRequired() {
+        return challengeRequired;
+    }
+
+    public void setChallengeRequired(final boolean challengeRequired) {
+        this.challengeRequired = challengeRequired;
     }
 }

@@ -2,18 +2,7 @@
 package com.toopher.integrations.cas;
 
 /**
- * Bean to store ToopherAPI configuration data
- * <p>
- * example configuration, taking configuration values from environment variables:
- * </p>
- * <pre>
- * {@code <bean id="toopherConfig" class="com.toopher.integrations.cas.ToopherConfig">
- * <property name="consumerKey" value="${TOOPHER_CONSUMER_KEY}"/>
- * <property name="consumerSecret" value="${TOOPHER_CONSUMER_SECRET}"/>
- * <property name="apiUrl" value="${TOOPHER_BASE_URL}"/>
- * </bean>
- * }
- * </pre>
+ * Bean to store ToopherAPI configuration data.
  *
  * @author Drew Shafer <drew@toopher.com>
  * @version 1.0
@@ -21,37 +10,26 @@ package com.toopher.integrations.cas;
  */
 public class ToopherConfig {
 
-    private String consumerKey;
-    private String consumerSecret;
-    private String apiUrl;
+    private final String consumerKey;
+    private final String consumerSecret;
+    private final String apiUrl;
 
-    @java.lang.SuppressWarnings("all")
+    public ToopherConfig(final String consumerKey, final String consumerSecret, final String apiUrl) {
+        this.consumerKey = consumerKey;
+        this.consumerSecret = consumerSecret;
+        this.apiUrl = apiUrl;
+    }
+
     public String getConsumerKey() {
         return this.consumerKey;
     }
 
-    @java.lang.SuppressWarnings("all")
-    public void setConsumerKey(final String consumerKey) {
-        this.consumerKey = consumerKey;
-    }
-
-    @java.lang.SuppressWarnings("all")
     public String getConsumerSecret() {
         return this.consumerSecret;
     }
 
-    @java.lang.SuppressWarnings("all")
-    public void setConsumerSecret(final String consumerSecret) {
-        this.consumerSecret = consumerSecret;
-    }
-
-    @java.lang.SuppressWarnings("all")
     public String getApiUrl() {
         return this.apiUrl;
     }
 
-    @java.lang.SuppressWarnings("all")
-    public void setApiUrl(final String apiUrl) {
-        this.apiUrl = apiUrl;
-    }
 }

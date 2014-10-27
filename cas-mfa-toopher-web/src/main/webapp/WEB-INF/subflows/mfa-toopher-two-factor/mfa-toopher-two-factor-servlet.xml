@@ -22,6 +22,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
@@ -59,23 +60,21 @@
           class="com.toopher.integrations.cas.authentication.principal.ToopherResponseCredentialsBinder" />
 
     <bean id="toopherConfig" class="com.toopher.integrations.cas.ToopherConfig"
-            p:consumerKey="${toopher.consumer.key}"
-            p:consumerSecret="${toopher.consumer.secret}"
-            p:apiUrl="${toopher.apiurl}" />
+            c:consumerKey="${toopher.consumer.key}"
+            c:consumerSecret="${toopher.consumer.secret}"
+            c:apiUrl="${toopher.apiurl}" />
 
     <bean id="simpleUsernameToEmailMapper"
           class="com.toopher.integrations.cas.authentication.principal.SimpleUsernameToEmailMapper"
-          p:defaultEmailDomain="unicon.net"  >
-        <property name="userDefinitions">
-            <map>
-                <entry key="casuser" value="user.one@example.edu" />
-            </map>
-        </property>
-    </bean>
+          c:emailAttributeName="${toopher.mfa.user.email.attribute:mail}"
+          c:defaultEmailDomain="${toopher.mfa.email.default.domain:@unicon.net}" />
 
     <bean id="toopherCAS" class="com.toopher.integrations.cas.ToopherCAS"
-        p:toopherConfig-ref="toopherConfig"
-        p:usernameToEmailMapper-ref="simpleUsernameToEmailMapper" />
+        c:toopherConfig-ref="toopherConfig"
+        c:usernameToEmailMapper-ref="simpleUsernameToEmailMapper"
+        p:iframeTtl="${toopher.mfa.request.ttl:60}"
+        p:automationAllowed="${toopher.mfa.automation.allowed:false}"
+        p:challengeRequired="${toopher.mfa.challenge.required:false}" />
 
     <bean id="toopherErrorEventBuilder"
           class="net.unicon.cas.mfa.web.flow.event.ToopherErroringMultiFactorAuthenticationSpringWebflowEventBuilder" />

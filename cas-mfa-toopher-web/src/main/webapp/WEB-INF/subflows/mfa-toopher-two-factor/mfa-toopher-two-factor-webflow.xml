@@ -51,7 +51,7 @@
             <evaluate expression="mfaLoginViewPrincipalGreeter.getPersonToGreet(mfaCredentials.principal, messageContext)"
                       result="viewScope.greetingPrincipalAttribute" />
 
-            <evaluate expression="toopherCAS.authIframeUrl(mfaCredentials.principal.id, flowScope.loginTicket)"
+            <evaluate expression="toopherCAS.authIframeUrl(mfaCredentials.principal, flowScope.loginTicket)"
                       result="viewScope.toopherIframeSrc" />
         </on-entry>
         <transition on="toopher-api-response" bind="true" validate="true" to="realSubmit">
@@ -84,7 +84,7 @@
             <binding property="toopher_sig" />
         </binder>
         <on-entry>
-            <evaluate expression="toopherCAS.pairIframeUrl(mfaCredentials.principal.id)"
+            <evaluate expression="toopherCAS.pairIframeUrl(mfaCredentials.principal)"
                       result="viewScope.toopherIframeSrc" />
         </on-entry>
         <transition on="toopher-api-response" bind="true" validate="true" to="generateLoginTicket" />
