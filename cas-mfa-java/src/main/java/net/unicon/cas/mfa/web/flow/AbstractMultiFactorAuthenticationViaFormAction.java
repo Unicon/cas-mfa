@@ -352,9 +352,11 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @return error event id
      */
     protected final Event getErrorEvent(final RequestContext context) {
+        final Event event = this.errorEventBuilder.buildEvent(context);
         final FlowDefinition flow = context.getActiveFlow();
-        logger.debug("Returning an error event in the active flow id {}", flow != null ? flow.getId() : "[none]");
-        return this.errorEventBuilder.buildEvent(context);
+        final String flowId = flow != null ? flow.getId() : "[none]";
+        logger.debug("Returning an error event [{}] in the active flow id [{}]", event.getId(), flowId);
+        return event;
     }
 
     /**
