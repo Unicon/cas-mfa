@@ -38,12 +38,12 @@
                         -->
 
                         <!-- Include to add support for strong-two-factor -->
-                        <!--
+
                         <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-s2f</artifactId>
                         </overlay>
-                        -->
+
 
                         <!-- Include to add support for Duo -->
                         <!--
@@ -61,7 +61,14 @@
                         </overlay>
                         -->
 
-                        <overlay>
+                       <!-- Include to add support for Toopher -->
+                       <!--
+                       <overlay>
+                            <groupId>net.unicon</groupId>
+                            <artifactId>cas-mfa-toopher-web</artifactId>
+                       </overlay>
+                       -->
+                       <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-web</artifactId>
                             <excludes>
@@ -72,14 +79,10 @@
                         <overlay>
                             <groupId>org.jasig.cas</groupId>
                             <artifactId>cas-server-webapp</artifactId>
-                            <includes>
-                                <include>WEB-INF/classes/messages_en.properties</include>
-                            </includes>
                             <excludes>
                                 <exclude>WEB-INF/cas.properties</exclude>
                                 <exclude>WEB-INF/login-webflow.xml</exclude>
                                 <exclude>WEB-INF/classes/log4j.xml</exclude>
-                                <exclude>WEB-INF/classes/messages_*.properties</exclude>
                                 <exclude>WEB-INF/restlet-servlet.xml</exclude>
                                 <exclude>**/commons-beanutils-1.7.0.jar</exclude>
                                 <exclude>**/commons-codec-1.4.jar</exclude>
@@ -143,14 +146,14 @@
         </dependency>
 
         <!-- Include to add support for strong-two-factor -->
-        <!--
+
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-s2f</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
-        -->
+
 
         <!-- Include to add support for Duo Security -->
         <!--
@@ -177,6 +180,16 @@
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-radius-web</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        -->
+
+        <!-- Include to add support for Toopher -->
+        <!--
+        <dependency>
+            <groupId>net.unicon</groupId>
+            <artifactId>cas-mfa-toopher-web</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
