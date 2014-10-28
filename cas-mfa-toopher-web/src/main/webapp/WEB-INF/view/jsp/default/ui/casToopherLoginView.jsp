@@ -21,7 +21,6 @@
 
 <link type="text/css" rel="stylesheet" href="<c:url value='/css/toopher-cas.css'/>" />
 <script src="<c:url value='/js/jquery-1.11.0.min.js'/>" ></script>
-<script src="<c:url value='/js/jquery.cookie.min.js'/>" ></script>
 <script src="<c:url value='/js/toopher-web.js'/>" ></script>
 
 
