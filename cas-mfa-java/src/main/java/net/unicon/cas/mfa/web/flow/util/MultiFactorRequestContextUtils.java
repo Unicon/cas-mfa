@@ -21,9 +21,13 @@ package net.unicon.cas.mfa.web.flow.util;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.handler.AuthenticationException;
+import org.jasig.cas.authentication.principal.Principal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.webflow.core.collection.MutableAttributeMap;
+import org.springframework.webflow.execution.FlowSession;
 import org.springframework.webflow.execution.RequestContext;
 
 /**
@@ -32,6 +36,8 @@ import org.springframework.webflow.execution.RequestContext;
  * @author Misagh Moayyed
  */
 public final class MultiFactorRequestContextUtils {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultiFactorRequestContextUtils.class);
 
     /**
      * Attribute name by which the authentication context can be retrieved/placed in the flow.
@@ -114,6 +120,29 @@ public final class MultiFactorRequestContextUtils {
     public static void setAuthentication(final RequestContext context, final Authentication auth) {
         context.getFlowScope().put(CAS_AUTHENTICATION_ATTR_NAME, auth);
     }
+
+    /**
+     * Gets the principal id.
+     *
+     * @param context the context
+     * @return the principal id
+     */
+    public static Principal getMultiFactorPrimaryPrincipal(final RequestContext context) {
+        if (context != null) {
+            final FlowSession flowSession = context.getFlowExecutionContext().getActiveSession();
+            final MutableAttributeMap map = flowSession.getScope();
+            final MultiFactorCredentials creds = (MultiFactorCredentials) map.get(CAS_MFA_CREDENTIALS_ATTR_NAME);
+
+            if (creds == null || creds.getPrincipal() == null) {
+                throw new IllegalArgumentException("Cannot locate credential object in the flow session map. Credentials missing...");
+            }
+            final Principal principalId = creds.getPrincipal();
+            LOGGER.debug("Determined principal name to use [{}] for authentication", principalId.getId());
+            return principalId;
+        }
+        throw new IllegalArgumentException("Request context could not be retrieved from the webflow.");
+    }
+
 
     /**
      * Sets the ticket granting ticket id.

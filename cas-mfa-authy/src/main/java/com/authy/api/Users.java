@@ -142,6 +142,7 @@ public class Users extends Resource {
 			error = (Error)unmarshaller.unmarshal(new StreamSource(xml));
 		}
 		catch(JAXBException e) {
+            e.printStackTrace();
 			return null;
 		}
 		return error;

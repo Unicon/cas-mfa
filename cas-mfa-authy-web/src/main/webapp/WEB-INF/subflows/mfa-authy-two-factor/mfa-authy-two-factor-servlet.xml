@@ -45,13 +45,11 @@
 
     <!-- Custom set of authentication handlers for the second factor authentication. -->
     <util:list id="authy_listOfTwoFactorStrongAuthenticationHandlers">
-        <bean class="org.jasig.cas.adaptors.generic.AcceptUsersAuthenticationHandler"
-              p:users-ref="casUsers" />
+        <bean class="net.unicon.cas.mfa.authentication.handler.AuthyAuthenticationHandler"
+              c:apiKey="${authy.apiKey.id}"
+              c:apiUrl="${authy.apiurl}"  />
     </util:list>
 
-    <util:map id="casUsers">
-        <entry key="casuser" value="Mellon" />
-    </util:map>
 
     <bean id="casMfaLoginView" class="org.springframework.web.servlet.view.JstlView"
           p:url="/WEB-INF/view/jsp/default/ui/casMfaLoginView.jsp" />

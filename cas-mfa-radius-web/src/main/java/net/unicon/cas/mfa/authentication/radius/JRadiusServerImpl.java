@@ -16,14 +16,13 @@ import net.jradius.packet.AccessRequest;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
-import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
+import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.adaptors.radius.RadiusServer;
+import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.webflow.core.collection.MutableAttributeMap;
-import org.springframework.webflow.execution.FlowSession;
 import org.springframework.webflow.execution.RequestContext;
 import org.springframework.webflow.execution.RequestContextHolder;
 
@@ -216,6 +215,7 @@ public final class JRadiusServerImpl implements RadiusServer {
      * @return the username password credentials
      */
     protected UsernamePasswordCredentials prepareRadiusOneTimeCredentials(final UsernamePasswordCredentials usernamePasswordCredentials) {
+        final RequestContext context = RequestContextHolder.getRequestContext();
 
         String pin = usernamePasswordCredentials.getUsername();
         if (this.caseSensitive) {
@@ -229,7 +229,14 @@ public final class JRadiusServerImpl implements RadiusServer {
         final UsernamePasswordCredentials newCreds = new UsernamePasswordCredentials();
 
         LOGGER.debug("Attempting to locate user id for radius authentication...");
-        newCreds.setUsername(getMultiFactorPrimaryPrincipalNameFromContext());
+        final Principal principalId = MultiFactorRequestContextUtils.getMultiFactorPrimaryPrincipal(context);
+
+        if (this.caseSensitive) {
+            newCreds.setUsername(principalId.getId().toLowerCase());
+            LOGGER.debug("Treating user id as case sensitive. Converted to [{}]", principalId);
+        } else {
+            newCreds.setUsername(principalId.getId());
+        }
         newCreds.setPassword(otp);
 
         LOGGER.trace("Using [{}]:[{}] as credentials for radius authentication...",
@@ -243,38 +250,7 @@ public final class JRadiusServerImpl implements RadiusServer {
                 this.authenticationPort, this.accountingPort, this.socketTimeout);
     }
 
-    /**
-     * Gets the principal id.
-     *
-     * @return the principal id
-     */
-    protected String getMultiFactorPrimaryPrincipalNameFromContext() {
-        final RequestContext context = RequestContextHolder.getRequestContext();
-        if (context != null) {
 
-            final FlowSession flowSession = context.getFlowExecutionContext().getActiveSession();
-            final MutableAttributeMap map = flowSession.getScope();
-            final MultiFactorCredentials creds = (MultiFactorCredentials) map.get("mfaCredentials");
-
-            if (creds == null || creds.getPrincipal() == null) {
-                throw new IllegalArgumentException("Cannot locate credential object in the flow session map. Credentials missing...");
-            }
-            String principalId = creds.getPrincipal().getId();
-
-            if (principalId == null) {
-                throw new IllegalArgumentException("Cannot determine principal name out of the webflow context. Credentials missing...");
-            }
-
-            if (this.caseSensitive) {
-                principalId = principalId.toLowerCase();
-                LOGGER.debug("Treating user id as case sensitive. Converted to [{}]", principalId);
-            }
-
-            LOGGER.debug("Determined principal name to use [{}] for authentication", principalId);
-            return principalId;
-        }
-        throw new IllegalArgumentException("Request context could not be retrieved from the webflow.");
-    }
 
     public void setEnableNas(final boolean enableNas) {
         this.enableNas = enableNas;

@@ -357,6 +357,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
         final String flowId = flow != null ? flow.getId() : "[none]";
         logger.debug("Returning an error event [{}] in the active flow id [{}]", event.getId(), flowId);
         return event;
+
     }
 
     /**

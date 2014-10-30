@@ -69,7 +69,7 @@
                  type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
         </on-entry>
         <evaluate expression="authy_terminatingTwoFactorAuthenticationViaFormAction" />
-        <transition on="mfa-strong-two-factor" to="mfaSuccess" />
+        <transition on="mfa-authy-two-factor" to="mfaSuccess" />
         <transition on="error" to="generateLoginTicket" />
         <exception-handler bean="principalMismatchExceptionHandler"/>
     </action-state>
