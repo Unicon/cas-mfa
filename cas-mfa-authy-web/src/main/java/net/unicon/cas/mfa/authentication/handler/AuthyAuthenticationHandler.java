@@ -17,6 +17,7 @@ import org.springframework.webflow.execution.RequestContext;
 import org.springframework.webflow.execution.RequestContextHolder;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -26,9 +27,11 @@ import java.util.Map;
 /**
  * @author Misagh Moayyed
  */
-public final class AuthyAuthenticationHandler extends AbstractUsernamePasswordAuthenticationHandler {
+public final class AuthyAuthenticationHandler extends AbstractUsernamePasswordAuthenticationHandler
+        implements Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthyAuthenticationHandler.class);
+    private static final long serialVersionUID = 4372937413518364597L;
 
     private final AuthyApiClient authyClient;
     private final Users authyUsers;
@@ -67,18 +70,18 @@ public final class AuthyAuthenticationHandler extends AbstractUsernamePasswordAu
             final String email = (String) principal.getAttributes().get(this.mailAttribute);
             if (StringUtils.isBlank(email)) {
                 throw new AuthyAuthenticationException("authy.registration.email.error", "No email address found for "
-                        + principal.getId() , "emailError");
+                        + principal.getId(), "emailError");
             }
             final String phone = (String) principal.getAttributes().get(this.phoneAttribute);
             if (StringUtils.isBlank(phone)) {
                 throw new AuthyAuthenticationException("authy.registration.phone.error", "No phone number found for "
-                        + principal.getId() , "phoneError");
+                        + principal.getId(), "phoneError");
             }
 
-            final User user = authyUsers.createUser(phone, email);
+            final User user = authyUsers.createUser(email, phone);
             if (!user.isOk()) {
-                 throw new AuthyAuthenticationException("authy.registration.error",
-                         getAuthyErrorMessage(user.getError()), "error");
+                throw new AuthyAuthenticationException("authy.registration.error",
+                        getAuthyErrorMessage(user.getError()), "error");
             }
             final long authyId = user.getId();
             this.authyUserAccountStore.add(authyId, principal);
@@ -89,13 +92,17 @@ public final class AuthyAuthenticationHandler extends AbstractUsernamePasswordAu
         final Map<String, String> options = new HashMap<String, String>();
         options.put("force", this.forceVerification.toString());
 
+
         final Token verification = this.authyTokens.verify(authyId.intValue(),
                 usernamePasswordCredentials.getUsername(), options);
 
         if (!verification.isOk()) {
+
+
             throw new AuthyAuthenticationException("authy.verification.error",
                     getAuthyErrorMessage(verification.getError()), "error");
         }
+
         return true;
     }
 
@@ -145,7 +152,7 @@ public final class AuthyAuthenticationHandler extends AbstractUsernamePasswordAu
          * Instantiates a new Authy authentication exception.
          *
          * @param code the code
-         * @param msg the msg
+         * @param msg  the msg
          * @param type the type
          */
         public AuthyAuthenticationException(final String code, final String msg, final String type) {

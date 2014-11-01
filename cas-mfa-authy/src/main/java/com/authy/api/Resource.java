@@ -1,20 +1,22 @@
 package com.authy.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLHandshakeException;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import java.net.HttpURLConnection;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLHandshakeException;
 
 /**
  * Class to send http requests.
@@ -22,6 +24,8 @@ import javax.net.ssl.SSLHandshakeException;
  *
  */
 public class Resource {
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private String apiUri, apiKey;
 	private int status;
 	private boolean testFlag = false;
@@ -118,7 +122,7 @@ public class Resource {
 			System.err.println("SSL verification is failing. This might be because of an attack. Contact support@authy.com");
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
 		return answer;
 	}
@@ -130,7 +134,11 @@ public class Resource {
 	public int getStatus() {
 		return status;
 	}
-	
+
+    public void setStatus(int s) {
+        this.status = s;
+    }
+
 	protected HttpURLConnection createConnection(URL url, String method, 
 			Map<String, String> options) throws Exception {
 

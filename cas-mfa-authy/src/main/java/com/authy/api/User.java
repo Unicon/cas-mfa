@@ -56,7 +56,7 @@ public class User extends Instance implements Response {
 			xml = sw.toString();
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return xml;
 	}

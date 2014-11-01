@@ -1,11 +1,13 @@
 package com.authy.api;
 
-import java.io.StringReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
 
 /**
  * Generic class to instance a response from the API
@@ -14,7 +16,10 @@ import javax.xml.transform.stream.StreamSource;
  */
 
 public class Instance {
-	int status;
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+	Integer status;
 	String content;
 	Error error;
 	
@@ -52,12 +57,17 @@ public class Instance {
 				error = (Error)unmarshaller.unmarshal(new StreamSource(xml));
 		}
 		catch(JAXBException e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
 		
 		return error;
 	}
-	
+
+    public void setStatus(int s) {
+        if (this.status == null)
+            this.status = s;
+    }
+
 	/**
 	 * Set an Error object.
 	 * @param error

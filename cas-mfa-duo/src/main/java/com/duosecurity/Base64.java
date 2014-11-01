@@ -1,9 +1,16 @@
 package com.duosecurity;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+
 /**
  * Duo security integration code copied from: https://github.com/duosecurity/duo_java
  */
 public class Base64 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Base64.class);
 
   /*  ******** P U B L I C F I E L D S ******** */
 
@@ -1256,8 +1263,8 @@ public class Base64 {
           bytes = baos.toByteArray();
 
         } // end try
-        catch (java.io.IOException e) {
-          e.printStackTrace();
+        catch (IOException e) {
+          LOGGER.error(e.getMessage(), e);
           // Just return originally-decoded bytes
         } // end catch
         finally {

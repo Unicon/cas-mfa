@@ -1,11 +1,15 @@
 package com.authy.api;
 
-import java.io.StringWriter;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * 
@@ -14,6 +18,8 @@ import javax.xml.bind.annotation.*;
  */
 @XmlRootElement(name="hash")
 public class Hash extends Instance implements Response {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private User user = null;
 	private String message, token;
@@ -59,7 +65,12 @@ public class Hash extends Instance implements Response {
 		this.success = success;
 	}
 
-	/**
+    @Override
+    public boolean isOk() {
+        return isSuccess();
+    }
+
+    /**
 	 * Map a Token instance to its XML representation.
 	 * @return a String with the description of this object in XML.
 	 */
@@ -81,7 +92,7 @@ public class Hash extends Instance implements Response {
 			xml = sw.toString();
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
 		return xml;
 	}
@@ -91,6 +102,6 @@ public class Hash extends Instance implements Response {
 	 * @return a Java's Map with the description of this object.
 	 */
 	public Map<String, String> toMap() {
-		return null;
+		return Collections.EMPTY_MAP;
 	}
 }

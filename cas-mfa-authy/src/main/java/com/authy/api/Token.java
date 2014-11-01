@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="token")
 public class Token extends Instance implements Response {
+
 	boolean valid;
 
 	public Token() {
@@ -55,7 +56,7 @@ public class Token extends Instance implements Response {
 			xml = sw.toString();
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
 		return xml;
 	}

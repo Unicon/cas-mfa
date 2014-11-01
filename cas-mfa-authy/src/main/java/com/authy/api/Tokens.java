@@ -1,14 +1,13 @@
 package com.authy.api;
 
-import java.io.StringReader;
-import java.net.URLEncoder;
-import java.util.Map;
-import java.util.HashMap;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
@@ -42,7 +41,7 @@ public class Tokens extends Resource {
 			path.append(URLEncoder.encode(Integer.toString(userId), ENCODE));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		
 		String content = this.get(path.toString(), internalToken);
@@ -57,6 +56,7 @@ public class Tokens extends Resource {
 			
 			if(error != null) {
 				token.setError(error);
+                token.setStatus(status);
 				return token;
 			}
 			
@@ -70,7 +70,7 @@ public class Tokens extends Resource {
 			token.setValid(token.isOk() && hash.getToken().equals(VALID_TOKEN_MESSAGE));
 		}
 		catch(JAXBException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return token;
 	}

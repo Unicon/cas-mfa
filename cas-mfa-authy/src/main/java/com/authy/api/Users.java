@@ -1,10 +1,7 @@
 package com.authy.api;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -13,6 +10,11 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * 
@@ -64,7 +66,7 @@ public class Users extends Resource {
 	 * @return Hash instance with API's response.
 	 */
 	public Hash requestSms(int userId) {
-		return requestSms(userId, null);
+		return requestSms(userId, Collections.EMPTY_MAP);
 	}
 	
 	/**
@@ -80,7 +82,7 @@ public class Users extends Resource {
 			url = URLEncoder.encode(Integer.toString(userId), ENCODE);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		
 		MapToResponse opt = new MapToResponse(options);
@@ -101,7 +103,7 @@ public class Users extends Resource {
 			url = URLEncoder.encode(Integer.toString(userId), ENCODE);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
 		
 		String content = this.post(DELETE_USER_PATH + url, null);
@@ -121,12 +123,15 @@ public class Users extends Resource {
 				
 				StringReader xml = new StringReader(content);
 				Hash hash = (Hash)unmarshaller.unmarshal(new StreamSource(xml));
+                hash.setStatus(status);
 				user = hash.getUser();
+
 			}
 			user.setError(error);
+            user.setStatus(status);
 		}
 		catch(JAXBException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return user;
 	}
@@ -142,7 +147,7 @@ public class Users extends Resource {
 			error = (Error)unmarshaller.unmarshal(new StreamSource(xml));
 		}
 		catch(JAXBException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
 			return null;
 		}
 		return error;
@@ -160,9 +165,10 @@ public class Users extends Resource {
 				hash = (Hash)unmarshaller.unmarshal(new StreamSource(xml));
 			}
 			hash.setError(error);
+            hash.setStatus(status);
 		}
 		catch(JAXBException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return hash;
 	}
@@ -185,6 +191,8 @@ public class Users extends Resource {
 	
 	@XmlRootElement(name="user")
 	static class User implements Response {
+        protected final Logger logger = LoggerFactory.getLogger(getClass());
+
 		String email, cellphone, countryCode;
 
 		public User() {
@@ -236,13 +244,13 @@ public class Users extends Resource {
 				xml = sw.toString();
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
 			}
 			return xml;
 		}
 
 		public Map<String, String> toMap() {
-			return null;
+			return Collections.EMPTY_MAP;
 		}
 	}
 }

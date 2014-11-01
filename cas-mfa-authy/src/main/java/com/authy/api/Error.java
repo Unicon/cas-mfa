@@ -1,12 +1,15 @@
 package com.authy.api;
 
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
@@ -15,6 +18,8 @@ import javax.xml.bind.annotation.*;
  */
 @XmlRootElement(name="errors")
 public class Error implements Response {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private String message, url, countryCode;
 
 	@XmlElement(name="country-code")
@@ -60,7 +65,7 @@ public class Error implements Response {
 			xml = sw.toString();
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return xml;
 	}
