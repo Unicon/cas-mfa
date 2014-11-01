@@ -16,6 +16,7 @@ The intention is to develop a solution that can be adopted by current CAS adopte
 * `duo-two-factor` (via DuoSecurity)
 * `yubikey-two-factor` (via YubiKey)
 * `toopher-two-factor` (via Toopher)
+* `authy-two-factor` (via Authy)
 * `radius-two-factor` (via RADIUS OTP)
 * `strong-two-factor` (Custom)
 
