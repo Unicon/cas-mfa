@@ -29,25 +29,26 @@
                     <packagingExcludes>WEB-INF/lib/stax-api-1.0-2.jar</packagingExcludes>
                     <overlays>
 
+                        <!-- Include to add support for strong-two-factor -->
+
+                        <overlay>
+                            <groupId>net.unicon</groupId>
+                            <artifactId>cas-mfa-s2f</artifactId>
+                        </overlay>
+
                         <!-- Include to add support for Authy -->
+                        <!--
                         <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-authy-web</artifactId>
                         </overlay>
+                        -->
 
                         <!-- Include to add support for radius-two-factor -->
                         <!--
                         <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-radius-web</artifactId>
-                        </overlay>
-                        -->
-
-                        <!-- Include to add support for strong-two-factor -->
-                        <!--
-                        <overlay>
-                            <groupId>net.unicon</groupId>
-                            <artifactId>cas-mfa-s2f</artifactId>
                         </overlay>
                         -->
 
@@ -152,14 +153,14 @@
         </dependency>
 
         <!-- Include to add support for strong-two-factor -->
-        <!--
+
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-s2f</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
-        -->
+
 
         <!-- Include to add support for Duo Security -->
         <!--
@@ -202,13 +203,13 @@
         -->
 
         <!-- Include to add support for Authy -->
-
+        <!--
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-authy-web</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
-
+        -->
     </dependencies>
 </project>

@@ -4,6 +4,7 @@ import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebAppl
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.Assert;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.Set;
  * @author Dmitriy Kopylenko
  * @author Unicon, inc.
  */
-public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationMethodRankingStrategy {
+public class OrderedMultiFactorMethodRankingStrategy implements RequestedAuthenticationMethodRankingStrategy {
 
     /**
      * The authn method loader.
@@ -27,13 +28,13 @@ public class OrderedMfaMethodRankingStrategy implements RequestedAuthenticationM
      *
      * @param authenticationMethodConfiguration the authentication method loader
      */
-    public OrderedMfaMethodRankingStrategy(final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
+    public OrderedMultiFactorMethodRankingStrategy(final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
         this.authenticationMethodConfiguration = authenticationMethodConfiguration;
     }
 
     @Override
     public MultiFactorAuthenticationSupportingWebApplicationService
-    computeHighestRankingAuthenticationMethod(final MultiFactorAuthenticationTransactionContext mfaTransaction) {
+    computeHighestRankingAuthenticationMethod(@NotNull final MultiFactorAuthenticationTransactionContext mfaTransaction) {
         final List<MultiFactorAuthenticationRequestContext> sortedRequests =
                 new ArrayList<MultiFactorAuthenticationRequestContext>(mfaTransaction.getMfaRequests());
 

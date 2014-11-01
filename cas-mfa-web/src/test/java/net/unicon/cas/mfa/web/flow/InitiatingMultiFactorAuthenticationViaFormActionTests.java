@@ -5,7 +5,7 @@ import net.unicon.cas.mfa.authentication.AuthenticationMethod;
 import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
-import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
+import net.unicon.cas.mfa.authentication.OrderedMultiFactorMethodRankingStrategy;
 import net.unicon.cas.mfa.web.flow.event.ErroringMultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.flow.event.MultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
@@ -132,7 +132,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         final JsonBackedAuthenticationMethodConfigurationProvider loader = new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         this.action = new InitiatingMultiFactorAuthenticationViaFormAction(multiFactorAuthenticationRequestResolver,
-                authenticationSupport, verifier, authViaFormAction, new OrderedMfaMethodRankingStrategy(loader),
+                authenticationSupport, verifier, authViaFormAction, new OrderedMultiFactorMethodRankingStrategy(loader),
                 "https://sso.school.edu");
 
         this.action.setCentralAuthenticationService(this.cas);

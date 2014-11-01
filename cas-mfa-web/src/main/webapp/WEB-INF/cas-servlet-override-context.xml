@@ -87,7 +87,7 @@
           c:mfaServiceFactory-ref="mfaServiceFactory"
           c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
 
-    <bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy"
+    <bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.OrderedMultiFactorMethodRankingStrategy"
           c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
 
     <bean id="abstractAuthenticationViaFormAction" abstract="true"

@@ -5,7 +5,7 @@ import net.unicon.cas.mfa.authentication.AuthenticationMethod;
 import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
-import net.unicon.cas.mfa.authentication.OrderedMfaMethodRankingStrategy;
+import net.unicon.cas.mfa.authentication.OrderedMultiFactorMethodRankingStrategy;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import org.jasig.cas.authentication.Authentication;
@@ -113,7 +113,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
 
         final JsonBackedAuthenticationMethodConfigurationProvider loader = new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
-        this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support, new OrderedMfaMethodRankingStrategy(loader));
+        this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support, new OrderedMultiFactorMethodRankingStrategy(loader));
 
         mockFlowScope = mock(MutableAttributeMap.class);
         when(requestContext.getFlowScope()).thenReturn(mockFlowScope);
