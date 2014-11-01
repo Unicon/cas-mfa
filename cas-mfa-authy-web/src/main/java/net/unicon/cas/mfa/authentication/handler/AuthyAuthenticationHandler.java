@@ -1,7 +1,10 @@
 package net.unicon.cas.mfa.authentication.handler;
 
 import com.authy.AuthyApiClient;
-import com.authy.api.*;
+import com.authy.api.Token;
+import com.authy.api.Tokens;
+import com.authy.api.User;
+import com.authy.api.Users;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.handler.AuthenticationException;
