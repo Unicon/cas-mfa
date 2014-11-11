@@ -441,7 +441,11 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
                 logger.info("There is an existing mfa request for service [{}] with a requested authentication method of [{}]",
                         mfaRequest.getMfaService().getId(), mfaRequest.getMfaService().getAuthenticationMethod());
             }
-
+            logger.debug("Resolved {} multifactor authentication requests", mfaRequests.size());
+            if (mfaRequests.size() == 0) {
+                logger.debug("No multifactor authentication requests could be resolved.");
+                return null;
+            }
         }
         return mfaRequests;
     }

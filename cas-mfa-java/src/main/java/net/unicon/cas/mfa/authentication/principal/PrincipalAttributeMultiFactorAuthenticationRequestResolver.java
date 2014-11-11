@@ -13,6 +13,7 @@ import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,8 +91,8 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     }
 
     @Override
-    public List<MultiFactorAuthenticationRequestContext> resolve(final Authentication authentication,
-                                                                 final WebApplicationService targetService) {
+    public List<MultiFactorAuthenticationRequestContext> resolve(@NotNull final Authentication authentication,
+                                                                 @NotNull final WebApplicationService targetService) {
         final List<MultiFactorAuthenticationRequestContext> list = new ArrayList<MultiFactorAuthenticationRequestContext>();
         if ((authentication != null) && (targetService != null)) {
             final Object mfaMethodAsObject = authentication.getPrincipal().getAttributes().get(this.authenticationMethodAttributeName);
@@ -112,6 +113,11 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
                     }
                 }
             }
+        }
+
+        if (list.size() == 0) {
+            logger.debug("No multifactor authentication requests could be resolved based on [{}]"
+                    , this.authenticationMethodAttributeName);
         }
         return list;
     }
