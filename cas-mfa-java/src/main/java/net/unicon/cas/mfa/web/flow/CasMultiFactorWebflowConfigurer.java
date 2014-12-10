@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.webflow.action.EvaluateAction;
 import org.springframework.webflow.action.ViewFactoryActionAdapter;
+import org.springframework.webflow.definition.StateDefinition;
 import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
 import org.springframework.webflow.engine.ActionState;
 import org.springframework.webflow.engine.DecisionState;
@@ -33,6 +34,7 @@ import org.springframework.webflow.engine.SubflowAttributeMapper;
 import org.springframework.webflow.engine.SubflowState;
 import org.springframework.webflow.engine.TargetStateResolver;
 import org.springframework.webflow.engine.Transition;
+import org.springframework.webflow.engine.TransitionableState;
 import org.springframework.webflow.engine.builder.support.FlowBuilderServices;
 import org.springframework.webflow.engine.support.DefaultTargetStateResolver;
 import org.springframework.webflow.engine.support.DefaultTransitionCriteria;
@@ -53,10 +55,14 @@ import java.util.List;
  * @author Misagh Moayyed
  */
 @Component
-public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
+public class CasMultiFactorWebflowConfigurer implements InitializingBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CasMultiFactorWebflowConfigurer.class);
 
     private static final String FLOW_ID_LOGIN = "login";
+
+    private static final String STATE_DEFINITION_ID_TGT_EXISTS_CHECK = "ticketGrantingTicketExistsCheck";
+    private static final String STATE_DEFINITION_ID_REAL_SUBMIT = "realSubmit";
+    private static final String STATE_DEFINITION_ID_SERVICE_CHECK = "serviceCheck";
 
     @Autowired
     private FlowBuilderServices flowBuilderServices;
@@ -90,7 +96,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param flowIds the flow ids
      */
 
-    private void setupWebflow(final String[] flowIds) {
+    protected void setupWebflow(final String[] flowIds) {
         try {
             LOGGER.debug("Starting to configure webflow...");
 
@@ -113,9 +119,9 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      *
      * @param flow the flow
      */
-    private void addMultiFactorGlobalTransitionsForExceptionHandling(final Flow flow) {
+    protected void addMultiFactorGlobalTransitionsForExceptionHandling(final Flow flow) {
         addGlobalTransitionIfExceptionIsThrown(flow,
-                "ticketGrantingTicketExistsCheck", NoAuthenticationContextAvailable.class);
+                STATE_DEFINITION_ID_TGT_EXISTS_CHECK, NoAuthenticationContextAvailable.class);
         addGlobalTransitionIfExceptionIsThrown(flow,
                 "viewMfaUnrecognizedAuthnMethodErrorView", UnrecognizedAuthenticationMethodException.class);
     }
@@ -127,7 +133,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param targetStateId the target state id
      * @param clazz         the exception class
      */
-    private void addGlobalTransitionIfExceptionIsThrown(final Flow flow, final String targetStateId, final Class<?> clazz) {
+    protected void addGlobalTransitionIfExceptionIsThrown(final Flow flow, final String targetStateId, final Class<?> clazz) {
 
         try {
             final TransitionExecutingFlowExecutionExceptionHandler handler = new TransitionExecutingFlowExecutionExceptionHandler();
@@ -182,8 +188,8 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param flow the flow
      * @param flowIds the flow ids
      */
-    private void addMultiFactorOutcomeTransitionsToSubmissionActionState(final Flow flow, final String[] flowIds) {
-        final ActionState actionState = (ActionState) flow.getState("realSubmit");
+    protected void addMultiFactorOutcomeTransitionsToSubmissionActionState(final Flow flow, final String[] flowIds) {
+        final ActionState actionState = (ActionState) flow.getState(STATE_DEFINITION_ID_REAL_SUBMIT);
         LOGGER.debug("Retrieved action state {}", actionState.getId());
 
         final Action existingAction = actionState.getActionList().get(0);
@@ -204,8 +210,8 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      *
      * @param flow the flow
      */
-    private void addOnEntryActionToServiceCheckState(final Flow flow) {
-        final DecisionState state = (DecisionState) flow.getState("serviceCheck");
+    protected void addOnEntryActionToServiceCheckState(final Flow flow) {
+        final DecisionState state = (DecisionState) flow.getState(STATE_DEFINITION_ID_SERVICE_CHECK);
 
         final EvaluateAction action = createEvaluateAction("removeHostnameServiceInContextAction");
         state.getEntryActionList().add(action);
@@ -217,7 +223,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param expression the expression
      * @return the evaluate action
      */
-    private EvaluateAction createEvaluateAction(final String expression) {
+    protected EvaluateAction createEvaluateAction(final String expression) {
         final ParserContext ctx = new FluentParserContext();
         final Expression action = this.flowBuilderServices.getExpressionParser()
                 .parseExpression(expression, ctx);
@@ -231,7 +237,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      *
      * @param flow the flow
      */
-    private void addMultiFactorViewEndStates(final Flow flow) {
+    protected void addMultiFactorViewEndStates(final Flow flow) {
         addEndStateBackedByView(flow, "viewMfaUnrecognizedAuthnMethodErrorView", "casMfaUnrecognizedAuthnMethodErrorView");
         addEndStateBackedByView(flow, "viewUnknownPrincipalErrorView", "casUnknownPrincipalErrorView");
     }
@@ -242,7 +248,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param flow the flow
      * @param flowIds the flow ids
      */
-    private void addTicketGrantingTicketExistsCheck(final Flow flow, final String[] flowIds) {
+    protected void addTicketGrantingTicketExistsCheck(final Flow flow, final String[] flowIds) {
         try {
             final ActionState actionState = new ActionState(flow, "mfaTicketGrantingTicketExistsCheck");
             LOGGER.debug("Created action state {}", actionState.getId());
@@ -252,8 +258,20 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
             for (final String flowId : flowIds) {
                 addTransitionToActionState(actionState, flowId, flowId);
             }
+            final TransitionableState currentStartState = TransitionableState.class.cast(flow.getStartState());
 
-            addTransitionToActionState(actionState, "requireTgt", "ticketGrantingTicketExistsCheck");
+            LOGGER.debug("Mapping the transition [{}] of state [{}] to the existing start state [{}]",
+                    ValidateInitialMultiFactorAuthenticationRequestAction.EVENT_ID_REQUIRE_TGT,
+                    actionState.getId(), currentStartState.getId());
+            addTransitionToActionState(actionState, "requireTgt", currentStartState.getId());
+
+            if (!STATE_DEFINITION_ID_TGT_EXISTS_CHECK.equals(currentStartState.getId())) {
+                LOGGER.debug("Found a custom existing start state [{}]. Will add a default transition to "
+                                + "[{}] so the flow can resume normally.",
+                        STATE_DEFINITION_ID_TGT_EXISTS_CHECK,
+                        currentStartState.getId());
+                addDefaultTransitionToState(currentStartState, STATE_DEFINITION_ID_TGT_EXISTS_CHECK);
+            }
 
             flow.setStartState(actionState);
             LOGGER.debug("Replaced flow {} start state with {}", flow.getId(), flow.getStartState().getId());
@@ -263,13 +281,27 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
     }
 
     /**
+     * Add a default transition to a given state.
+     * @param state the state to include the default transition
+     * @param targetState the id of the destination state to which the flow should transfer
+     */
+    protected void addDefaultTransitionToState(final TransitionableState state, final String targetState) {
+        if (state == null) {
+            LOGGER.debug("Cant add default transition of [{}] to the given state is null and cannot be found in the flow.", targetState);
+            return;
+        }
+        final Transition transition = createTransition(targetState);
+        state.getTransitionSet().add(transition);
+    }
+
+    /**
      * Add transition to action state.
      *
      * @param actionState     the action state
      * @param criteriaOutcome the criteria outcome
      * @param targetState     the target state
      */
-    private void addTransitionToActionState(final ActionState actionState,
+    protected void addTransitionToActionState(final ActionState actionState,
                                             final String criteriaOutcome, final String targetState) {
         try {
             final Transition transition = createTransition(criteriaOutcome, targetState);
@@ -288,11 +320,22 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param targetState     the target state
      * @return the transition
      */
-    private Transition createTransition(final String criteriaOutcome, final String targetState) {
+    protected Transition createTransition(final String criteriaOutcome, final String targetState) {
         final DefaultTransitionCriteria criteria = new DefaultTransitionCriteria(new LiteralExpression(criteriaOutcome));
         final DefaultTargetStateResolver resolver = new DefaultTargetStateResolver(targetState);
 
         return new Transition(criteria, resolver);
+    }
+
+    /**
+     * Create transition without a criteria.
+     *
+     * @param targetState     the target state
+     * @return the transition
+     */
+    protected Transition createTransition(final String targetState) {
+        final DefaultTargetStateResolver resolver = new DefaultTargetStateResolver(targetState);
+        return new Transition(resolver);
     }
 
     /**
@@ -302,7 +345,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param id     the id
      * @param viewId the view id
      */
-    private void addEndStateBackedByView(final Flow flow, final String id, final String viewId) {
+    protected void addEndStateBackedByView(final Flow flow, final String id, final String viewId) {
         try {
             final EndState endState = new EndState(flow, id);
             final ViewFactory viewFactory = this.flowBuilderServices.getViewFactoryCreator().createViewFactory(
@@ -325,7 +368,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param flow the flow
      * @param flowIds the flow ids
      */
-    private void createMultiFactorSubflowStateDefinitions(final Flow flow, final String[] flowIds) {
+    protected void createMultiFactorSubflowStateDefinitions(final Flow flow, final String[] flowIds) {
         createMultiFactorSubflowStateDefinitionsByAuthenticationMethod(flow, flowIds);
     }
 
@@ -335,7 +378,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param flow the flow
      * @param id the id
      */
-    private void createMultiFactorParentSubflowStateDefinitions(final Flow flow, final String id) {
+    protected void createMultiFactorParentSubflowStateDefinitions(final Flow flow, final String id) {
         final EvaluateAction action = createEvaluateAction("generateMfaCredentialsAction");
 
         final SubflowState subflowState = createSubflowState(flow, id, id, action);
@@ -361,12 +404,10 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param flow the flow
      * @param flowIds the flow ids
      */
-    private void createMultiFactorSubflowStateDefinitionsByAuthenticationMethod(final Flow flow, final String[] flowIds) {
+    protected void createMultiFactorSubflowStateDefinitionsByAuthenticationMethod(final Flow flow, final String[] flowIds) {
         for (final String flowId : flowIds) {
             createMultiFactorParentSubflowStateDefinitions(flow, flowId);
         }
-
-
     }
 
     /**
@@ -378,7 +419,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param entryAction the entry action
      * @return the subflow state
      */
-    private SubflowState createSubflowState(final Flow flow, final String id, final String subflow,
+    protected SubflowState createSubflowState(final Flow flow, final String id, final String subflow,
                                             final Action entryAction) {
 
         final SubflowState state = new SubflowState(flow, id, new BasicSubflowExpression(subflow));
@@ -395,7 +436,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param mappings the mappings
      * @return the mapper
      */
-    private Mapper createMapperToSubflowState(final List<DefaultMapping> mappings) {
+    protected Mapper createMapperToSubflowState(final List<DefaultMapping> mappings) {
         final DefaultMapper inputMapper = new DefaultMapper();
         for (final DefaultMapping mapping : mappings) {
             inputMapper.addMapping(mapping);
@@ -412,7 +453,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param type the type
      * @return the default mapping
      */
-    private DefaultMapping createMappingToSubflowState(final String name, final String value,
+    protected DefaultMapping createMappingToSubflowState(final String name, final String value,
                                                        final boolean required, final Class type) {
 
         final ExpressionParser parser = this.flowBuilderServices.getExpressionParser();
@@ -436,7 +477,7 @@ public final class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param outputMapper the output mapper
      * @return the subflow attribute mapper
      */
-    private SubflowAttributeMapper createSubflowAttributeMapper(final Mapper inputMapper, final Mapper outputMapper) {
+    protected SubflowAttributeMapper createSubflowAttributeMapper(final Mapper inputMapper, final Mapper outputMapper) {
         return new GenericSubflowAttributeMapper(inputMapper, outputMapper);
     }
 
