@@ -1,5 +1,7 @@
 ## What is this project?
 
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/Unicon/cas-mfa?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is a project to develop free and open source compatibly licensed extensions for the CAS server `v3.5.2.1` product implementing
 * support for authenticating using multiple authentication factors
 * support for relying parties (CAS-using applications) understanding how strongly the user authenticated from the ticket validation response, and
