@@ -2,7 +2,8 @@
 
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/Unicon/cas-mfa?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-This is a project to develop free and open source compatibly licensed extensions for the CAS server `v3.5.2.1` product implementing
+This is a project to develop free and open source compatibly licensed extensions for the CAS server `v3.5.x` product implementing
+
 * support for authenticating using multiple authentication factors
 * support for relying parties (CAS-using applications) understanding how strongly the user authenticated from the ticket validation response, and
 * support for relying parties exerting authentication strength requirements.
@@ -10,9 +11,9 @@ This is a project to develop free and open source compatibly licensed extensions
 The intention is to develop a solution that can be adopted by current CAS adopters.
 
 ## Requirements
-* JDK 6
+* JDK 6~8
 * Maven 3
-* Tomcat 7
+* Tomcat 7~8
 
 ## MultiFactor Support
 * `duo-two-factor` (via DuoSecurity)

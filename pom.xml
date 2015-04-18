@@ -523,7 +523,7 @@
 
     <properties>
         <!-- CAS Versions -->
-        <cas.version>3.5.2.1</cas.version>
+        <cas.version>3.5.3</cas.version>
         <cas-addons.version>1.13</cas-addons.version>
 
         <!-- Dependency Versions -->
