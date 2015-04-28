@@ -105,6 +105,9 @@ public abstract class AbstractMultiFactorAuthenticationProtocolValidationSpecifi
         return false;
     }
 
+    /**
+     * An MFA validator that handles proxy authentications.
+     */
     public static final class WithProxy extends AbstractMultiFactorAuthenticationProtocolValidationSpecification {
         /**
          * Instantiates a new with proxy spec.
@@ -114,6 +117,9 @@ public abstract class AbstractMultiFactorAuthenticationProtocolValidationSpecifi
         }
     }
 
+    /**
+     * An MFA validator that does not handles proxy authentications.
+     */
     public static final class WithoutProxy extends AbstractMultiFactorAuthenticationProtocolValidationSpecification {
         /**
          * Instantiates a new without proxy spec.

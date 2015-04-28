@@ -1,14 +1,11 @@
 package net.unicon.cas.mfa.ticket;
 
-
-import net.unicon.cas.mfa.AbstractMultiFactorAuthenticationProtocolValidationSpecification;
-
 /**
  * Multifactor authentication exception that is thrown
  * when the requested authentication method cannot be accepted
  * or isn't support by this CAS server.
  * @author Misagh Moayyed
- * @see AbstractMultiFactorAuthenticationProtocolValidationSpecification
+ * @see net.unicon.cas.mfa.AbstractMultiFactorAuthenticationProtocolValidationSpecification
  */
 public class UnrecognizedMultiFactorAuthenticationMethodException extends MultiFactorAuthenticationBaseTicketValidationException {
 

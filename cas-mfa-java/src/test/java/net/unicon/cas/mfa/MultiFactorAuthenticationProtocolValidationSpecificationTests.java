@@ -41,7 +41,7 @@ public class MultiFactorAuthenticationProtocolValidationSpecificationTests {
         when(map.containsKey((any(Object.class)))).thenReturn(true);
         when(authentication.getAttributes()).thenReturn(map);
 
-        this.spec = new AbstractMultiFactorAuthenticationProtocolValidationSpecification(false);
+        this.spec = new AbstractMultiFactorAuthenticationProtocolValidationSpecification.WithoutProxy();
     }
 
     @Test
