@@ -18,7 +18,7 @@
  */
 package net.unicon.cas.mfa.web;
 
-import net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification;
+import net.unicon.cas.mfa.AbstractMultiFactorAuthenticationProtocolValidationSpecification;
 import net.unicon.cas.mfa.ticket.UnacceptableMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
@@ -60,7 +60,7 @@ import java.net.URL;
  *
  * <p>This implementation differs from the default, in that the validation of
  * the incoming request is handled by an instance of
- * {@link MultiFactorAuthenticationProtocolValidationSpecification}. Validation
+ * {@link AbstractMultiFactorAuthenticationProtocolValidationSpecification}. Validation
  * errors are signaled back to this controller via exceptions, the result of which
  * are passed down to the error view.
  *
@@ -97,8 +97,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
 
     /** The validation protocol we want to use. */
     @NotNull
-    private MultiFactorAuthenticationProtocolValidationSpecification validationSpecificationClass
-            = new MultiFactorAuthenticationProtocolValidationSpecification(false);
+    private Class<AbstractMultiFactorAuthenticationProtocolValidationSpecification> validationSpecificationClass;
 
     /** The proxy handler we want to use with the controller. */
     @NotNull
@@ -153,7 +152,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
     }
 
     /**
-     * <p>Handle the request. Specially, abides by the default behavior specified in the {@link ServiceValidateController}
+     * <p>Handle the request. Specially, abides by the default behavior specified in the {@link org.jasig.cas.web.ServiceValidateController}
      * and then, invokes the {@link #getCommandClass()} method to delegate the task of spec validation.
      * @param request request object
      * @param response response object
@@ -186,7 +185,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
             }
 
             final Assertion assertion = this.centralAuthenticationService.validateServiceTicket(serviceTicketId, service);
-            final MultiFactorAuthenticationProtocolValidationSpecification validationSpecification = this.getCommandClass();
+            final AbstractMultiFactorAuthenticationProtocolValidationSpecification validationSpecification = this.getCommandClass();
             final ServletRequestDataBinder binder = new ServletRequestDataBinder(validationSpecification, "validationSpecification");
             initBinder(request, binder);
             binder.bind(request);
@@ -280,13 +279,13 @@ public class MultiFactorServiceValidateController extends DelegateController {
     }
 
     /**
-     * Returns the instance of {@link MultiFactorAuthenticationProtocolValidationSpecification} that is responsible
+     * Returns the instance of {@link AbstractMultiFactorAuthenticationProtocolValidationSpecification} that is responsible
      * to validate the incoming validation request based on the augmented spec for MFA.
-     * @return the instance of {@link MultiFactorAuthenticationProtocolValidationSpecification}
+     * @return the instance of {@link AbstractMultiFactorAuthenticationProtocolValidationSpecification}
      */
-    private MultiFactorAuthenticationProtocolValidationSpecification getCommandClass() {
+    private AbstractMultiFactorAuthenticationProtocolValidationSpecification getCommandClass() {
         try {
-            return this.validationSpecificationClass;
+            return this.validationSpecificationClass.newInstance();
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -331,7 +330,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
      * to set.
      */
     public final void setValidationSpecificationClass(
-            final MultiFactorAuthenticationProtocolValidationSpecification validationSpecificationClass) {
+            final Class<AbstractMultiFactorAuthenticationProtocolValidationSpecification> validationSpecificationClass) {
         this.validationSpecificationClass = validationSpecificationClass;
     }
 

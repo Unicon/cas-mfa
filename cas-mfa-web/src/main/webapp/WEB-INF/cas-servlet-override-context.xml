@@ -27,26 +27,17 @@
         <webflow:flow-location-pattern value="**/*-webflow.xml"/>
     </webflow:flow-registry>
 
-    <bean id="mfaValidationWithoutProxySupportSpec"
-          class="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
-          c:validateProxyAuthenticationRequests="false"/>
-
-    <bean id="mfaValidationWithProxySupportSpec"
-          class="net.unicon.cas.mfa.MultiFactorAuthenticationProtocolValidationSpecification"
-          c:validateProxyAuthenticationRequests="true"/>
-
     <bean id="abstractValidateController" class="net.unicon.cas.mfa.web.MultiFactorServiceValidateController"
           abstract="true"
           p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
           p:proxyHandler-ref="proxy20Handler"
-          p:validationSpecificationClass-ref="mfaValidationWithProxySupportSpec"
           p:argumentExtractor-ref="casArgumentExtractor"/>
 
     <bean id="proxyValidateController" parent="abstractValidateController"
-          p:validationSpecificationClass-ref="mfaValidationWithProxySupportSpec"  />
+          p:validationSpecificationClass="net.unicon.cas.mfa.AbstractMultiFactorAuthenticationProtocolValidationSpecification.WithProxy"/>
 
     <bean id="serviceValidateController" parent="abstractValidateController"
-          p:validationSpecificationClass-ref="mfaValidationWithoutProxySupportSpec"/>
+          p:validationSpecificationClass="net.unicon.cas.mfa.AbstractMultiFactorAuthenticationProtocolValidationSpecification.WithoutProxy"/>
 
     <bean id="samlValidateController" parent="serviceValidateController"
           p:argumentExtractor-ref="samlArgumentExtractor"

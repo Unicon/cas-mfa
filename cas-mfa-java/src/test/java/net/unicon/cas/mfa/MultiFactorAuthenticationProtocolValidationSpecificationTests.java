@@ -27,7 +27,7 @@ public class MultiFactorAuthenticationProtocolValidationSpecificationTests {
     @Mock
     private Authentication authentication;
 
-    private final MultiFactorAuthenticationProtocolValidationSpecification spec;
+    private final AbstractMultiFactorAuthenticationProtocolValidationSpecification spec;
 
     public MultiFactorAuthenticationProtocolValidationSpecificationTests() {
         MockitoAnnotations.initMocks(this);
@@ -41,7 +41,7 @@ public class MultiFactorAuthenticationProtocolValidationSpecificationTests {
         when(map.containsKey((any(Object.class)))).thenReturn(true);
         when(authentication.getAttributes()).thenReturn(map);
 
-        this.spec = new MultiFactorAuthenticationProtocolValidationSpecification(false);
+        this.spec = new AbstractMultiFactorAuthenticationProtocolValidationSpecification(false);
     }
 
     @Test
