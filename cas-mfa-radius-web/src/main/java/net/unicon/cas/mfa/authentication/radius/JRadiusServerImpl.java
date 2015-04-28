@@ -228,7 +228,7 @@ public final class JRadiusServerImpl implements RadiusServer {
 
         final UsernamePasswordCredentials newCreds = new UsernamePasswordCredentials();
 
-        LOGGER.debug("Attempting to locate user id for radius authentication...");
+        LOGGER.debug("Attempting to get user id for radius authentication...");
         final Principal principalId = MultiFactorRequestContextUtils.getMultiFactorPrimaryPrincipal(context);
 
         if (this.caseSensitive) {
