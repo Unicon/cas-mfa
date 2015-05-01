@@ -15,10 +15,8 @@ import java.io.Serializable;
 /**
  * Represents a single mfa request by wrapping
  * {@link net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService}.
- * <p/>
  * Adds implementations of {@code equals} and {@code hashcode} to ensure the uniqueness of
  * one mfa method per service per request origination source.
- * <p/>
  * Implements {@link org.springframework.core.Ordered} to assist implementations of
  * {@link net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy} do
  * the ranking if they choose to use this abstraction.

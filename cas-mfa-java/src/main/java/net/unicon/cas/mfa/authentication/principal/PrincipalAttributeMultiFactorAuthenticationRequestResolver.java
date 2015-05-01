@@ -22,7 +22,6 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
 /**
  * Implementation of <code>MultiFactorAuthenticationRequestResolver</code> that resolves
  * potential mfa request based on the configured principal attribute.
- * <p/>
  * Note: It is assumed that the attribute value that specifies the
  * authentication method at this time is a single-valued attribute.
  *

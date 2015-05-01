@@ -27,7 +27,6 @@ import java.util.TreeSet;
      "name" : "sample_two_factor"
  } ]
  * </code></pre>
- * </p>
  * @author Misagh Moayyed
  */
 public final class JsonBackedAuthenticationMethodConfigurationProvider implements AuthenticationMethodConfigurationProvider {

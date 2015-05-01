@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * A strategy interface for resolving requests for multifactor authentication from existing primary authentication data.
- * <p/>
+ *
  * Example implementations might use primary authenticated principal's attribute or some other piece of contextual data
  * available in passed in <code>Authentication</code> object instance. Implementations may choose to return multiple contexts.
  *

@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A {@link Credentials} implementation that is to ease multifactor authentication.
  * It primarily carries the following entities:
- * <p>
  * <ul>
  *  <li><strong>Chain of credentials:</strong> represent various forms of credentials during an MFA flow</li>
  *  <li><strong>Chain of authentications:</strong> represent the authentication contexts established during the flow

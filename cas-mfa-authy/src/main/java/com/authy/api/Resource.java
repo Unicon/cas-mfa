@@ -46,8 +46,8 @@ public class Resource {
 	
 	/**
 	 * POST method.
-	 * @param path
-	 * @param data
+	 * @param path the path
+	 * @param data the data
 	 * @return response from API.
 	 */
 	public String post(String path, Response data) {
@@ -59,8 +59,8 @@ public class Resource {
 	
 	/**
 	 * GET method.
-	 * @param path
-	 * @param data
+	 * @param path the path
+	 * @param data the data
 	 * @return response from API.
 	 */
 	public String get(String path, Response data) {
@@ -72,8 +72,8 @@ public class Resource {
 	
 	/**
 	 * PUT method.
-	 * @param path
-	 * @param data
+	 * @param path the path
+	 * @param data the data
 	 * @return response from API.
 	 */
 	public String put(String path, Response data) {
@@ -85,8 +85,8 @@ public class Resource {
 	
 	/**
 	 * DELETE method.
-	 * @param path
-	 * @param data
+	 * @param path the path
+	 * @param data the data
 	 * @return response from API.
 	 */
 	public String delete(String path, Response data) {

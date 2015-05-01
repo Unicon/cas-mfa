@@ -19,8 +19,8 @@ import java.util.Set;
 
 /**
  * Determines whether the login flow needs to branch *now* to honor the authentication method requirements of
- * <p/>
- * <p/>
+ *
+ *
  * If the Service expresses a requirement for how the user must authenticate,
  * and there's an existing single sign-on session, and there is not a record in the user's
  * single sign-on session of having already fulfilled that requirement, then fires the `requireMfa` event indicating
@@ -28,10 +28,10 @@ import java.util.Set;
  * or there is no existing single sign-on session,
  * or the required exceptional authentication method is already fulfilled) then fire the `requireTgt` event indicating
  * that the login flow should proceed as per normal.
- * <p/>
+ *
  * More explicitly:
- * <p/>
- * <p/>
+ *
+ *
  * <ol>
  * <li>If an authentication context does not exist
  * (i.e., the user does not have an existing single sign-on session with a record of a prior authentication),
@@ -44,7 +44,7 @@ import java.util.Set;
  * is required to fulfill the service's authentication requirements.</li>
  * <li>Otherwise, fire the `requireTgt` event to continue the login flow as per usual.</li>
  * </ol>
- * <p/>
+ *
  * This means that in the case where there is not an existing single sign-on session, this Action will continue
  * the login flow as per normal <strong>even though additional authentication will be required
  * later in the flow to fulfill the authentication requirements of the CAS-using service</strong>.

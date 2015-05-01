@@ -140,6 +140,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
     /**
      * When there is no existing mfa transaction in conversation scope the Action should return the Event
      * indicating the flow should proceed as per normal.
+     * @throws Exception the exception
      */
     @Test
     public void testMissingMfaTransactionProceedsFlowAsNormal() throws Exception {
@@ -152,6 +153,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
     /**
      * When there is no existing TGT (no existing single sign-on session), the Action should return the Event
      * indicating the flow should proceed as per normal.
+     * @throws Exception the exception
      */
     @Test
     public void testMissingTgtProceedsFlowAsNormal() throws Exception {

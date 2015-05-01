@@ -119,6 +119,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
     /**
      * When login presents a recognized authentication method among several supported methods,
      * extractor extracts a service conveying the required authentication method.
+     * @throws IOException the IO exception
      */
     @Test
     public void testRecognizedAuthenticationMethodParamAmongMultipleSupportedYieldsService() throws IOException {

@@ -1,5 +1,7 @@
 package com.duosecurity;
 
+import java.io.IOException;
+
 public class Base64 {
 
 	/*  ******** P U B L I C F I E L D S ******** */
@@ -1067,13 +1069,13 @@ public class Base64 {
 	 * the decoding process. Special case: if len = 0, an empty array is
 	 * returned. Still, if you need more speed and reduced memory footprint (and
 	 * aren't gzipping), consider this method.
-	 * 
-	 * @param source
-	 *            The Base64 encoded data
+	 *
+	 * @param source             The Base64 encoded data
 	 * @return decoded data
-	 * @since 2.3.1
-	 */
-	public static byte[] decode(byte[] source) throws java.io.IOException {
+	 * @throws java.io.IOException the iO exception
+     * @since 2.3.1
+     */
+	public static byte[] decode(byte[] source) throws IOException {
 		byte[] decoded = null;
 		// try {
 		decoded = decode(source, 0, source.length, Base64.NO_OPTIONS);
@@ -1107,7 +1109,7 @@ public class Base64 {
 	 * @since 1.3
 	 */
 	public static byte[] decode(byte[] source, int off, int len, int options)
-			throws java.io.IOException {
+			throws IOException {
 
 		// Lots of error checking and exception throwing
 		if (source == null) {
@@ -1322,7 +1324,7 @@ public class Base64 {
 		 * <pre>
 		 *   ENCODE or DECODE: Encode or Decode as data is read.
 		 *   DO_BREAK_LINES: don't break lines at 76 characters
-		 *     (only meaningful when encoding)</i>
+		 *     <i>(only meaningful when encoding)</i>
 		 * </pre>
 		 * <p>
 		 * Example: <code>new Base64.OutputStream( out, Base64.ENCODE )</code>

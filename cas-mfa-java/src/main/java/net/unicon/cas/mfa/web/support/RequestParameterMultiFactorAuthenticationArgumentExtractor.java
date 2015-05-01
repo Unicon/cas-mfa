@@ -12,7 +12,7 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
 /**
  * The multifactor authentication argument extractor, responsible to
  * instruct CAS with the constructed instance of a {@link WebApplicationService}.
- * <p/>
+ *
  * The requested authentication method discovery in this implementation is based on HTTP request parameter <b>authn_method</b>
  *
  * @author Misagh Moayyed

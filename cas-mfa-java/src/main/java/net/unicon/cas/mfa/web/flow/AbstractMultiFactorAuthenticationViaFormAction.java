@@ -40,7 +40,7 @@ import java.util.List;
  * An abstraction that specifies how the authentication flow should behave.
  * It primarily acts as a wrapper recipient of authentication requests via form,
  * which is loosely mimics the behavior of {@link org.jasig.cas.web.flow.AuthenticationViaFormAction}.
- * <p/>
+ *
  * <p>Implementations are notified of the authentication type (MFA, non-MFA)
  * and are responsible to act accordingly.
  *

@@ -15,7 +15,7 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
  * mfa methods from multiple definition sources required to authenticate against any current target service
  * collected for just current authentication request.
  * Each new authentication request should represent a new mfa transaction.
- * <p/>
+ *
  * This class enforces invariants that ensures that only a single target service is able to participate
  * in such a single mfa authentication transaction
  * and only a single instance of the same authentication method source could exist at a time.

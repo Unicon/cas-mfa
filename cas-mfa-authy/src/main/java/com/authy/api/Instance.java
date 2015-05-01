@@ -70,7 +70,7 @@ public class Instance {
 
 	/**
 	 * Set an Error object.
-	 * @param error
+	 * @param error the error
 	 */
 	public void setError(Error error) {
 		this.error = error;

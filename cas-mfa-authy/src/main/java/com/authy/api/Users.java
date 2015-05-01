@@ -37,9 +37,9 @@ public class Users extends Resource {
 	
 	/**
 	 * Create a new user using his e-mail, phone and country code.
-	 * @param email
-	 * @param phone
-	 * @param countryCode
+	 * @param email email
+	 * @param phone phone
+	 * @param countryCode country code
 	 * @return a User instance
 	 */
 	public com.authy.api.User createUser(String email, String phone, String countryCode) {
@@ -52,8 +52,8 @@ public class Users extends Resource {
 	
 	/**
 	 * Create a new user using his e-mail and phone. It uses USA country code by default.
-	 * @param email
-	 * @param phone
+	 * @param email email
+	 * @param phone phone
 	 * @return a User instance
 	 */
 	public com.authy.api.User createUser(String email, String phone) {
@@ -62,7 +62,7 @@ public class Users extends Resource {
 	
 	/**
 	 * Send token via sms to a user.
-	 * @param userId
+	 * @param userId user id
 	 * @return Hash instance with API's response.
 	 */
 	public Hash requestSms(int userId) {
@@ -71,8 +71,8 @@ public class Users extends Resource {
 	
 	/**
 	 * Send token via sms to a user with some options defined.
-	 * @param userId
-	 * @param options
+	 * @param userId user id
+	 * @param options options
 	 * @return Hash instance with API's response.
 	 */
 	public Hash requestSms(int userId, Map<String, String> options) {
@@ -93,7 +93,7 @@ public class Users extends Resource {
 
 	/**
 	 * Delete a user.
-	 * @param userId
+	 * @param userId user id
 	 * @return Hash instance with API's response.
 	 */
 	public Hash deleteUser(int userId) {

@@ -4,7 +4,7 @@ package com.toopher.integrations.cas;
 /**
  * Bean to store ToopherAPI configuration data.
  *
- * @author Drew Shafer <drew@toopher.com>
+ * @author Drew Shafer drew@toopher.com
  * @version 1.0
  * @see <a href="https://dev.toopher.com/docs">ToopherAPI Developer Docs</a>
  */
