@@ -1,4 +1,4 @@
-## What is this project?  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.unicon.cas/cas-mfa/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/net.unicon.cas/cas-mfa)
+## What is this project?  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.unicon/cas-mfa/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/net.unicon/cas-mfa)
 
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/Unicon/cas-mfa?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
