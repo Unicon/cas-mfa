@@ -1,6 +1,5 @@
 package net.unicon.cas.mfa.authentication;
 
-import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.web.support.DefaultMultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
 import org.junit.Test;
