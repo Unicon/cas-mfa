@@ -3,8 +3,7 @@ package net.unicon.cas.mfa.authentication;
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 
-
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -16,31 +15,33 @@ import java.util.regex.Pattern;
 public class RegexAuthenticationMethodTranslator implements AuthenticationMethodTranslator {
     private final Map<Pattern, String> translationMap;
 
-    private boolean ignoreIfNoMatchIsFound = true;
-
-    private String defaultMfaMethod = "";
+    private String defaultMfaMethod = null;
 
     /**
      * Instantiates a new Regex authentication method translator.
      *
-     * @param translationMap the regex/mfa method translation map
+     * @param translationMap the regex/mfa method translation map (maybe an ordered map)
      */
     public RegexAuthenticationMethodTranslator(final Map<String, String> translationMap) {
-        final Map<Pattern, String> optimizedMap = new HashMap<Pattern, String>();
+        this(translationMap, null);
+    }
+
+    /**
+     * Instantiates a new Regex authentication method translator.
+     *
+     * @param translationMap the regex/mfa method translation map (maybe an ordered map)
+     * @param defaultMfaMethod the default MFA merhod to use if no match is found.
+     */
+    public RegexAuthenticationMethodTranslator(final Map<String, String> translationMap, final String defaultMfaMethod) {
+        this.defaultMfaMethod = defaultMfaMethod;
+
+        final Map<Pattern, String> optimizedMap = new LinkedHashMap<Pattern, String>();
 
         for (final String pattern : translationMap.keySet()) {
             optimizedMap.put(Pattern.compile(pattern), translationMap.get(pattern));
         }
 
         this.translationMap = optimizedMap;
-    }
-
-    public void setIgnoreIfNoMatchIsFound(final boolean ignoreIfNoMatchIsFound) {
-        this.ignoreIfNoMatchIsFound = ignoreIfNoMatchIsFound;
-    }
-
-    public void setDefaultMfaMethod(final String defaultMfaMethod) {
-        this.defaultMfaMethod = defaultMfaMethod;
     }
 
     @Override
@@ -51,10 +52,10 @@ public class RegexAuthenticationMethodTranslator implements AuthenticationMethod
             }
         }
 
-        if (this.ignoreIfNoMatchIsFound) {
+        if (this.defaultMfaMethod != null) {
             return defaultMfaMethod;
         }
 
-        throw new UnrecognizedAuthenticationMethodException("MFA Method for " + triggerValue, targetService.getId());
+        throw new UnrecognizedAuthenticationMethodException(triggerValue, targetService.getId());
     }
 }
