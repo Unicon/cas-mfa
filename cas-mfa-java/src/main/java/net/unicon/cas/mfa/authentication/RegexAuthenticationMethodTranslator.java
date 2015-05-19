@@ -3,11 +3,13 @@ package net.unicon.cas.mfa.authentication;
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * A translator that will check a list of regex patterns and return an authentication method name
+ * A translator that will check a list of regex patterns and return an authentication method name.
  *
  * @author John Gasper
  */
