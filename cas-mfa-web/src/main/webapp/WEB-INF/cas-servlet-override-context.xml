@@ -61,7 +61,7 @@
           p:ticketGrantingTicketUniqueTicketIdGenerator-ref="ticketGrantingTicketUniqueIdGenerator"
           p:centralAuthenticationServiceDelegate-ref="centralAuthenticationService"
           p:servicesManager-ref="servicesManager"
-          p:authenticationMethodAttributeName="${mfa.method.userAttribute:authn_method}"
+          p:authenticationMethodAttributeName="${mfa.method.response.attribute:authn_method}"
           p:persistentIdGenerator-ref="persistentIdGenerator"
           p:authenticationManager-ref="mfaAuthenticationManager"/>
 
