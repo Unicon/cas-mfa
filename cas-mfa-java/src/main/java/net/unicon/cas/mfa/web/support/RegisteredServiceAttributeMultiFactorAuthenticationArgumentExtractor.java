@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
@@ -68,9 +69,16 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
             return determineDefaultAuthenticationMethod();
         }
 
+        final Map<String, Object> extraAttributes = RegisteredServiceWithAttributes.class.cast(registeredService)
+                .getExtraAttributes();
+
+        if (extraAttributes != null && extraAttributes.containsKey("mfa_role")) {
+            logger.debug("Deferring mfa authn method for Principal Attribute Resolver");
+            return null;
+        }
+
         final String authenticationMethod =
-                String.class.cast(RegisteredServiceWithAttributes.class.cast(registeredService)
-                        .getExtraAttributes().get(this.authenticationMethodAttribute));
+                String.class.cast(extraAttributes.get(this.authenticationMethodAttribute));
 
 
         if (!StringUtils.hasText(authenticationMethod)) {

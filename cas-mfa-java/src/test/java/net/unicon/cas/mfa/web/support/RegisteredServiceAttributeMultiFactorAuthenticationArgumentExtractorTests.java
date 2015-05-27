@@ -94,7 +94,39 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
                 (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(getRequest());
         assertNull(webSvc);
     }
-    
+
+    @Test
+    public void testServiceWithMfaRole() {
+        final List<ArgumentExtractor> set = new ArrayList<ArgumentExtractor>();
+        set.add(new CasArgumentExtractor());
+
+        final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
+        when(factory.create(anyString(), anyString(), anyString(), anyString(), any(AuthenticationMethodSource.class)))
+                .thenReturn(getMfaService());
+
+        final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
+
+        final Map<String, Object> attrs = new HashMap<String, Object>();
+        attrs.put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, CAS_AUTHN_METHOD);
+        attrs.put("mfa_role", new HashMap<String, Object>());
+
+        final RegisteredServiceWithAttributes svc = mock(RegisteredServiceWithAttributes.class);
+        when(svc.getId()).thenReturn(0L);
+        when(svc.getServiceId()).thenReturn(CAS_SERVICE);
+        when(svc.getExtraAttributes()).thenReturn(attrs);
+
+        final ServicesManager mgmr = mock(ServicesManager.class);
+        when(mgmr.findServiceBy(anyInt())).thenReturn(svc);
+        when(mgmr.findServiceBy(any(Service.class))).thenReturn(svc);
+
+        final RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor extractor =
+                new RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor(set, factory, mgmr, verifier);
+
+        final MultiFactorAuthenticationSupportingWebApplicationService webSvc =
+                (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(getRequest());
+        assertNull(webSvc);
+    }
+
     @Test
     public void testServiceWithDifferentServiceType() {
         final List<ArgumentExtractor> set = new ArrayList<ArgumentExtractor>();
@@ -113,7 +145,6 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
         
         final RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor extractor = 
                 new RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor(set, factory, mgmr, verifier);
-        
 
         final MultiFactorAuthenticationSupportingWebApplicationService webSvc =
                 (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(getRequest());
