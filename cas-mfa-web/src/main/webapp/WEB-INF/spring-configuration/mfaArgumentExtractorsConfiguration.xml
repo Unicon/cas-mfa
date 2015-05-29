@@ -71,7 +71,7 @@
           c:configuration="${mfa.authn.methods.config.location:file:/etc/cas/authn-methods.conf}" />
 
     <bean id="registeredServiceMfaRoleProcessor"
-          class="net.unicon.cas.mfa.authentication.RegisteredServiceMfaRoleProcessor"
+          class="net.unicon.cas.mfa.authentication.DefaultRegisteredServiceMfaRoleProcessorImpl"
           c:servicesManager-ref="servicesManager"
           c:mfaServiceFactory-ref="mfaServiceFactory"
           c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
