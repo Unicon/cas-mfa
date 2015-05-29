@@ -1,8 +1,6 @@
-package net.unicon.cas.mfa.authentication.principal;
+package net.unicon.cas.mfa.authentication;
 
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
-import net.unicon.cas.mfa.authentication.AuthenticationMethodConfigurationProvider;
-import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
 import org.jasig.cas.authentication.Authentication;
@@ -19,20 +17,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
-
 /**
- * Implementation of <code>MultiFactorAuthenticationRequestResolver</code> that resolves
- * potential mfa request based on the configured principal attribute.
- * Note: It is assumed that the attribute value that specifies the
- * authentication method at this time is a single-valued attribute.
+ * Resolves potential mfa request based on the configured principal attribute and the service attribute.
+ * If a service has an mfa-role attribute, then its authn_method is only enforce if the principal matches the requested attribute.
  *
- * @author Dmitriy Kopylenko
+ * @author John Gasper
  * @author Unicon, inc.
  */
-public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver extends
-        PrincipalAttributeMultiFactorAuthenticationRequestResolver {
 
+public class RegisteredServiceMfaRoleProcessor {
     /**
      * The logger.
      */
@@ -57,12 +50,11 @@ public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestRe
      * @param authenticationMethodConfiguration the authentication method loader
      * @param servicesManager a CAS Service Manager instance
      */
-    public ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver(
-             final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
-             final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration,
-             final ServicesManager servicesManager) {
+    public RegisteredServiceMfaRoleProcessor(
+            final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
+            final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration,
+            final ServicesManager servicesManager) {
 
-        super(mfaServiceFactory, authenticationMethodConfiguration);
         this.mfaServiceFactory = mfaServiceFactory;
         this.authenticationMethodConfiguration = authenticationMethodConfiguration;
         this.servicesManager = servicesManager;
@@ -70,7 +62,12 @@ public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestRe
         translationMap = new LinkedHashMap<String, Pattern>();
     }
 
-    @Override
+    /**
+     * Resolves the authn_method for a given service if it supports mfa_role and the user has the appropriate attribute.
+     * @param authentication the user authentication object
+     * @param targetService the target service being tested
+     * @return a list (usually one) mfa authn request context.
+     */
     public List<MultiFactorAuthenticationRequestContext> resolve(@NotNull final Authentication authentication,
                                                                  @NotNull final WebApplicationService targetService) {
 
@@ -80,12 +77,11 @@ public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestRe
             final ServiceMfaData serviceMfaData = getServicesAuthenticationData(targetService);
 
             if (serviceMfaData == null || !serviceMfaData.isValid()) {
-                logger.debug("No specific MFA service attributes found. Trying generic 'authn_method' user attribute");
-                return super.resolve(authentication, targetService);
-
-            } else {
-                logger.debug("Found mfa_role: {}", serviceMfaData);
+                logger.debug("No specific mfa_role service attributes found");
+                return null;
             }
+
+            logger.debug("Found mfa_role: {}", serviceMfaData);
 
             authenticationMethodAttributeName = serviceMfaData.attributeName;
 
@@ -116,7 +112,7 @@ public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestRe
         if (list.size() == 0) {
             logger.debug("No multifactor authentication requests could be resolved based on [{}]. Trying generic 'authn_method' attribute",
                     authenticationMethodAttributeName);
-            return super.resolve(authentication, targetService);
+            return null;
         }
         return list;
     }
@@ -133,25 +129,25 @@ public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestRe
                                                                          final String attributeValue,
                                                                          final WebApplicationService targetService) {
 
-          if (match(serviceMfaData.getAttributePattern(), attributeValue)) {
-              if (!this.authenticationMethodConfiguration.containsAuthenticationMethod(serviceMfaData.getAuthenticationMethod())) {
-                  logger.info("MFA attribute [{}] with value [{}] is not supported by the authentication method configuration.",
-                          serviceMfaData.getAttributeName(),
-                          serviceMfaData.getAuthenticationMethod());
-                  return null;
-              }
-              final int mfaMethodRank = this.authenticationMethodConfiguration.getAuthenticationMethod(
-                      serviceMfaData.getAuthenticationMethod()).getRank();
-              final MultiFactorAuthenticationSupportingWebApplicationService svc =
-                      this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
-                              targetService.getArtifactId(), serviceMfaData.getAuthenticationMethod(),
-                              AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
+        if (match(serviceMfaData.getAttributePattern(), attributeValue)) {
+            if (!this.authenticationMethodConfiguration.containsAuthenticationMethod(serviceMfaData.getAuthenticationMethod())) {
+                logger.info("MFA attribute [{}] with value [{}] is not supported by the authentication method configuration.",
+                        serviceMfaData.getAttributeName(),
+                        serviceMfaData.getAuthenticationMethod());
+                return null;
+            }
+            final int mfaMethodRank = this.authenticationMethodConfiguration.getAuthenticationMethod(
+                    serviceMfaData.getAuthenticationMethod()).getRank();
+            final MultiFactorAuthenticationSupportingWebApplicationService svc =
+                    this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
+                            targetService.getArtifactId(), serviceMfaData.getAuthenticationMethod(),
+                            MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
 
-              return new MultiFactorAuthenticationRequestContext(svc, mfaMethodRank);
-          }
+            return new MultiFactorAuthenticationRequestContext(svc, mfaMethodRank);
+        }
 
-          logger.debug("{} did not match {}", attributeValue, serviceMfaData.getAttributePattern());
-          return null;
+        logger.trace("{} did not match {}", attributeValue, serviceMfaData.getAttributePattern());
+        return null;
     }
 
     /**

@@ -76,7 +76,8 @@
           class="net.unicon.cas.mfa.authentication.principal.PrincipalAttributeMultiFactorAuthenticationRequestResolver"
           c:authenticationMethodAttributeName="${mfa.method.userAttribute:authn_method}"
           c:mfaServiceFactory-ref="mfaServiceFactory"
-          c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
+          c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"
+          p:mfaRoleProcessor-ref="registeredServiceMfaRoleProcessor"/>
 
     <bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.OrderedMultiFactorMethodRankingStrategy"
           c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>

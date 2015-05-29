@@ -1,4 +1,4 @@
-package net.unicon.cas.mfa.authentication.principal;
+package net.unicon.cas.mfa.authentication;
 
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.authentication.AuthenticationMethod;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
  * Created by jgasper on 5/25/15.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolverTest {
+public class RegisteredServiceMfaRoleProcessorTest {
     private static final String CAS_SERVICE = "https://mfa.cas.edu";
 
     private static final String CAS_AUTHN_METHOD = "two-factor";
@@ -55,10 +55,8 @@ public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestRe
         HashMap<String, Object> extraAttributes = new HashMap<String, Object>();
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 
-        ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver resolver
-                = new ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver(
-                getMFWASF(was), getAMCP(), getServicesManager(rswa)
-        );
+        RegisteredServiceMfaRoleProcessor resolver = new RegisteredServiceMfaRoleProcessor(
+            getMFWASF(was), getAMCP(), getServicesManager(rswa));
 
         List<MultiFactorAuthenticationRequestContext> result = resolver.resolve(auth, was);
         assertNotNull(result);
@@ -82,10 +80,8 @@ public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestRe
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 
 
-        ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver resolver
-                = new ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver(
-                getMFWASF(was), getAMCP(), getServicesManager(rswa)
-        );
+        RegisteredServiceMfaRoleProcessor resolver = new RegisteredServiceMfaRoleProcessor(
+                getMFWASF(was), getAMCP(), getServicesManager(rswa));
 
         List<MultiFactorAuthenticationRequestContext> result = resolver.resolve(auth, was);
         assertNotNull(result);
@@ -109,10 +105,8 @@ public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestRe
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 
 
-        ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver resolver
-                = new ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver(
-                getMFWASF(was), getAMCP(), getServicesManager(rswa)
-        );
+        RegisteredServiceMfaRoleProcessor resolver = new RegisteredServiceMfaRoleProcessor(
+                getMFWASF(was), getAMCP(), getServicesManager(rswa));
 
         List<MultiFactorAuthenticationRequestContext> result = resolver.resolve(auth, was);
         assertNotNull(result);
@@ -136,10 +130,8 @@ public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestRe
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 
 
-        ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver resolver
-                = new ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver(
-                getMFWASF(was), getAMCP(), getServicesManager(rswa)
-        );
+        RegisteredServiceMfaRoleProcessor resolver = new RegisteredServiceMfaRoleProcessor(
+                getMFWASF(was), getAMCP(), getServicesManager(rswa));
 
         List<MultiFactorAuthenticationRequestContext> result = resolver.resolve(auth, was);
         assertNotNull(result);
@@ -156,10 +148,8 @@ public class ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestRe
         extraAttributes.put(AUTHN_METHOD, CAS_AUTHN_METHOD);
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 
-        ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver resolver
-                = new ServiceSpecificPrincipalAttributeMultiFactorAuthenticationRequestResolver(
-                getMFWASF(was), getAMCP(), getServicesManager(rswa)
-        );
+        RegisteredServiceMfaRoleProcessor resolver = new RegisteredServiceMfaRoleProcessor(
+                getMFWASF(was), getAMCP(), getServicesManager(rswa));
 
         List<MultiFactorAuthenticationRequestContext> result = resolver.resolve(auth, was);
         assertNotNull(result);

@@ -1,11 +1,18 @@
 package net.unicon.cas.mfa.web.support;
 
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
+import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
+import net.unicon.cas.mfa.authentication.RegisteredServiceMfaRoleProcessor;
+import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
+import org.jasig.cas.ticket.Ticket;
+import org.jasig.cas.ticket.TicketGrantingTicketImpl;
+import org.jasig.cas.ticket.registry.TicketRegistry;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.springframework.util.StringUtils;
+import org.springframework.webflow.execution.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -36,6 +43,16 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
     private String defaultAuthenticationMethod = null;
 
     /**
+     * The Ticket Registry.
+     */
+    private TicketRegistry ticketRegistry;
+
+    /**
+     * The mfa_role processor.
+     */
+    private RegisteredServiceMfaRoleProcessor mfaRoleProcessor;
+
+    /**
      * Ctor.
      *
      * @param supportedArgumentExtractors supported protocols by argument extractors
@@ -58,6 +75,13 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
     @Override
     protected String getAuthenticationMethod(final HttpServletRequest request, final WebApplicationService targetService) {
         logger.debug("Attempting to extract multifactor authentication method from registered service attribute...");
+
+        if (mfaRoleProcessor != null) {
+            final String mfaRolesResult = checkMfaRoles(targetService);
+            if (!StringUtils.isEmpty(mfaRolesResult)) {
+                return mfaRolesResult;
+            }
+        }
 
         final RegisteredService registeredService = this.servicesManager.findServiceBy(targetService);
         if (registeredService == null) {
@@ -105,7 +129,7 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
      * @return the default authn method if one is specified, or null.
      */
     protected String determineDefaultAuthenticationMethod() {
-        if (!StringUtils.isEmpty(this.defaultAuthenticationMethod)) {
+        if (!StringUtils.hasText(this.defaultAuthenticationMethod)) {
             logger.debug("{} is configured to use the default authentication method [{}]. ",
                     this.getClass().getSimpleName(),
                     this.defaultAuthenticationMethod);
@@ -114,4 +138,47 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
         logger.debug("No default authentication method is defined. Returning null...");
         return null;
     }
+
+    /**
+     * Adaptes the current request to check user attributes.
+     * @param targetService the targetted service
+     * @return the mfa authn method
+     */
+    protected String checkMfaRoles(final WebApplicationService targetService) {
+        final String tgt = RequestContextHolder.getRequestContext().getFlowScope().getString("ticketGrantingTicketId");
+        if (StringUtils.isEmpty(tgt)) {
+            logger.debug("The tgt is not available in the flowscope, so skipping check for mfa role attributes.");
+            return null;
+        }
+
+        final Ticket ticket = ticketRegistry.getTicket(tgt);
+        if (ticket == null) {
+            logger.debug("The tgt is not available in the registry, so skipping check for mfa role attributes.");
+            return null;
+        }
+
+        final Authentication authentication = TicketGrantingTicketImpl.class.cast(ticket).getAuthentication();
+        if (authentication == null) {
+            return null;
+        }
+
+        final List<MultiFactorAuthenticationRequestContext> mfaRequestContexts = mfaRoleProcessor.resolve(authentication, targetService);
+        if (mfaRequestContexts == null || mfaRequestContexts.size() == 0) {
+            logger.debug("no 'mfa_role' assigned contexts were found.");
+            return null;
+        }
+
+        final String authnMethod = mfaRequestContexts.get(0).getMfaService().getAuthenticationMethod();
+        logger.info("'mfa_role' returned {}.", authnMethod);
+        return authnMethod;
+    }
+
+    public void setTicketRegistry(final TicketRegistry ticketRegistry) {
+        this.ticketRegistry = ticketRegistry;
+    }
+
+    public void setMfaRoleProcessor(final RegisteredServiceMfaRoleProcessor mfaRoleProcessor) {
+        this.mfaRoleProcessor = mfaRoleProcessor;
+    }
+
 }
