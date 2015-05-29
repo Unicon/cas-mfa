@@ -3,6 +3,7 @@ package net.unicon.cas.mfa.authentication;
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.services.RegisteredService;
@@ -27,6 +28,26 @@ import java.util.regex.Pattern;
 
 public class RegisteredServiceMfaRoleProcessor {
     /**
+     * mfa_role.
+     */
+    public static final String MFA_ROLE = "mfa_role";
+
+    /**
+     * mfa_attribute_name.
+     */
+    public static final String MFA_ATTRIBUTE_NAME = "mfa_attribute_name";
+
+    /**
+     * mfa_attribute_name.
+     */
+    public static final String MFA_ATTRIBUTE_PATTERN = "mfa_attribute_pattern";
+
+    /**
+     * authn_method.
+     */
+    public static final String AUTHN_METHOD = "authn_method";
+
+    /**
      * The logger.
      */
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -36,10 +57,19 @@ public class RegisteredServiceMfaRoleProcessor {
      */
     private final MultiFactorWebApplicationServiceFactory mfaServiceFactory;
 
+    /**
+     * Authentication Method Configuration Provider.
+     */
     private final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration;
 
-    private final Map<String, Pattern> translationMap;
+    /**
+     * used to cache regex patterns for faster lookup/execution.
+     */
+    private final Map<String, Pattern> patternCache;
 
+    /**
+     * the services manager.
+     */
     private final ServicesManager servicesManager;
 
 
@@ -58,8 +88,7 @@ public class RegisteredServiceMfaRoleProcessor {
         this.mfaServiceFactory = mfaServiceFactory;
         this.authenticationMethodConfiguration = authenticationMethodConfiguration;
         this.servicesManager = servicesManager;
-
-        translationMap = new LinkedHashMap<String, Pattern>();
+        this.patternCache = new LinkedHashMap<String, Pattern>();
     }
 
     /**
@@ -76,7 +105,7 @@ public class RegisteredServiceMfaRoleProcessor {
         if ((authentication != null) && (targetService != null)) {
             final ServiceMfaData serviceMfaData = getServicesAuthenticationData(targetService);
 
-            if (serviceMfaData == null || !serviceMfaData.isValid()) {
+            if (serviceMfaData == null) {
                 logger.debug("No specific mfa_role service attributes found");
                 return null;
             }
@@ -110,7 +139,7 @@ public class RegisteredServiceMfaRoleProcessor {
         }
 
         if (list.size() == 0) {
-            logger.debug("No multifactor authentication requests could be resolved based on [{}]. Trying generic 'authn_method' attribute",
+            logger.debug("No multifactor authentication requests could be resolved based on [{}]." ,
                     authenticationMethodAttributeName);
             return null;
         }
@@ -157,7 +186,7 @@ public class RegisteredServiceMfaRoleProcessor {
      * @return true if a match is found. otherwise false
      */
     private boolean match(final String attributePattern, final String attributeValue) {
-        Pattern pattern = translationMap.get(attributePattern);
+        Pattern pattern = patternCache.get(attributePattern);
         if (pattern == null) {
             pattern = Pattern.compile(attributePattern);
         }
@@ -186,16 +215,20 @@ public class RegisteredServiceMfaRoleProcessor {
 
         final RegisteredServiceWithAttributes service = RegisteredServiceWithAttributes.class.cast(registeredService);
 
-        final Map mfaRole = Map.class.cast(service.getExtraAttributes().get("mfa_role"));
+        final Map mfaRole = Map.class.cast(service.getExtraAttributes().get(MFA_ROLE));
         if (mfaRole == null) {
             return null;
         }
 
-        serviceData.setAttributeName(String.class.cast(mfaRole.get("mfa_attribute_name")));
-        serviceData.setAttributePattern(String.class.cast(mfaRole.get("mfa_attribute_pattern")));
-        serviceData.setAuthenticationMethod(String.class.cast(service.getExtraAttributes().get("authn_method")));
+        serviceData.setAttributeName(String.class.cast(mfaRole.get(MFA_ATTRIBUTE_NAME)));
+        serviceData.setAttributePattern(String.class.cast(mfaRole.get(MFA_ATTRIBUTE_PATTERN)));
+        serviceData.setAuthenticationMethod(String.class.cast(service.getExtraAttributes().get(AUTHN_METHOD)));
 
-        return serviceData;
+        if (serviceData.isValid()) {
+            return serviceData;
+        }
+
+        return null;
     }
 
     /**
@@ -237,17 +270,23 @@ public class RegisteredServiceMfaRoleProcessor {
         public boolean isValid() {
             if (this.authenticationMethod != null && this.attributeName != null && this.attributePattern != null) {
                 return true;
-            } else {
-                logger.info("Something is null: mfa_authn_method ({}), mfa_attribute_name ({}), or mfa_attribute_pattern ({}) ",
-                        authenticationMethod, attributeName, attributePattern);
+            }
+            if (this.attributeName == null) {
+                logger.warn("'mfa_attribute_name' cannot be null when using '{}'", MFA_ROLE);
                 return false;
             }
+            if (this.attributePattern == null) {
+                logger.warn("'mfa_attribute_pattern' cannot be null when using '{}'", MFA_ROLE);
+                return false;
+            }
+
+            logger.warn("'authn_method` cannot be null when using '{}'", MFA_ROLE);
+            return false;
         }
 
         @Override
         public String toString() {
-            return String.format("Mfa role-mfaAuthnMethod: %s, attribute: %s, pattern: %s",
-                    this.authenticationMethod, this.attributeName, this.attributePattern);
+            return ToStringBuilder.reflectionToString(this);
         }
     }
 

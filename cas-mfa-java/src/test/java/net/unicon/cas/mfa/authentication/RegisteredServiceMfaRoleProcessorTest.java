@@ -37,11 +37,6 @@ public class RegisteredServiceMfaRoleProcessorTest {
 
     private static final String CAS_AUTHN_METHOD = "two-factor";
 
-    public static final String AUTHN_METHOD = "authn_method";
-    public static final String MFA_ROLE = "mfa_role";
-    public static final String MFA_ATTRIBUTE_PATTERN = "mfa_attribute_pattern";
-    public static final String MFA_ATTRIBUTE_NAME = "mfa_attribute_name";
-
     public static final String MEMBER_OF = "memberOf";
     public static final String MEMBER_OF_VALUE = "cn=test";
 
@@ -70,13 +65,13 @@ public class RegisteredServiceMfaRoleProcessorTest {
 
         RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
         HashMap<String, Object> extraAttributes = new HashMap<String, Object>();
-        extraAttributes.put(AUTHN_METHOD, CAS_AUTHN_METHOD);
+        extraAttributes.put(RegisteredServiceMfaRoleProcessor.AUTHN_METHOD, CAS_AUTHN_METHOD);
 
         Map<String, Object> roleMap = new HashMap<String, Object>();
         // making mfa_role incomplete: roleMap.put("mfa_attribute_name", "memberOf");
-        roleMap.put(MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
+        roleMap.put(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
 
-        extraAttributes.put(MFA_ROLE, roleMap);
+        extraAttributes.put(RegisteredServiceMfaRoleProcessor.MFA_ROLE, roleMap);
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 
 
@@ -95,13 +90,13 @@ public class RegisteredServiceMfaRoleProcessorTest {
 
         RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
         HashMap<String, Object> extraAttributes = new HashMap<String, Object>();
-        extraAttributes.put(AUTHN_METHOD, CAS_AUTHN_METHOD);
+        extraAttributes.put(RegisteredServiceMfaRoleProcessor.AUTHN_METHOD, CAS_AUTHN_METHOD);
 
         Map<String, Object> roleMap = new HashMap<String, Object>();
-        roleMap.put(MFA_ATTRIBUTE_NAME, MEMBER_OF);
-        roleMap.put(MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
+        roleMap.put(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_NAME, MEMBER_OF);
+        roleMap.put(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
 
-        extraAttributes.put(MFA_ROLE, roleMap);
+        extraAttributes.put(RegisteredServiceMfaRoleProcessor.MFA_ROLE, roleMap);
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 
 
@@ -120,13 +115,13 @@ public class RegisteredServiceMfaRoleProcessorTest {
 
         RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
         HashMap<String, Object> extraAttributes = new HashMap<String, Object>();
-        extraAttributes.put(AUTHN_METHOD, CAS_AUTHN_METHOD);
+        extraAttributes.put(RegisteredServiceMfaRoleProcessor.AUTHN_METHOD, CAS_AUTHN_METHOD);
 
         Map<String, Object> roleMap = new HashMap<String, Object>();
-        roleMap.put(MFA_ATTRIBUTE_NAME, MEMBER_OF);
-        roleMap.put(MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
+        roleMap.put(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_NAME, MEMBER_OF);
+        roleMap.put(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
 
-        extraAttributes.put(MFA_ROLE, roleMap);
+        extraAttributes.put(RegisteredServiceMfaRoleProcessor.MFA_ROLE, roleMap);
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 
 
@@ -145,11 +140,12 @@ public class RegisteredServiceMfaRoleProcessorTest {
 
         RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
         HashMap<String, Object> extraAttributes = new HashMap<String, Object>();
-        extraAttributes.put(AUTHN_METHOD, CAS_AUTHN_METHOD);
+        extraAttributes.put(RegisteredServiceMfaRoleProcessor.AUTHN_METHOD, CAS_AUTHN_METHOD);
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 
         RegisteredServiceMfaRoleProcessor resolver = new RegisteredServiceMfaRoleProcessor(
-                getMFWASF(was), getAMCP(), getServicesManager(rswa));
+                getMFWASF(was), getAMCP(), getServicesManager(rswa)
+);
 
         List<MultiFactorAuthenticationRequestContext> result = resolver.resolve(auth, was);
         assertNotNull(result);
