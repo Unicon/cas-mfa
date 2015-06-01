@@ -4,6 +4,7 @@ import net.unicon.cas.mfa.authentication.AuthenticationMethodConfigurationProvid
 import net.unicon.cas.mfa.authentication.AuthenticationMethodTranslator;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
+import net.unicon.cas.mfa.authentication.RegisteredServiceMfaRoleProcessor;
 import net.unicon.cas.mfa.authentication.StubAuthenticationMethodTranslator;
 import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
@@ -63,6 +64,11 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     private AuthenticationMethodTranslator authenticationMethodTranslator = new StubAuthenticationMethodTranslator();
 
     /**
+     * The mfa_role processor.
+     */
+    private RegisteredServiceMfaRoleProcessor mfaRoleProcessor;
+
+    /**
      * Ctor.
      *
      * @param mfaServiceFactory mfaServiceFactory
@@ -94,6 +100,15 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
                                                                  @NotNull final WebApplicationService targetService) {
         final List<MultiFactorAuthenticationRequestContext> list = new ArrayList<MultiFactorAuthenticationRequestContext>();
         if ((authentication != null) && (targetService != null)) {
+
+            if (mfaRoleProcessor != null) {
+                final List<MultiFactorAuthenticationRequestContext> mfaRoleResults =
+                        mfaRoleProcessor.resolve(authentication, targetService);
+                if (mfaRoleResults != null) {
+                    return mfaRoleResults;
+                }
+            }
+
             final Object mfaMethodAsObject = authentication.getPrincipal().getAttributes().get(this.authenticationMethodAttributeName);
             if (mfaMethodAsObject != null) {
                 if (mfaMethodAsObject instanceof String) {
@@ -156,5 +171,9 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
 
     public void setAuthenticationMethodTranslator(final AuthenticationMethodTranslator authenticationMethodTranslator) {
         this.authenticationMethodTranslator = authenticationMethodTranslator;
+    }
+
+    public void setMfaRoleProcessor(final RegisteredServiceMfaRoleProcessor mfaRoleProcessor) {
+        this.mfaRoleProcessor = mfaRoleProcessor;
     }
 }
