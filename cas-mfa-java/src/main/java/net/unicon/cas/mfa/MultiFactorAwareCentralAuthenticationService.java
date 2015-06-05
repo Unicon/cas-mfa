@@ -18,6 +18,7 @@ import org.jasig.cas.authentication.principal.ShibbolethCompatiblePersistentIdGe
 import org.jasig.cas.authentication.principal.SimplePrincipal;
 import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
+import org.jasig.cas.services.UnauthorizedProxyingException;
 import org.jasig.cas.services.UnauthorizedServiceException;
 import org.jasig.cas.ticket.ExpirationPolicy;
 import org.jasig.cas.ticket.InvalidTicketException;
@@ -236,25 +237,7 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
             actionResolverName="GRANT_PROXY_GRANTING_TICKET_RESOLVER",
             resourceResolverName="GRANT_PROXY_GRANTING_TICKET_RESOURCE_RESOLVER")
     public String delegateTicketGrantingTicket(final String serviceTicketId, final Credentials credentials) throws TicketException {
-        try {
-            this.authenticationManager.authenticate(credentials);
-            final ServiceTicket serviceTicket = (ServiceTicket) this.ticketRegistry.getTicket(serviceTicketId, ServiceTicket.class);
-            final TicketGrantingTicket tgt = serviceTicket.getGrantingTicket();
-
-            final MultiFactorCredentials mfaCredentials = new MultiFactorCredentials();
-            mfaCredentials.addAuthenticationToChain(tgt.getAuthentication());
-
-            final Authentication authentication = mfaCredentials.getAuthentication();
-            final TicketGrantingTicket ticketGrantingTicket = serviceTicket.grantTicketGrantingTicket(
-                    this.ticketGrantingTicketUniqueTicketIdGenerator.getNewTicketId(TicketGrantingTicket.PREFIX),
-                    authentication, this.ticketGrantingTicketExpirationPolicy);
-
-            this.ticketRegistry.addTicket(ticketGrantingTicket);
-
-            return ticketGrantingTicket.getId();
-        } catch (final AuthenticationException e) {
-            throw new TicketCreationException(e);
-        }
+        return this.delegate.delegateTicketGrantingTicket(serviceTicketId, credentials);
     }
 
     /**

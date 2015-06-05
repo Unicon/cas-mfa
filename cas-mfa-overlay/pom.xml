@@ -144,6 +144,13 @@
             <type>war</type>
         </dependency>
 
+        <dependency>
+            <groupId>org.jasig.cas</groupId>
+            <artifactId>cas-server-extension-clearpass</artifactId>
+            <version>${cas.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- This is required. Do not remove! -->
         <dependency>
             <groupId>net.unicon</groupId>
