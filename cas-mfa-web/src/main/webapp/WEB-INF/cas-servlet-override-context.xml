@@ -70,9 +70,6 @@
 
     <util:list id="listOfMfaAuthenticationMetadataPopulators">
         <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator"/>
-        <bean class="org.jasig.cas.extension.clearpass.CacheCredentialsMetaDataPopulator"
-                  c:credentialCache-ref="credentialsCache" />
-
     </util:list>
 
     <bean id="principalAttributeMfaRequestResolver"
