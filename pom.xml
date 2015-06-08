@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
     <name>CAS MFA Parent</name>
     <description>Jasig CAS SSO server multifactor authentication libraries and web application.</description>
-    <version>1.0.0-RC2</version>
+    <version>1.0.0-RC3-SNAPSHOT</version>
     <url>https://github.com/Unicon/cas-mfa</url>
     <inceptionYear>2013</inceptionYear>
     <organization>
