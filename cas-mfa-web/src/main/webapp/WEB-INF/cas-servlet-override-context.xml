@@ -71,7 +71,16 @@
                 <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator"/>
             </list>
         </property>
+        <property name="credentialsToPrincipalResolvers">
+            <list merge="true" >
+                <bean class="net.unicon.cas.mfa.authentication.principal.ChainingCredentialsToPrincipalResolver"
+                      p:chain-ref="mfaCredentialsToPrincipalResolvers" />
+            </list>
+        </property>
     </bean>
+
+    <!-- This will be automatically populated at runtime, when necessary, by each module -->
+    <util:list id="mfaCredentialsToPrincipalResolvers" />
 
     <bean id="principalAttributeMfaRequestResolver"
           class="net.unicon.cas.mfa.authentication.principal.PrincipalAttributeMultiFactorAuthenticationRequestResolver"
