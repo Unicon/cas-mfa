@@ -9,6 +9,8 @@ import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.message.MessageResolver;
 
+import java.util.Collection;
+
 /**
  * Greets the principal by a configurable principal attribute and falls back
  * to the principal id, if none is found.
@@ -36,7 +38,24 @@ public final class MultifactorLoginViewPrincipalAttributeGreeter implements Mult
     public String getPersonToGreet(final Principal p, final MessageContext messageContext) {
 
         String personId = p.getId();
-        final String greetingPersonId = (String) p.getAttributes().get(this.greetingAttributeName);
+        final Object attrValue = p.getAttributes().get(this.greetingAttributeName);
+
+        if (attrValue == null) {
+            LOGGER.warn("No attribute value could be found for [{}]", this.greetingAttributeName);
+            return p.getId();
+        }
+
+        String greetingPersonId = attrValue.toString();
+        if (attrValue instanceof Collection) {
+            final Collection col =((Collection) attrValue);
+            if (!col.isEmpty()) {
+                greetingPersonId = col.iterator().next().toString();
+                LOGGER.warn("Found multiple attribute values [{}] for [{}] to greet. Picked [{}]",
+                        attrValue, this.greetingAttributeName,
+                        greetingPersonId);
+            }
+        }
+
         if (!StringUtils.isBlank(greetingPersonId)) {
             personId = greetingPersonId;
         }
@@ -46,13 +65,12 @@ public final class MultifactorLoginViewPrincipalAttributeGreeter implements Mult
 
         final Message[] messages = messageContext.getMessagesBySource(CODE);
         if (messages == null || messages.length == 0) {
-            LOGGER.warn("The greeting message for pricipal [{}] could not be resolved by the "
+            LOGGER.warn("The greeting message for principal [{}] could not be resolved by the "
                     + "code [{}] in any of the configured message resource bundles. Falling back to principal id [{}]",
                     p, CODE, p.getId());
             return p.getId();
         }
-        final String msgToReturn = messages[0].getText();
-        return msgToReturn;
+        return messages[0].getText();
     }
 
 }

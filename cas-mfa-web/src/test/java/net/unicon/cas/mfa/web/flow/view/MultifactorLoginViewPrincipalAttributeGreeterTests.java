@@ -1,23 +1,22 @@
 package net.unicon.cas.mfa.web.flow.view;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.SimplePrincipal;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.binding.message.Message;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.message.Severity;
 
-@RunWith(JUnit4.class)
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
+
 public class MultifactorLoginViewPrincipalAttributeGreeterTests {
 
     @Mock
@@ -35,6 +34,22 @@ public class MultifactorLoginViewPrincipalAttributeGreeterTests {
         values[0] = msg;
 
         when(messageContext.getMessagesBySource(any(Object.class))).thenReturn(values);
+    }
+
+    @Test
+    public void testValidPrincipalMultivaluedAttributeToGreet() {
+        final Map map = new HashMap();
+        map.put("firstName", Arrays.asList("cas", "sso"));
+        map.put("lastName", "user");
+
+        final Principal p = new SimplePrincipal("userid", map);
+
+        final MultifactorLoginViewPrincipalAttributeGreeter greeter = new MultifactorLoginViewPrincipalAttributeGreeter(
+                "firstName");
+
+        configureMessageContextForPrincipal("cas");
+        final String value = greeter.getPersonToGreet(p, this.messageContext);
+        assertTrue(value.contains("cas"));
     }
 
     @Test
