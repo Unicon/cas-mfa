@@ -65,18 +65,19 @@
           p:persistentIdGenerator-ref="persistentIdGenerator"
           p:authenticationManager-ref="mfaAuthenticationManager"/>
 
-    <bean id="mfaAuthenticationManager" parent="authenticationManager">
+    <bean id="mfaAuthenticationManager" class="net.unicon.cas.mfa.authentication.CasMultiFactorAuthenticationManager">
         <property name="authenticationMetaDataPopulators">
-            <list merge="true">
+            <list>
                 <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator"/>
             </list>
         </property>
         <property name="credentialsToPrincipalResolvers">
-            <list merge="true" >
+            <list>
                 <bean class="net.unicon.cas.mfa.authentication.principal.ChainingCredentialsToPrincipalResolver"
                       p:chain-ref="mfaCredentialsToPrincipalResolvers" />
             </list>
         </property>
+        <property name="delegate" ref="authenticationManager" />
     </bean>
 
     <!-- This will be automatically populated at runtime, when necessary, by each module -->
