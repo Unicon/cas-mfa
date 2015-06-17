@@ -3,7 +3,7 @@
     <parent>
         <artifactId>cas-mfa</artifactId>
         <groupId>net.unicon</groupId>
-        <version>1.0.0-RC3-SNAPSHOT</version>
+        <version>1.0.0-RC3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cas-mfa-overlay</artifactId>
@@ -30,11 +30,12 @@
                     <overlays>
 
                         <!-- Include to add support for strong-two-factor -->
-
+                        <!--
                         <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-s2f</artifactId>
                         </overlay>
+                        -->
 
                         <!-- Include to add support for Authy -->
                         <!--
@@ -53,12 +54,11 @@
                         -->
 
                         <!-- Include to add support for Duo -->
-                        <!--
+
                         <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-duo-web</artifactId>
                         </overlay>
-                        -->
 
                         <!-- Include to add support for YubiKey -->
                         <!--
@@ -154,23 +154,31 @@
 
         <!-- Include to add support for strong-two-factor -->
 
+        <!--
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-s2f</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
+        -->
 
+        <dependency>
+            <groupId>org.jasig.cas</groupId>
+            <artifactId>cas-server-extension-clearpass</artifactId>
+            <version>${cas.version}</version>
+            <scope>runtime</scope>
+        </dependency>
 
         <!-- Include to add support for Duo Security -->
-        <!--
+
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-duo-web</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
-        -->
+
 
         <!-- Include to add support for YubiKey -->
         <!--
