@@ -26,6 +26,7 @@ import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStr
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 
+import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.web.flow.AuthenticationViaFormAction;
@@ -80,6 +81,12 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
     @Override
     protected final Event doAuthentication(final RequestContext context, final Credentials credentials,
                                            final MessageContext messageContext, final String id) throws Exception {
+
+
+        final String tgt = WebUtils.getTicketGrantingTicketId(context);
+        if (!StringUtils.isBlank(tgt)) {
+            this.cas.destroyTicketGrantingTicket(tgt);
+        }
 
         final String primaryAuthnEventId = this.wrapperAuthenticationAction.submit(context, credentials, messageContext);
         final Event primaryAuthnEvent = new Event(this, primaryAuthnEventId);

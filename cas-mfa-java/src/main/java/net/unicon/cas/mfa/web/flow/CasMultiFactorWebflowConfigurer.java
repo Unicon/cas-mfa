@@ -62,6 +62,10 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
     private static final String STATE_DEFINITION_ID_TGT_EXISTS_CHECK = "ticketGrantingTicketExistsCheck";
     private static final String STATE_DEFINITION_ID_REAL_SUBMIT = "realSubmit";
     private static final String STATE_DEFINITION_ID_SERVICE_CHECK = "serviceCheck";
+    private static final String UNKNOWN_PRINCIPAL_ERROR_EVENT_ID = "unknownPrincipalError";
+    private static final String MFA_UNRECOGNIZED_AUTHN_METHOD_ERROR_EVENT_ID = "mfaUnrecognizedAuthnMethodError";
+    private static final String MFA_SUCCESS_EVENT_ID = "mfaSuccess";
+    private static final String SEND_TICKET_GRANTING_TICKET_EVENT_ID = "sendTicketGrantingTicket";
 
     @Autowired
     private FlowBuilderServices flowBuilderServices;
@@ -392,9 +396,11 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
         final SubflowAttributeMapper subflowMapper = createSubflowAttributeMapper(inputMapper, null);
         subflowState.setAttributeMapper(subflowMapper);
 
-        subflowState.getTransitionSet().add(createTransition("mfaSuccess", "sendTicketGrantingTicket"));
-        subflowState.getTransitionSet().add(createTransition("unknownPrincipalError", "viewUnknownPrincipalErrorView"));
-        subflowState.getTransitionSet().add(createTransition("mfaUnrecognizedAuthnMethodError", "viewMfaUnrecognizedAuthnMethodErrorView"));
+        subflowState.getTransitionSet().add(createTransition(MFA_SUCCESS_EVENT_ID, SEND_TICKET_GRANTING_TICKET_EVENT_ID));
+        subflowState.getTransitionSet().add(createTransition(UNKNOWN_PRINCIPAL_ERROR_EVENT_ID,
+                "viewUnknownPrincipalErrorView"));
+        subflowState.getTransitionSet().add(createTransition(MFA_UNRECOGNIZED_AUTHN_METHOD_ERROR_EVENT_ID,
+                "viewMfaUnrecognizedAuthnMethodErrorView"));
     }
 
     /**

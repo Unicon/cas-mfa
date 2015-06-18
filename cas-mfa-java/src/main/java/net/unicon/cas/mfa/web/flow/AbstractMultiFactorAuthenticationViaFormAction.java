@@ -11,7 +11,6 @@ import net.unicon.cas.mfa.web.flow.event.ServiceAuthenticationMethodMultiFactorA
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.AuthenticationManager;
@@ -99,12 +98,6 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      */
     private final String hostname;
 
-    /**
-     * Prior to attempting to execute multifactor authentication,
-     * should the previous SSO session (TGT) be destroyed?
-     */
-    private boolean destroyPreviousSingleSignOnSession = true;
-
     private MultiFactorAuthenticationSpringWebflowEventBuilder successfulEventBuilder =
             new ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEventBuilder();
 
@@ -186,14 +179,6 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
         Assert.notNull(credentials);
 
         try {
-
-            if (this.destroyPreviousSingleSignOnSession) {
-                final String tgt = WebUtils.getTicketGrantingTicketId(context);
-                if (!StringUtils.isBlank(tgt)) {
-                    this.cas.destroyTicketGrantingTicket(tgt);
-                }
-            }
-
             final Authentication auth = this.authenticationManager.authenticate(credentials);
             if (MultiFactorRequestContextUtils.getMultifactorWebApplicationService(context) == null) {
                 final List<MultiFactorAuthenticationRequestContext> mfaRequest =
@@ -324,15 +309,6 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
 
     public void setErrorEventBuilder(final MultiFactorAuthenticationSpringWebflowEventBuilder errorEventBuilder) {
         this.errorEventBuilder = errorEventBuilder;
-    }
-
-    /**
-     * Sets destroy previous single sign on session.
-     *
-     * @param destroyPreviousSingleSignOnSession the destroy previous single sign on session
-     */
-    public void setDestroyPreviousSingleSignOnSession(final boolean destroyPreviousSingleSignOnSession) {
-        this.destroyPreviousSingleSignOnSession = destroyPreviousSingleSignOnSession;
     }
 
     /**

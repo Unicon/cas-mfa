@@ -110,8 +110,7 @@
     <bean id="initiatingAuthenticationViaFormAction" parent="abstractAuthenticationViaFormAction"
           class="net.unicon.cas.mfa.web.flow.InitiatingMultiFactorAuthenticationViaFormAction"
           c:wrapperAuthenticationAction-ref="authenticationViaFormAction"
-          p:warnCookieGenerator-ref="warnCookieGenerator"
-          p:destroyPreviousSingleSignOnSession="${mfa.destroy.prev.sso:true}"  />
+          p:warnCookieGenerator-ref="warnCookieGenerator"/>
 
     <bean id="principalMismatchExceptionHandler"
           class="net.unicon.cas.mfa.web.flow.ConfigurableSpringWebflowExceptionHandler"
@@ -125,6 +124,12 @@
     <bean id="removeHostnameServiceInContextAction"
               class="net.unicon.cas.mfa.web.flow.RemoveHostnameInContextAction"
               c:hostname="${server.prefix}" />
+
+    <bean id="sendTicketGrantingTicketAction" class="net.unicon.cas.mfa.web.flow.SendTicketGrantingTicketAction"
+          p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
+          p:authenticationSupport-ref="authenticationSupport"
+          p:destroyPreviousSSOSession="${mfa.destroy.prev.sso:true}"
+          p:ticketGrantingTicketCookieGenerator-ref="ticketGrantingTicketCookieGenerator"/>
 
     <!-- MFA Views -->
 
