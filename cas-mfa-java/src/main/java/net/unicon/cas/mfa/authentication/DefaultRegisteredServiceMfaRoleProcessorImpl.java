@@ -66,6 +66,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
      * used to cache regex patterns for faster lookup/execution.
      */
     private final Map<String, Pattern> patternCache;
+    private final Object cacheLock = new Object();
 
     /**
      * the services manager.
@@ -186,9 +187,15 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
      * @return true if a match is found. otherwise false
      */
     private boolean match(final String attributePattern, final String attributeValue) {
-        Pattern pattern = patternCache.get(attributePattern);
-        if (pattern == null) {
-            pattern = Pattern.compile(attributePattern);
+        Pattern pattern;
+
+        synchronized (cacheLock) {
+            pattern = patternCache.get(attributePattern);
+
+            if (pattern == null) {
+                pattern = Pattern.compile(attributePattern);
+                patternCache.put(attributePattern, pattern);
+            }
         }
 
         return pattern.matcher(attributeValue).matches();
