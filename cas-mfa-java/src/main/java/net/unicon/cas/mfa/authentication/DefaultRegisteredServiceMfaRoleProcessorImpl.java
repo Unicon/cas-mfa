@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -66,6 +66,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
      * used to cache regex patterns for faster lookup/execution.
      */
     private final Map<String, Pattern> patternCache;
+    private final Object cacheLock = new Object();
 
     /**
      * the services manager.
@@ -88,7 +89,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
         this.mfaServiceFactory = mfaServiceFactory;
         this.authenticationMethodConfiguration = authenticationMethodConfiguration;
         this.servicesManager = servicesManager;
-        this.patternCache = new LinkedHashMap<String, Pattern>();
+        this.patternCache = new ConcurrentHashMap<>();
     }
 
     /**
@@ -186,9 +187,15 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
      * @return true if a match is found. otherwise false
      */
     private boolean match(final String attributePattern, final String attributeValue) {
-        Pattern pattern = patternCache.get(attributePattern);
-        if (pattern == null) {
-            pattern = Pattern.compile(attributePattern);
+        Pattern pattern;
+
+        synchronized (cacheLock) {
+            pattern = patternCache.get(attributePattern);
+
+            if (pattern == null) {
+                pattern = Pattern.compile(attributePattern);
+                patternCache.put(attributePattern, pattern);
+            }
         }
 
         return pattern.matcher(attributeValue).matches();
