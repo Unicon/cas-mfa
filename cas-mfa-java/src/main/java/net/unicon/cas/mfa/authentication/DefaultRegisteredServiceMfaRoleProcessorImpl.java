@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -89,7 +89,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
         this.mfaServiceFactory = mfaServiceFactory;
         this.authenticationMethodConfiguration = authenticationMethodConfiguration;
         this.servicesManager = servicesManager;
-        this.patternCache = new LinkedHashMap<String, Pattern>();
+        this.patternCache = new ConcurrentHashMap<>();
     }
 
     /**
