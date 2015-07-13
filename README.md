@@ -2,6 +2,10 @@
 
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/Unicon/cas-mfa?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+
+> This project is made public here on Github as part of Unicon's [Open Source Support program](https://unicon.net/opensource).
+Professional Support / Integration Assistance for this module is available. For more information [visit](https://unicon.net/opensource/cas).
+
 This is a project to develop free and open source compatibly licensed extensions for the CAS server `v3.6.x` product implementing
 
 * support for authenticating using multiple authentication factors
