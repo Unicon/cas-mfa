@@ -1,7 +1,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:cas="http://unicon.net/schema/cas"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:webflow="http://www.springframework.org/schema/webflow-config"
        xmlns:c="http://www.springframework.org/schema/c"
@@ -11,7 +10,6 @@
        http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://unicon.net/schema/cas http://unicon.net/schema/cas/cas-addons.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 
@@ -20,8 +18,6 @@
     <context:annotation-config />
 
     <aop:aspectj-autoproxy/>
-
-    <cas:default-authentication-support/>
 
     <webflow:flow-registry id="flowRegistry" flow-builder-services="builder" base-path="/WEB-INF/subflows">
         <webflow:flow-location-pattern value="**/*-webflow.xml"/>
