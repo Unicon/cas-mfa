@@ -1,5 +1,6 @@
 package net.unicon.cas.mfa.web.support;
 
+import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.RegisteredServiceMfaRoleProcessor;
@@ -7,9 +8,6 @@ import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
-import org.jasig.cas.ticket.Ticket;
-import org.jasig.cas.ticket.TicketGrantingTicketImpl;
-import org.jasig.cas.ticket.registry.TicketRegistry;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.springframework.util.StringUtils;
 import org.springframework.webflow.execution.RequestContextHolder;
@@ -43,14 +41,14 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
     private String defaultAuthenticationMethod = null;
 
     /**
-     * The Ticket Registry.
-     */
-    private TicketRegistry ticketRegistry;
-
-    /**
      * The mfa_role processor.
      */
     private RegisteredServiceMfaRoleProcessor mfaRoleProcessor;
+
+    /**
+     * The authentication support.
+     */
+    private AuthenticationSupport authenticationSupport;
 
     /**
      * Ctor.
@@ -66,10 +64,6 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
                                                               final AuthenticationMethodVerifier authenticationMethodVerifier) {
         super(supportedArgumentExtractors, mfaWebApplicationServiceFactory, authenticationMethodVerifier);
         this.servicesManager = servicesManager;
-    }
-
-    public void setAuthenticationMethodAttribute(final String authenticationMethodAttribute) {
-        this.authenticationMethodAttribute = authenticationMethodAttribute;
     }
 
     @Override
@@ -151,14 +145,9 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
             return null;
         }
 
-        final Ticket ticket = ticketRegistry.getTicket(tgt);
-        if (ticket == null) {
-            logger.debug("The tgt is not available in the registry, so skipping check for mfa role attributes.");
-            return null;
-        }
-
-        final Authentication authentication = TicketGrantingTicketImpl.class.cast(ticket).getAuthentication();
+        final Authentication authentication = this.authenticationSupport.getAuthenticationFrom(tgt);
         if (authentication == null) {
+            logger.debug("There is no current authentication, so skipping check for mfa role attributes.");
             return null;
         }
 
@@ -173,12 +162,17 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
         return authnMethod;
     }
 
-    public void setTicketRegistry(final TicketRegistry ticketRegistry) {
-        this.ticketRegistry = ticketRegistry;
-    }
+
 
     public void setMfaRoleProcessor(final RegisteredServiceMfaRoleProcessor mfaRoleProcessor) {
         this.mfaRoleProcessor = mfaRoleProcessor;
     }
 
+    public void setAuthenticationMethodAttribute(final String authenticationMethodAttribute) {
+        this.authenticationMethodAttribute = authenticationMethodAttribute;
+    }
+
+    public void setAuthenticationSupport(final AuthenticationSupport authenticationSupport) {
+        this.authenticationSupport = authenticationSupport;
+    }
 }

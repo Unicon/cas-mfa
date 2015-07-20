@@ -54,7 +54,7 @@
           c:servicesManager-ref="servicesManager"
           p:defaultAuthenticationMethod="${mfa.default.authn.method:}"
           p:mfaRoleProcessor-ref="registeredServiceMfaRoleProcessor"
-          p:ticketRegistry-ref="ticketRegistry"/>
+          p:authenticationSupport-ref="authenticationSupport"/>
 
     <util:set id="mfaArgumentExtractors">
         <ref bean="registeredServiceAttributeMfaArgumentExtractor"/>
