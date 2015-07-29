@@ -4,6 +4,7 @@ import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestResolver;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionContext;
+import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTrustStrategy;
 import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStrategy;
 import net.unicon.cas.mfa.web.flow.event.ErroringMultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.flow.event.MultiFactorAuthenticationSpringWebflowEventBuilder;
@@ -111,6 +112,9 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
     private MultiFactorAuthenticationSpringWebflowEventBuilder errorEventBuilder =
             new ErroringMultiFactorAuthenticationSpringWebflowEventBuilder();
 
+    private MultiFactorAuthenticationTrustStrategy authenticationTrustStrategy =
+            new MultiFactorAuthenticationTrustStrategy.MultiFactorAuthenticationNeverTrustStrategy();
+
     /**
      * Ctor.
      *
@@ -207,10 +211,13 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
                             addToMfaTransactionAndGetHighestRankedMfaRequest(mfaRequest, context));
                 }
             }
-
-            final Event result = multiFactorAuthenticationSuccessful(auth, context, credentials, messageContext, id);
             MultiFactorRequestContextUtils.setAuthentication(context, auth);
-            return result;
+
+            if (this.authenticationTrustStrategy.isTrusted(auth, context)) {
+                return success();
+            }
+            return multiFactorAuthenticationSuccessful(auth, context, credentials, messageContext, id);
+
         } catch (final AuthenticationException e) {
             populateErrorsInstance(e.getCode(), messageContext);
             MultiFactorRequestContextUtils.setAuthenticationExceptionInFlowScope(context, e);
@@ -487,5 +494,10 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
             getHighestRankedMfaRequestFromMfaTransaction(final RequestContext context) {
         return this.authnMethodRankingStrategy.computeHighestRankingAuthenticationMethod(
                 MultiFactorRequestContextUtils.getMfaTransaction(context));
+    }
+
+    public void setAuthenticationTrustStrategy(
+            final MultiFactorAuthenticationTrustStrategy authenticationTrustStrategy) {
+        this.authenticationTrustStrategy = authenticationTrustStrategy;
     }
 }

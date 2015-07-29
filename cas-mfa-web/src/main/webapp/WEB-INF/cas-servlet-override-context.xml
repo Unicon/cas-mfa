@@ -81,6 +81,15 @@
     <bean id="authenticationMethodRankingStrategy" class="net.unicon.cas.mfa.authentication.OrderedMultiFactorMethodRankingStrategy"
           c:authenticationMethodConfiguration-ref="authenticationMethodsConfig"/>
 
+    <bean id="mfaLocationResolver" class="net.unicon.cas.mfa.authentication.loc.IpInfoDbAuthenticationLocationResolver"
+          c:apiKey="${ipinfodb.api.key}" />
+
+    <bean id="authenticationRegistry" class="net.unicon.cas.mfa.authentication.loc.DefaultAuthenticationRegistry" />
+
+    <bean id="mfaTrustStrategy" class="net.unicon.cas.mfa.authentication.loc.LocationBasedMultiFactorAuthenticationTrustStrategy"
+          c:locationResolver-ref="mfaLocationResolver"
+          c:registry-ref="authenticationRegistry" />
+
     <bean id="abstractAuthenticationViaFormAction" abstract="true"
           class="net.unicon.cas.mfa.web.flow.AbstractMultiFactorAuthenticationViaFormAction"
           p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
@@ -89,7 +98,8 @@
           c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
           c:hostname="${server.prefix}"
           c:authenticationSupport-ref="authenticationSupport"
-          c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver" />
+          c:multiFactorAuthenticationRequestResolver-ref="principalAttributeMfaRequestResolver"
+          p:authenticationTrustStrategy-ref="mfaTrustStrategy"  />
 
     <!--
       Initiating the the multifactor authentication sequence. Validates credentials and
