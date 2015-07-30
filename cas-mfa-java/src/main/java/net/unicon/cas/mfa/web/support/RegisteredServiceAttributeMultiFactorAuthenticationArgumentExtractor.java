@@ -4,12 +4,14 @@ import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.RegisteredServiceMfaRoleProcessor;
+import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
 import org.jasig.cas.web.support.ArgumentExtractor;
-import org.springframework.util.StringUtils;
+
+import org.springframework.webflow.execution.RequestContext;
 import org.springframework.webflow.execution.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -99,7 +101,7 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
                 String.class.cast(extraAttributes.get(this.authenticationMethodAttribute));
 
 
-        if (!StringUtils.hasText(authenticationMethod)) {
+        if (StringUtils.isBlank(authenticationMethod)) {
             logger.debug("Registered service does not define authentication method attribute [{}]. ",
                     this.authenticationMethodAttribute);
             return determineDefaultAuthenticationMethod();
@@ -123,7 +125,7 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
      * @return the default authn method if one is specified, or null.
      */
     protected String determineDefaultAuthenticationMethod() {
-        if (!StringUtils.hasText(this.defaultAuthenticationMethod)) {
+        if (StringUtils.isBlank(this.defaultAuthenticationMethod)) {
             logger.debug("{} is configured to use the default authentication method [{}]. ",
                     this.getClass().getSimpleName(),
                     this.defaultAuthenticationMethod);
@@ -139,8 +141,14 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
      * @return the mfa authn method
      */
     protected String checkMfaRoles(final WebApplicationService targetService) {
-        final String tgt = RequestContextHolder.getRequestContext().getFlowScope().getString("ticketGrantingTicketId");
-        if (StringUtils.isEmpty(tgt)) {
+        final RequestContext context = RequestContextHolder.getRequestContext();
+        if (context == null) {
+            logger.debug("No request context is available, so skipping check for mfa role attributes.");
+            return null;
+        }
+
+        final String tgt = context.getFlowScope().getString("ticketGrantingTicketId");
+        if (StringUtils.isBlank(tgt)) {
             logger.debug("The tgt is not available in the flowscope, so skipping check for mfa role attributes.");
             return null;
         }
