@@ -125,7 +125,7 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
      * @return the default authn method if one is specified, or null.
      */
     protected String determineDefaultAuthenticationMethod() {
-        if (StringUtils.isBlank(this.defaultAuthenticationMethod)) {
+        if (StringUtils.isNotBlank(this.defaultAuthenticationMethod)) {
             logger.debug("{} is configured to use the default authentication method [{}]. ",
                     this.getClass().getSimpleName(),
                     this.defaultAuthenticationMethod);
