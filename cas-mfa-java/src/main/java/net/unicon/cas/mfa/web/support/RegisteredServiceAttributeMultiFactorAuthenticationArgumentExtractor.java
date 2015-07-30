@@ -136,8 +136,8 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
     }
 
     /**
-     * Adaptes the current request to check user attributes.
-     * @param targetService the targetted service
+     * Adapts the current request to check user attributes.
+     * @param targetService the targeted service
      * @return the mfa authn method
      */
     protected String checkMfaRoles(final WebApplicationService targetService) {
