@@ -15,7 +15,7 @@ This is a project to develop free and open source compatibly licensed extensions
 The intention is to develop a solution that can be adopted by current CAS adopters.
 
 ## Requirements
-* JDK 6~8
+* JDK 7~8
 * Maven 3
 * Tomcat 7~8
 
