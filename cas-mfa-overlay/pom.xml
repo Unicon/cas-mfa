@@ -154,14 +154,14 @@
 
         <!-- Include to add support for strong-two-factor -->
 
-        <!--
+        <!-- -->
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-s2f</artifactId>
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
-        -->
+        <!-- -->
 
         <dependency>
             <groupId>org.jasig.cas</groupId>
