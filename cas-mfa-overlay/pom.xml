@@ -30,12 +30,12 @@
                     <overlays>
 
                         <!-- Include to add support for strong-two-factor -->
-                        <!--
+                        <!-- -->
                         <overlay>
                             <groupId>net.unicon</groupId>
                             <artifactId>cas-mfa-s2f</artifactId>
                         </overlay>
-                        -->
+                        <!-- -->
 
                         <!-- Include to add support for Authy -->
                         <!--
