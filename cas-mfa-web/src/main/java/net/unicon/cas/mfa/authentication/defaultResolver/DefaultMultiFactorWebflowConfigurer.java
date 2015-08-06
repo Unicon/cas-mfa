@@ -1,11 +1,9 @@
 package net.unicon.cas.mfa.authentication.defaultResolver;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver;
-import org.jasig.cas.authentication.principal.Credentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -21,7 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 @Component
 public class DefaultMultiFactorWebflowConfigurer implements InitializingBean {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DuoMultiFactorWebflowConfigurer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMultiFactorWebflowConfigurer.class);
 
     @Autowired
     private WebApplicationContext context;
