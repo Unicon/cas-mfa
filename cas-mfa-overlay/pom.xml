@@ -154,7 +154,7 @@
 
         <!-- Include to add support for strong-two-factor -->
 
-        <!--
+        <!-- 
         <dependency>
             <groupId>net.unicon</groupId>
             <artifactId>cas-mfa-s2f</artifactId>
