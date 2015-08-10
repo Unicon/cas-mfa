@@ -1,5 +1,7 @@
 package net.unicon.cas.mfa.web.flow;
 
+import net.unicon.cas.mfa.authentication.defaultResolver.UsernamePasswordCredentialsToPrincipalResolver;
+import net.unicon.cas.mfa.authentication.defaultResolver.WebApplicationContext;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
@@ -73,6 +75,9 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
     @Autowired
     private FlowDefinitionRegistry flowDefinitionRegistry;
 
+    @Autowired
+    private WebApplicationContext context;
+
     @Override
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
@@ -89,6 +94,10 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
             setupWebflow(flowIds);
             LOGGER.debug("Configured webflow for multifactor authentication.");
 
+            LOGGER.debug("Registering default credentials-to-principal resolver...");
+            final List resolvers = this.context.getBean("mfaCredentialsToPrincipalResolvers", List.class);
+            resolvers.add(new UsernamePasswordCredentialsToPrincipalResolver());
+            LOGGER.debug("Registered default credentials-to-principal resolver.");
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
