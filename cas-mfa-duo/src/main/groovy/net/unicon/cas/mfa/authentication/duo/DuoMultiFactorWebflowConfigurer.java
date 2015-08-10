@@ -31,7 +31,7 @@ public class DuoMultiFactorWebflowConfigurer implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         try {
             final List resolvers = this.context.getBean("mfaCredentialsToPrincipalResolvers", List.class);
-            resolvers.add(0, new DuoCredentialsToPrincipalResolver());
+            resolvers.add(new DuoCredentialsToPrincipalResolver());
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
