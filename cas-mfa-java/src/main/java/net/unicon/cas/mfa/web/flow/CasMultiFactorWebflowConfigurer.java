@@ -1,11 +1,10 @@
 package net.unicon.cas.mfa.web.flow;
 
-import net.unicon.cas.mfa.authentication.defaultResolver.UsernamePasswordCredentialsToPrincipalResolver;
-import net.unicon.cas.mfa.authentication.defaultResolver.WebApplicationContext;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
 import org.apache.commons.lang.ArrayUtils;
+import org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -24,6 +23,7 @@ import org.springframework.binding.mapping.impl.DefaultMapper;
 import org.springframework.binding.mapping.impl.DefaultMapping;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.webflow.action.EvaluateAction;
 import org.springframework.webflow.action.ViewFactoryActionAdapter;
 import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
