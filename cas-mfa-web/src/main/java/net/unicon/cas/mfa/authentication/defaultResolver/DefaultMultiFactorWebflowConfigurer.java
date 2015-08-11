@@ -1,9 +1,9 @@
 package net.unicon.cas.mfa.authentication.defaultResolver;
 
-import java.util.List;
+//import java.util.List;
 
 import javax.annotation.PostConstruct;
-import org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver;
+//import org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -29,8 +29,9 @@ public class DefaultMultiFactorWebflowConfigurer implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         try {
-            final List resolvers = this.context.getBean("mfaCredentialsToPrincipalResolvers", List.class);
-            resolvers.add(new UsernamePasswordCredentialsToPrincipalResolver());
+            final int ix = 1; // nop
+//            final List resolvers = this.context.getBean("mfaCredentialsToPrincipalResolvers", List.class);
+//            resolvers.add(new UsernamePasswordCredentialsToPrincipalResolver());
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

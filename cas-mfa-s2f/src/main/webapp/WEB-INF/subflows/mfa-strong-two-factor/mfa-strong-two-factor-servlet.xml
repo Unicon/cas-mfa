@@ -51,6 +51,7 @@
   
   <util:map id="casUsers">
     <entry key="casuser" value="Mellon" />
+    <entry key="casuser2" value="Yello" />
   </util:map>
 
     <bean id="casMfaLoginView" class="org.springframework.web.servlet.view.JstlView"

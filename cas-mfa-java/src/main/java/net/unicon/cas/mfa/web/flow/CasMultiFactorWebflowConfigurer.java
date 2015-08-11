@@ -4,6 +4,7 @@ import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
 import org.apache.commons.lang.ArrayUtils;
+import org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,6 +23,7 @@ import org.springframework.binding.mapping.impl.DefaultMapper;
 import org.springframework.binding.mapping.impl.DefaultMapping;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.webflow.action.EvaluateAction;
 import org.springframework.webflow.action.ViewFactoryActionAdapter;
 import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
@@ -73,6 +75,9 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
     @Autowired
     private FlowDefinitionRegistry flowDefinitionRegistry;
 
+    @Autowired
+    private WebApplicationContext context;
+
     @Override
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
@@ -89,6 +94,10 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
             setupWebflow(flowIds);
             LOGGER.debug("Configured webflow for multifactor authentication.");
 
+            LOGGER.debug("Registering default credentials-to-principal resolver...");
+            final List resolvers = this.context.getBean("mfaCredentialsToPrincipalResolvers", List.class);
+            resolvers.add(new UsernamePasswordCredentialsToPrincipalResolver());
+            LOGGER.debug("Registered default credentials-to-principal resolver.");
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
