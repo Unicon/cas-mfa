@@ -5,6 +5,7 @@ import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebAppl
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
 import org.apache.commons.lang.ArrayUtils;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver;
+import org.jasig.services.persondir.IPersonAttributeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -96,7 +97,10 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
 
             LOGGER.debug("Registering default credentials-to-principal resolver...");
             final List resolvers = this.context.getBean("mfaCredentialsToPrincipalResolvers", List.class);
-            resolvers.add(new UsernamePasswordCredentialsToPrincipalResolver());
+            final UsernamePasswordCredentialsToPrincipalResolver defaultResolver = new UsernamePasswordCredentialsToPrincipalResolver();
+            final IPersonAttributeDao attributeRepository = this.context.getBean("attributeRepository", IPersonAttributeDao.class);
+            defaultResolver.setAttributeRepository(attributeRepository);
+            resolvers.add(defaultResolver);
             LOGGER.debug("Registered default credentials-to-principal resolver.");
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
