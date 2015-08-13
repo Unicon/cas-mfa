@@ -4,6 +4,8 @@ import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
 import org.apache.commons.lang.ArrayUtils;
+import org.jasig.cas.authentication.principal.AbstractPersonDirectoryCredentialsToPrincipalResolver;
+import org.jasig.cas.authentication.principal.CredentialsToPrincipalResolver;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver;
 import org.jasig.services.persondir.IPersonAttributeDao;
 import org.slf4j.Logger;
@@ -96,15 +98,22 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
             LOGGER.debug("Configured webflow for multifactor authentication.");
 
             LOGGER.debug("Registering default credentials-to-principal resolver...");
-            final List resolvers = this.context.getBean("mfaCredentialsToPrincipalResolvers", List.class);
-            final UsernamePasswordCredentialsToPrincipalResolver defaultResolver = new UsernamePasswordCredentialsToPrincipalResolver();
-            final IPersonAttributeDao attributeRepository = this.context.getBean("attributeRepository", IPersonAttributeDao.class);
-            defaultResolver.setAttributeRepository(attributeRepository);
-            resolvers.add(defaultResolver);
+            registerDefaultCredentialsToPrincipalResolver();
             LOGGER.debug("Registered default credentials-to-principal resolver.");
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    /**
+     * 
+     */
+    protected void registerDefaultCredentialsToPrincipalResolver() {
+        final List<CredentialsToPrincipalResolver> resolvers = this.context.getBean("mfaCredentialsToPrincipalResolvers", List.class);
+        final AbstractPersonDirectoryCredentialsToPrincipalResolver defaultResolver = new UsernamePasswordCredentialsToPrincipalResolver();
+        final IPersonAttributeDao attributeRepository = this.context.getBean("attributeRepository", IPersonAttributeDao.class);
+        defaultResolver.setAttributeRepository(attributeRepository);
+        resolvers.add(defaultResolver);
     }
 
     /**
