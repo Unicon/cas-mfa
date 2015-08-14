@@ -4,6 +4,10 @@ import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.UnrecognizedAuthenticationMethodException;
 import org.apache.commons.lang.ArrayUtils;
+import org.jasig.cas.authentication.principal.AbstractPersonDirectoryCredentialsToPrincipalResolver;
+import org.jasig.cas.authentication.principal.CredentialsToPrincipalResolver;
+import org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver;
+import org.jasig.services.persondir.IPersonAttributeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,6 +26,7 @@ import org.springframework.binding.mapping.impl.DefaultMapper;
 import org.springframework.binding.mapping.impl.DefaultMapping;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.webflow.action.EvaluateAction;
 import org.springframework.webflow.action.ViewFactoryActionAdapter;
 import org.springframework.webflow.definition.registry.FlowDefinitionRegistry;
@@ -73,6 +78,9 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
     @Autowired
     private FlowDefinitionRegistry flowDefinitionRegistry;
 
+    @Autowired
+    private WebApplicationContext context;
+
     @Override
     @PostConstruct
     public void afterPropertiesSet() throws Exception {
@@ -89,9 +97,24 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
             setupWebflow(flowIds);
             LOGGER.debug("Configured webflow for multifactor authentication.");
 
+            LOGGER.debug("Registering default credentials-to-principal resolver...");
+            registerDefaultCredentialsToPrincipalResolver();
+            LOGGER.debug("Registered default credentials-to-principal resolver.");
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Registers the default credentials-to-principal resolver for the second or later factors. Also attaches an
+     * attribute repository to the resolver.
+     */
+    protected void registerDefaultCredentialsToPrincipalResolver() {
+        final List<CredentialsToPrincipalResolver> resolvers = this.context.getBean("mfaCredentialsToPrincipalResolvers", List.class);
+        final AbstractPersonDirectoryCredentialsToPrincipalResolver defaultResolver = new UsernamePasswordCredentialsToPrincipalResolver();
+        final IPersonAttributeDao attributeRepository = this.context.getBean("attributeRepository", IPersonAttributeDao.class);
+        defaultResolver.setAttributeRepository(attributeRepository);
+        resolvers.add(defaultResolver);
     }
 
     /**
