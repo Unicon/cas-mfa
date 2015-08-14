@@ -106,7 +106,8 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
     }
 
     /**
-     * 
+     * Registers the default credentials-to-principal resolver for the second or later factors. Also attaches an
+     * attribute repository to the resolver.
      */
     protected void registerDefaultCredentialsToPrincipalResolver() {
         final List<CredentialsToPrincipalResolver> resolvers = this.context.getBean("mfaCredentialsToPrincipalResolvers", List.class);
