@@ -5,6 +5,7 @@ import org.jasig.cas.authentication.principal.AbstractWebApplicationService;
 import org.jasig.cas.authentication.principal.Response;
 import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;
 import org.jasig.cas.util.HttpClient;
+import org.jasig.cas.authentication.principal.Response.ResponseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +46,14 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
      * @param id the service id, potentially with a jsessionid; still needing excised
      * @param originalUrl the service url
      * @param artifactId the artifact id
+     * @param responseType the HTTP method for the response
      * @param httpClient http client to process requests
      * @param authnMethod the authentication method required for this service
      */
     public DefaultMultiFactorAuthenticationSupportingWebApplicationService(final String id, final String originalUrl,
-            final String artifactId, final HttpClient httpClient, @NotNull final String authnMethod) {
+            final String artifactId, final ResponseType responseType, final HttpClient httpClient, @NotNull final String authnMethod) {
         super(cleanupUrl(id), originalUrl, artifactId, httpClient);
-        this.wrapperService = new SimpleWebApplicationServiceImpl(id, httpClient);
+        this.wrapperService = new SimpleWebApplicationServiceImpl(id, originalUrl, artifactId, responseType, httpClient);
         this.authenticationMethod = authnMethod;
     }
 
@@ -100,7 +102,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
             final String artifactId, final HttpClient httpClient,
             @NotNull final String authnMethod,
             @NotNull final AuthenticationMethodSource authenticationMethodSource) {
-        this(id, originalUrl, artifactId, httpClient, authnMethod);
+        this(id, originalUrl, artifactId, null, httpClient, authnMethod);
         this.authenticationMethodSource = authenticationMethodSource;
     }
 

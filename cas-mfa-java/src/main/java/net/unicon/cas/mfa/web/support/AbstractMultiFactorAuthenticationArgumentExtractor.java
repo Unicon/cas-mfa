@@ -5,6 +5,7 @@ import net.unicon.cas.mfa.authentication.StubAuthenticationMethodTranslator;
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.web.support.ArgumentExtractor;
+import org.jasig.cas.authentication.principal.Response.ResponseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_METHOD;
 
 /**
  * Abstract extractor containing common functionality pertaining to authentication methods verification and target service extraction
@@ -75,9 +77,12 @@ public abstract class AbstractMultiFactorAuthenticationArgumentExtractor impleme
         authenticationMethod = this.authenticationMethodTranslator.translate(targetService, authenticationMethod);
         this.authenticationMethodVerifier.verifyAuthenticationMethod(authenticationMethod, targetService, request);
 
+        // Grab the HTTP method for the response off of the request.
+        final String method = request.getParameter(CONST_PARAM_METHOD);
+
         final MultiFactorAuthenticationSupportingWebApplicationService mfaService =
                 this.mfaWebApplicationServiceFactory.create(targetService.getId(), targetService.getId(), targetService.getArtifactId(),
-                        authenticationMethod, getAuthenticationMethodSource());
+                        "POST".equals(method) ? ResponseType.POST : ResponseType.REDIRECT, authenticationMethod, getAuthenticationMethodSource());
 
         logger.debug("Created multifactor authentication service instance for [{}] with [{}] as [{}] "
                 + "and authentication method definition source [{}].",

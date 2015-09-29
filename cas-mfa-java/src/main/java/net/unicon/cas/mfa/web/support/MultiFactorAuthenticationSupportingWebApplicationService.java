@@ -12,6 +12,12 @@ public interface MultiFactorAuthenticationSupportingWebApplicationService extend
     String CONST_PARAM_AUTHN_METHOD = "authn_method";
 
     /**
+     * Parameter name that defines the HTTP method used to send the
+     * authentication response back to a service.
+     */
+    String CONST_PARAM_METHOD = "method";
+
+    /**
      * Define the authentication method accepted and supported by this MFA service.
      * @return the supported method
      */

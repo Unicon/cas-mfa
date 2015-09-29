@@ -1,6 +1,7 @@
 package net.unicon.cas.mfa.web.support;
 
 import org.jasig.cas.util.HttpClient;
+import org.jasig.cas.authentication.principal.Response.ResponseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -42,6 +43,7 @@ public final class DefaultMultiFactorWebApplicationServiceFactory implements Mul
     public MultiFactorAuthenticationSupportingWebApplicationService create(final String id,
                                                                            final String originalUrl,
                                                                            final String artifactId,
+                                                                           final ResponseType responseType,
                                                                            final String authenticationMethod,
                                                                            final AuthenticationMethodSource authenticationMethodSource) {
 
