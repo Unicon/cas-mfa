@@ -18,6 +18,12 @@ public interface MultiFactorAuthenticationSupportingWebApplicationService extend
     String CONST_PARAM_METHOD = "method";
 
     /**
+     * Parameter name that defines the service ticket to send back
+     * to the service.
+     */
+    String CONST_PARAM_TICKET = "ticket";
+
+    /**
      * Define the authentication method accepted and supported by this MFA service.
      * @return the supported method
      */

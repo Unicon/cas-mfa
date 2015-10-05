@@ -51,7 +51,7 @@ public final class DefaultMultiFactorWebApplicationServiceFactory implements Mul
         Assert.notNull(authenticationMethodSource, "authenticationMethodSource cannot be null.");
 
         return new DefaultMultiFactorAuthenticationSupportingWebApplicationService(
-                id, originalUrl, artifactId,
+                id, originalUrl, artifactId, responseType,
                 getHttpClientIfSingleSignOutEnabled(),
                 authenticationMethod, authenticationMethodSource);
     }
