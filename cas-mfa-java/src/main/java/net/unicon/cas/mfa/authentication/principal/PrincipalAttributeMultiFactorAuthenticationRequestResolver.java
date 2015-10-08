@@ -162,7 +162,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
             final int mfaMethodRank = this.authenticationMethodConfiguration.getAuthenticationMethod(mfaMethod).getRank();
             final MultiFactorAuthenticationSupportingWebApplicationService svc =
                     this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
-                            targetService.getArtifactId(), mfaMethod, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
+                            targetService.getArtifactId(), null, mfaMethod, AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
 
             return new MultiFactorAuthenticationRequestContext(svc, mfaMethodRank);
         }
