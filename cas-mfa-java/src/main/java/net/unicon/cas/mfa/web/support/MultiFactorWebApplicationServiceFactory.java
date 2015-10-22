@@ -1,6 +1,7 @@
 package net.unicon.cas.mfa.web.support;
 
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
+import org.jasig.cas.authentication.principal.Response.ResponseType;
 
 /**
  * Factory abstraction for creating instances of
@@ -26,6 +27,7 @@ public interface MultiFactorWebApplicationServiceFactory {
     MultiFactorAuthenticationSupportingWebApplicationService create(String id,
                                                                     String originalUrl,
                                                                     String artifactId,
+                                                                    ResponseType responseType,
                                                                     String authnMethod,
                                                                     AuthenticationMethodSource authenticationMethodSource);
 

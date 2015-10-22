@@ -6,6 +6,7 @@ import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.WebApplicationService;
+import org.jasig.cas.authentication.principal.Response.ResponseType;
 import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
 import org.slf4j.Logger;
@@ -158,6 +159,9 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
     private MultiFactorAuthenticationRequestContext getMfaRequestContext(final ServiceMfaData serviceMfaData,
                                                                          final String attributeValue,
                                                                          final WebApplicationService targetService) {
+        final RegisteredService registeredService = this.servicesManager.findServiceBy(targetService);
+        final RegisteredServiceWithAttributes service = RegisteredServiceWithAttributes.class.cast(registeredService);
+        final String method = String.class.cast(service.getExtraAttributes().get("method"));
 
         if (match(serviceMfaData.getAttributePattern(), attributeValue)) {
             if (!this.authenticationMethodConfiguration.containsAuthenticationMethod(serviceMfaData.getAuthenticationMethod())) {
@@ -170,7 +174,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
                     serviceMfaData.getAuthenticationMethod()).getRank();
             final MultiFactorAuthenticationSupportingWebApplicationService svc =
                     this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
-                            targetService.getArtifactId(), serviceMfaData.getAuthenticationMethod(),
+                            targetService.getArtifactId(), "POST".equals(method) ? ResponseType.POST : ResponseType.REDIRECT, serviceMfaData.getAuthenticationMethod(),
                             MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
 
             return new MultiFactorAuthenticationRequestContext(svc, mfaMethodRank);
