@@ -19,7 +19,8 @@ public class DefaultMultiFactorAuthenticationSupportingWebApplicationServiceTest
     public void testServiceness() {
         final DefaultMultiFactorAuthenticationSupportingWebApplicationService svc =
                 new DefaultMultiFactorAuthenticationSupportingWebApplicationService("https://www.github.com",
-                "https://www.github.com", null, null, "test_authn_method");
+                "https://www.github.com", null, Response.ResponseType.REDIRECT,
+                        null, "test_authn_method");
         assertEquals(svc.getAuthenticationMethod(), "test_authn_method");
         final Response res = svc.getResponse("testTicketId");
         assertNotNull(res);

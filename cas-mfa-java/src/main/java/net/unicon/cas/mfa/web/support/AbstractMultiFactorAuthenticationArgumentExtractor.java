@@ -82,7 +82,7 @@ public abstract class AbstractMultiFactorAuthenticationArgumentExtractor impleme
 
         final MultiFactorAuthenticationSupportingWebApplicationService mfaService =
                 this.mfaWebApplicationServiceFactory.create(targetService.getId(), targetService.getId(), targetService.getArtifactId(),
-                        "POST".equals(method) ? ResponseType.POST : ResponseType.REDIRECT, authenticationMethod, getAuthenticationMethodSource());
+                        "POST".equalsIgnoreCase(method) ? ResponseType.POST : ResponseType.REDIRECT, authenticationMethod, getAuthenticationMethodSource());
 
         logger.debug("Created multifactor authentication service instance for [{}] with [{}] as [{}] "
                 + "and authentication method definition source [{}].",

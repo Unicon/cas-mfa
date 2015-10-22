@@ -6,6 +6,7 @@ import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebAppl
 import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Principal;
+import org.jasig.cas.authentication.principal.Response;
 import org.jasig.cas.authentication.principal.Service;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.services.ServicesManager;
@@ -170,12 +171,14 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
     }
 
     private MultiFactorAuthenticationSupportingWebApplicationService getMfaService() {
-        return new DefaultMultiFactorAuthenticationSupportingWebApplicationService(CAS_SERVICE, CAS_SERVICE, null, null, CAS_AUTHN_METHOD);
+        return new DefaultMultiFactorAuthenticationSupportingWebApplicationService(CAS_SERVICE, CAS_SERVICE, null,
+                Response.ResponseType.REDIRECT, null, CAS_AUTHN_METHOD);
     }
 
     private MultiFactorWebApplicationServiceFactory getMFWASF(WebApplicationService was) {
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
-        when(factory.create(anyString(), anyString(), anyString(), anyString(), any(MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource.class)))
+        when(factory.create(anyString(), anyString(), anyString(), Response.ResponseType.REDIRECT, anyString(),
+                any(MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource.class)))
                 .thenReturn(getMfaService());
         return factory;
     }

@@ -2,6 +2,7 @@ package net.unicon.cas.mfa.web.support;
 
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
+import org.jasig.cas.authentication.principal.Response;
 import org.jasig.cas.authentication.principal.Service;
 import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
@@ -26,7 +27,8 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
     private static final String CAS_AUTHN_METHOD = "strong_two";
     
     private MultiFactorAuthenticationSupportingWebApplicationService getMfaService() {
-        return new DefaultMultiFactorAuthenticationSupportingWebApplicationService(CAS_SERVICE, CAS_SERVICE, null, null, CAS_AUTHN_METHOD);
+        return new DefaultMultiFactorAuthenticationSupportingWebApplicationService(CAS_SERVICE, CAS_SERVICE, null,
+                Response.ResponseType.REDIRECT, null, CAS_AUTHN_METHOD);
     }
     
     private HttpServletRequest getRequest() {
@@ -42,7 +44,8 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
         set.add(new CasArgumentExtractor());
         
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
-        when(factory.create(anyString(), anyString(), anyString(), anyString(), any(AuthenticationMethodSource.class)))
+        when(factory.create(anyString(), anyString(), anyString(), Response.ResponseType.REDIRECT,
+                anyString(), any(AuthenticationMethodSource.class)))
             .thenReturn(getMfaService());
         
         final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
@@ -101,7 +104,8 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
         set.add(new CasArgumentExtractor());
 
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
-        when(factory.create(anyString(), anyString(), anyString(), anyString(), any(AuthenticationMethodSource.class)))
+        when(factory.create(anyString(), anyString(), anyString(), Response.ResponseType.REDIRECT,
+                anyString(), any(AuthenticationMethodSource.class)))
                 .thenReturn(getMfaService());
 
         final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
