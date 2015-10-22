@@ -155,7 +155,7 @@ public final class AuthyAuthenticationHandler extends AbstractUsernamePasswordAu
          * @param msg  the msg
          * @param type the type
          */
-        public AuthyAuthenticationException(final String code, final String msg, final String type) {
+        AuthyAuthenticationException(final String code, final String msg, final String type) {
             super(code, msg, type);
         }
     }

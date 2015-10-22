@@ -20,6 +20,7 @@ public interface MultiFactorWebApplicationServiceFactory {
      * @param originalUrl originalUrl
      * @param artifactId artifactId
      * @param authnMethod authentication method
+     * @param responseType the request response type
      * @param authenticationMethodSource authentication method source
      *
      * @return an instance of {@link net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService}

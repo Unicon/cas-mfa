@@ -141,7 +141,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
         }
 
         if (list.size() == 0) {
-            logger.debug("No multifactor authentication requests could be resolved based on [{}]." ,
+            logger.debug("No multifactor authentication requests could be resolved based on [{}].",
                     authenticationMethodAttributeName);
             return null;
         }
@@ -174,7 +174,8 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
                     serviceMfaData.getAuthenticationMethod()).getRank();
             final MultiFactorAuthenticationSupportingWebApplicationService svc =
                     this.mfaServiceFactory.create(targetService.getId(), targetService.getId(),
-                            targetService.getArtifactId(), "POST".equals(method) ? ResponseType.POST : ResponseType.REDIRECT, serviceMfaData.getAuthenticationMethod(),
+                            targetService.getArtifactId(), "POST".equals(method) ? ResponseType.POST : ResponseType.REDIRECT,
+                            serviceMfaData.getAuthenticationMethod(),
                             MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE);
 
             return new MultiFactorAuthenticationRequestContext(svc, mfaMethodRank);

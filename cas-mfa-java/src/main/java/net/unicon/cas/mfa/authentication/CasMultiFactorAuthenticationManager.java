@@ -84,7 +84,7 @@ public class CasMultiFactorAuthenticationManager implements AuthenticationManage
          * @param attributes the attributes
          * @param date the date
          */
-        public MutableAuthentication(final Principal principal, final Map<String, Object> attributes, final Date date) {
+        MutableAuthentication(final Principal principal, final Map<String, Object> attributes, final Date date) {
             super(principal, new HashMap<String, Object>(attributes));
             this.authenticatedDate = date;
         }

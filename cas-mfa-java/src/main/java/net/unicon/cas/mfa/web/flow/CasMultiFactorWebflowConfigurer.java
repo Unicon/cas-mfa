@@ -517,7 +517,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
          *
          * @param subflowId the subflow id
          */
-        public BasicSubflowExpression(final String subflowId) {
+        BasicSubflowExpression(final String subflowId) {
             this.subflowId = subflowId;
         }
 

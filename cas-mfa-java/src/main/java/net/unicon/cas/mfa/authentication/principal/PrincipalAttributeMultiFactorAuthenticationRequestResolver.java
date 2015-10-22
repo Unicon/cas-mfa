@@ -130,8 +130,8 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
         }
 
         if (list.size() == 0) {
-            logger.debug("No multifactor authentication requests could be resolved based on [{}]"
-                    , this.authenticationMethodAttributeName);
+            logger.debug("No multifactor authentication requests could be resolved based on [{}]",
+                    this.authenticationMethodAttributeName);
         }
         return list;
     }

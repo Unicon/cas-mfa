@@ -23,11 +23,11 @@ public class ServiceAuthenticationMethodMultiFactorAuthenticationSpringWebflowEv
         final MultiFactorAuthenticationSupportingWebApplicationService service = (MultiFactorAuthenticationSupportingWebApplicationService)
                 WebUtils.getService(context);
 
-        logger.debug("Attempting to build an event based on the authentication method [{}] and service [{}]"
-                , service.getAuthenticationMethod(), service.getId());
+        logger.debug("Attempting to build an event based on the authentication method [{}] and service [{}]",
+                service.getAuthenticationMethod(), service.getId());
         final Event event = new Event(this, MFA_EVENT_ID_PREFIX + service.getAuthenticationMethod());
-        logger.debug("Resulting event id is [{}]. Locating transitions in the context for that event id..."
-                , event.getId());
+        logger.debug("Resulting event id is [{}]. Locating transitions in the context for that event id...",
+                event.getId());
 
         final TransitionDefinition def = context.getMatchingTransition(event.getId());
         if (def == null) {
