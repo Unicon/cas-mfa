@@ -18,6 +18,7 @@ import org.jasig.cas.authentication.handler.AuthenticationException;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;
 import org.jasig.cas.authentication.principal.WebApplicationService;
+import org.jasig.cas.authentication.principal.Response.ResponseType;
 import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.web.bind.CredentialsBinder;
 import org.jasig.cas.web.support.WebUtils;
@@ -402,17 +403,20 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
                                                                           final RequestContext context) {
 
         WebApplicationService serviceToUse = service;
+        final HttpServletRequest request = HttpServletRequest.class.cast(context.getExternalContext().getNativeRequest());
+        final String responseMethod = request.getParameter("method");
+        final ResponseType responseType = "POST".equalsIgnoreCase(responseMethod) ? ResponseType.POST : ResponseType.REDIRECT;
         if (service == null) {
             serviceToUse = new SimpleWebApplicationServiceImpl(this.hostname, null);
         }
 
         final List<MultiFactorAuthenticationRequestContext> mfaRequests =
-                this.multiFactorAuthenticationRequestResolver.resolve(authentication, serviceToUse);
+                this.multiFactorAuthenticationRequestResolver.resolve(authentication, serviceToUse, responseType);
         if (mfaRequests != null) {
             for (final MultiFactorAuthenticationRequestContext mfaRequest : mfaRequests) {
                 this.authenticationMethodVerifier.verifyAuthenticationMethod(mfaRequest.getMfaService().getAuthenticationMethod(),
                         mfaRequest.getMfaService(),
-                        HttpServletRequest.class.cast(context.getExternalContext().getNativeRequest()));
+                        request);
 
                 logger.info("There is an existing mfa request for service [{}] with a requested authentication method of [{}]",
                         mfaRequest.getMfaService().getId(), mfaRequest.getMfaService().getAuthenticationMethod());
