@@ -1,6 +1,7 @@
 package net.unicon.cas.mfa.authentication;
 
 import org.jasig.cas.authentication.Authentication;
+import org.jasig.cas.authentication.principal.Response.ResponseType;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 
 import java.util.List;
@@ -22,8 +23,9 @@ public interface MultiFactorAuthenticationRequestResolver {
      *
      * @param authentication primary authentication instance
      * @param targetService target service
+     * @param responseType response type required by the service
      *
      * @return list instance of <code>MultiFactorAuthenticationRequestContext</code> or null if no mfa request can be resolved
      */
-    List<MultiFactorAuthenticationRequestContext> resolve(final Authentication authentication, final WebApplicationService targetService);
+    List<MultiFactorAuthenticationRequestContext> resolve(final Authentication authentication, final WebApplicationService targetService, final ResponseType responseType);
 }
