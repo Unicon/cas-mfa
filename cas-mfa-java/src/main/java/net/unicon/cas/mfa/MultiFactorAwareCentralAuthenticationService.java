@@ -131,6 +131,10 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
      * Implements Audit Trail participation by virtue of the delegate's audit trail participation.
      */
     @Override
+    @Audit(
+            action="SERVICE_TICKET_VALIDATE",
+            actionResolverName="VALIDATE_SERVICE_TICKET_RESOLVER",
+            resourceResolverName="VALIDATE_SERVICE_TICKET_RESOURCE_RESOLVER")
     public Assertion validateServiceTicket(final String serviceTicketId, final Service service) throws TicketException {
         Assert.notNull(serviceTicketId, "serviceTicketId cannot be null");
         Assert.notNull(service, "service cannot be null");
