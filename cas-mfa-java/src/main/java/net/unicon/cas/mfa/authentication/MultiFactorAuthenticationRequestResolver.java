@@ -27,5 +27,6 @@ public interface MultiFactorAuthenticationRequestResolver {
      *
      * @return list instance of <code>MultiFactorAuthenticationRequestContext</code> or null if no mfa request can be resolved
      */
-    List<MultiFactorAuthenticationRequestContext> resolve(final Authentication authentication, final WebApplicationService targetService, final ResponseType responseType);
+    List<MultiFactorAuthenticationRequestContext> resolve(Authentication authentication, WebApplicationService targetService,
+                                                          ResponseType responseType);
 }
