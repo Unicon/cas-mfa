@@ -115,14 +115,16 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
             if (mfaMethodAsObject != null) {
                 if (mfaMethodAsObject instanceof String) {
                     final String mfaMethod = mfaMethodAsObject.toString();
-                    final MultiFactorAuthenticationRequestContext ctx = getMfaRequestContext(mfaMethod, authentication, targetService, responseType);
+                    final MultiFactorAuthenticationRequestContext ctx = getMfaRequestContext(mfaMethod, authentication,
+                            targetService, responseType);
                     if (ctx != null) {
                         list.add(ctx);
                     }
                 } else if (mfaMethodAsObject instanceof List) {
                     final List<String> mfaMethods = (List<String>) mfaMethodAsObject;
                     for (final String mfaMethod : mfaMethods) {
-                        final MultiFactorAuthenticationRequestContext ctx = getMfaRequestContext(mfaMethod, authentication, targetService, responseType);
+                        final MultiFactorAuthenticationRequestContext ctx = getMfaRequestContext(mfaMethod,
+                                authentication, targetService, responseType);
                         if (ctx != null) {
                             list.add(ctx);
                         }
@@ -141,9 +143,10 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     /**
      * Gets mfa request context.
      *
-     * @param method the mfa method
+     * @param method         the mfa method
      * @param authentication the authentication
-     * @param targetService the target service
+     * @param targetService  the target service
+     * @param responseType   the response type
      * @return the mfa request context
      */
     private MultiFactorAuthenticationRequestContext getMfaRequestContext(final String method,
