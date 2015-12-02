@@ -29,6 +29,7 @@ import org.jasig.cas.ticket.registry.TicketRegistry;
 import org.jasig.cas.util.UniqueTicketIdGenerator;
 import org.jasig.cas.validation.Assertion;
 import org.jasig.cas.validation.ImmutableAssertionImpl;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -98,6 +99,7 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
             action="TICKET_GRANTING_TICKET",
             actionResolverName="CREATE_TICKET_GRANTING_TICKET_RESOLVER",
             resourceResolverName="CREATE_TICKET_GRANTING_TICKET_RESOURCE_RESOLVER")
+    @Profiled(tag = "CREATE_TICKET_GRANTING_TICKET", logFailuresSeparately = false)
     public String createTicketGrantingTicket(final Credentials credentials) throws TicketException {
         final MultiFactorCredentials mfaCredentials = (MultiFactorCredentials) credentials;
         final Authentication authentication = mfaCredentials.getAuthentication();
@@ -135,6 +137,7 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
             action="SERVICE_TICKET_VALIDATE",
             actionResolverName="VALIDATE_SERVICE_TICKET_RESOLVER",
             resourceResolverName="VALIDATE_SERVICE_TICKET_RESOURCE_RESOLVER")
+    @Profiled(tag="VALIDATE_SERVICE_TICKET", logFailuresSeparately = false)
     public Assertion validateServiceTicket(final String serviceTicketId, final Service service) throws TicketException {
         Assert.notNull(serviceTicketId, "serviceTicketId cannot be null");
         Assert.notNull(service, "service cannot be null");
@@ -237,6 +240,7 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
             action="PROXY_GRANTING_TICKET",
             actionResolverName="GRANT_PROXY_GRANTING_TICKET_RESOLVER",
             resourceResolverName="GRANT_PROXY_GRANTING_TICKET_RESOURCE_RESOLVER")
+    @Profiled(tag="GRANT_PROXY_GRANTING_TICKET", logFailuresSeparately = false)
     public String delegateTicketGrantingTicket(final String serviceTicketId, final Credentials credentials) throws TicketException {
         return this.delegate.delegateTicketGrantingTicket(serviceTicketId, credentials);
     }
