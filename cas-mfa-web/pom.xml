@@ -37,14 +37,6 @@
          <version>${project.version}</version>
       </dependency>
       <dependency>
-         <groupId>org.jasig.cas</groupId>
-         <artifactId>cas-server-support-generic</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>net.unicon.cas</groupId>
-         <artifactId>cas-addons</artifactId>
-      </dependency>
-      <dependency>
          <groupId>org.mockito</groupId>
          <artifactId>mockito-core</artifactId>
       </dependency>
