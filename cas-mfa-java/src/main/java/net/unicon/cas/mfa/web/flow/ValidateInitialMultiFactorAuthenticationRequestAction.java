@@ -147,6 +147,10 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
+        if (context.getRequestParameters().get("renew") != null) {
+            return new Event(this, EVENT_ID_REQUIRE_TGT);
+        }
+
         logger.trace("Authentication method [{}] is STRONGER than any previously fulfilled methods [{}]; "
                 + "branching to prompt for required authentication method.",
                 requestedAuthenticationMethod, previouslyAchievedAuthenticationMethods);
