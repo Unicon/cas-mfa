@@ -32,12 +32,7 @@
             <id>mmoayyed</id>
             <name>Misagh Moayyed</name>
             <email>mmoayyed@unicon.net</email>
-            <timezone>-7</timezone>
-            <roles>
-                <role>developer</role>
-            </roles>
         </developer>
-
     </developers>
 
     <issueManagement>
@@ -241,7 +236,7 @@
 
             <dependency>
                 <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
+                <artifactId>javax.servlet-api</artifactId>
                 <version>${servlet.api.version}</version>
                 <scope>provided</scope>
             </dependency>
