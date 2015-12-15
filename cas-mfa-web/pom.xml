@@ -1,65 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <parent>
-      <artifactId>cas-mfa</artifactId>
-      <groupId>net.unicon</groupId>
-      <version>1.0.0-RC9-SNAPSHOT</version>
-   </parent>
-   <modelVersion>4.0.0</modelVersion>
-   <artifactId>cas-mfa-web</artifactId>
-   <name>CAS MFA Web Support</name>
-   <description>
-    This is the multifactor extensions for CAS sub-module for Web components. Things that are not Java,
-    that do not build into a .jar. For example: JSPs, deployment descriptors, customized and new
-    Spring Web Flow XML and other Spring web framework configuration, etc.
-  </description>
-   <packaging>war</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>cas-mfa</artifactId>
+        <groupId>net.unicon</groupId>
+        <version>2.0.0-RC1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>cas-mfa-web</artifactId>
+    <name>CAS MFA Web Support</name>
+    <description>
+        This is the multifactor extensions for CAS sub-module for Web components. Things that are not Java,
+        that do not build into a .jar. For example: JSPs, deployment descriptors, customized and new
+        Spring Web Flow XML and other Spring web framework configuration, etc.
+    </description>
+    <packaging>war</packaging>
 
-   <build>
-      <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-war-plugin</artifactId>
-            <configuration>
-               <failOnMissingWebXml>false</failOnMissingWebXml>
-            </configuration>
-         </plugin>
-      </plugins>
-      <finalName>cas-mfa-web</finalName>
-   </build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+        <finalName>cas-mfa-web</finalName>
+    </build>
 
-   <dependencies>
-      <dependency>
-         <groupId>net.unicon</groupId>
-         <artifactId>cas-mfa-java</artifactId>
-         <scope>compile</scope>
-         <type>jar</type>
-         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.jasig.cas</groupId>
-         <artifactId>cas-server-support-generic</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>net.unicon.cas</groupId>
-         <artifactId>cas-addons</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.mockito</groupId>
-         <artifactId>mockito-core</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.codehaus.groovy</groupId>
-         <artifactId>groovy</artifactId>
-      </dependency>
-       <dependency>
-         <groupId>org.spockframework</groupId>
-         <artifactId>spock-core</artifactId>
-       </dependency>
-   </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>net.unicon</groupId>
+            <artifactId>cas-mfa-java</artifactId>
+            <scope>compile</scope>
+            <type>jar</type>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-core</artifactId>
+        </dependency>
+    </dependencies>
 </project>

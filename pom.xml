@@ -10,10 +10,10 @@
     <artifactId>cas-mfa</artifactId>
     <packaging>pom</packaging>
     <name>CAS MFA Parent</name>
-    <description>Jasig CAS SSO server multifactor authentication libraries and web application.</description>
-    <version>1.0.0-RC9-SNAPSHOT</version>
+    <description>Apereo CAS SSO server multifactor authentication libraries and web application.</description>
+    <version>2.0.0-RC1-SNAPSHOT</version>
     <url>https://github.com/Unicon/cas-mfa</url>
-    <inceptionYear>2013</inceptionYear>
+    <inceptionYear>2015</inceptionYear>
     <organization>
         <name>Unicon Inc.</name>
         <url>http://unicon.net</url>
@@ -29,24 +29,10 @@
 
     <developers>
         <developer>
-            <id>apetro</id>
-            <name>Andrew Petro</name>
-            <email>apetro@unicon.net</email>
-            <timezone>-5</timezone>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
             <id>mmoayyed</id>
             <name>Misagh Moayyed</name>
             <email>mmoayyed@unicon.net</email>
-            <timezone>-7</timezone>
-            <roles>
-                <role>developer</role>
-            </roles>
         </developer>
-
     </developers>
 
     <issueManagement>
@@ -103,6 +89,17 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>com.rimerosolutions.maven.plugins</groupId>
+                <artifactId>wrapper-maven-plugin</artifactId>
+                <version>${maven.wrapper.plugin.version}</version>
+                <configuration>
+                <!-- optional base distribution url --> 
+                 <baseDistributionUrl>https://repository.apache.org/content/repositories/releases/org/apache/maven/apache-maven</baseDistributionUrl>
+                 <!-- optional wrapper jar output folder -->
+                  <wrapperDirectory>${basedir}/maven</wrapperDirectory>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -239,7 +236,7 @@
 
             <dependency>
                 <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
+                <artifactId>javax.servlet-api</artifactId>
                 <version>${servlet.api.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -429,30 +426,39 @@
             </dependency>
 
             <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
                 <version>${log4j.version}</version>
-                <type>jar</type>
-                <scope>compile</scope>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j.version}</version>
+                <scope>runtime</scope>
                 <exclusions>
                     <exclusion>
-                        <groupId>javax.mail</groupId>
-                        <artifactId>mail</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.jms</groupId>
-                        <artifactId>jms</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.sun.jdmk</groupId>
-                        <artifactId>jmxtools</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.sun.jmx</groupId>
-                        <artifactId>jmxri</artifactId>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-jcl</artifactId>
+                <version>${log4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.jasig.cas</groupId>
                 <artifactId>cas-server-webapp</artifactId>
@@ -465,23 +471,6 @@
                 <artifactId>cas-server-core</artifactId>
                 <version>${cas.version}</version>
                 <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jasig.cas</groupId>
-                <artifactId>cas-server-support-generic</artifactId>
-                <version>${cas.version}</version>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>net.unicon.cas</groupId>
-                <artifactId>cas-addons</artifactId>
-                <version>${cas-addons.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>edu.internet2.middleware.grouper</groupId>
-                        <artifactId>grouperClient</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
@@ -510,52 +499,46 @@
         <module>cas-mfa-java</module>
         <module>cas-mfa-web</module>
         <module>cas-mfa-duo</module>
-        <module>cas-mfa-toopher</module>
-        <module>cas-mfa-authy</module>
         <module>cas-mfa-duo-web</module>
-        <module>cas-mfa-toopher-web</module>
-        <module>cas-mfa-authy-web</module>
-        <module>cas-mfa-yubikey-web</module>
-        <module>cas-mfa-s2f</module>
-        <module>cas-mfa-radius-web</module>
         <module>cas-mfa-overlay</module>
     </modules>
 
     <properties>
         <!-- CAS Versions -->
-        <cas.version>3.6.0</cas.version>
+        <cas.version>4.1.2</cas.version>
         <cas-addons.version>1.16</cas-addons.version>
 
         <!-- Dependency Versions -->
-        <spring.webflow.version>2.3.2.RELEASE</spring.webflow.version>
-        <spring.version>3.2.4.RELEASE</spring.version>
-        <aspectj.version>1.7.2</aspectj.version>
-        <javax.validation.version>1.0.0.GA</javax.validation.version>
+        <spring.webflow.version>2.4.1.RELEASE</spring.webflow.version>
+        <spring.version>4.1.8.RELEASE</spring.version>
+        <aspectj.version>1.8.6</aspectj.version>
+        <javax.validation.version>1.1.0.Final</javax.validation.version>
         <hibernate.validator.version>4.2.0.Final</hibernate.validator.version>
-        <slf4j.version>1.7.5</slf4j.version>
-        <servlet.api.version>2.5</servlet.api.version>
-        <commons.codec.version>1.7</commons.codec.version>
-        <log4j.version>1.2.17</log4j.version>
+        <slf4j.version>1.7.12</slf4j.version>
+        <servlet.api.version>3.0.1</servlet.api.version>
+        <commons.codec.version>1.10</commons.codec.version>
+        <log4j.version>2.3</log4j.version>
         <junit.version>4.11</junit.version>
-        <checkstyle.version>6.1</checkstyle.version>
-        <commons.lang.version>3.1</commons.lang.version>
+        <checkstyle.version>6.7</checkstyle.version>
+        <commons.lang.version>3.4</commons.lang.version>
         <commons.io.version>2.4</commons.io.version>
-        <mockito.version>1.9.5</mockito.version>
-        <spock.version>0.7-groovy-2.0</spock.version>
-        <groovy.version>2.3.1</groovy.version>
-        <joda-time.version>2.3</joda-time.version>
-        <oauth.signpost.version>1.2.1.2</oauth.signpost.version>
+        <mockito.version>1.10.19</mockito.version>
+        <spock.version>1.0-groovy-2.4</spock.version>
+        <groovy.version>2.4.5</groovy.version>
+        <joda-time.version>2.8.1</joda-time.version>
+        
 
         <!-- Plugin Versions -->
-        <maven.surefire.plugin.version>2.12.4</maven.surefire.plugin.version>
-        <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
+        <maven.surefire.plugin.version>2.19</maven.surefire.plugin.version>
+        <maven.jar.plugin.version>2.6</maven.jar.plugin.version>
         <maven.war.plugin.version>2.6</maven.war.plugin.version>
-        <maven.checkstyle.plugin.version>2.10</maven.checkstyle.plugin.version>
-        <maven.enforcer.plugin.version>1.2</maven.enforcer.plugin.version>
-        <maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
+        <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>
+        <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
+        <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
+        <maven.wrapper.plugin.version>0.0.4</maven.wrapper.plugin.version>
 
-        <maven.groovy.eclipse.batch.plugin.version>2.3.4-01</maven.groovy.eclipse.batch.plugin.version>
-        <maven.groovy.eclipse.compiler.plugin.version>2.9.0-01</maven.groovy.eclipse.compiler.plugin.version>
+        <maven.groovy.eclipse.batch.plugin.version>2.4.3-01</maven.groovy.eclipse.batch.plugin.version>
+        <maven.groovy.eclipse.compiler.plugin.version>2.9.2-01</maven.groovy.eclipse.compiler.plugin.version>
 
         <project.build.sourceVersion>1.7</project.build.sourceVersion>
         <project.build.targetVersion>1.7</project.build.targetVersion>
