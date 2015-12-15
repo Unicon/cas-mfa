@@ -1,7 +1,7 @@
 package net.unicon.cas.mfa.util;
 
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.validation.Assertion;
 
@@ -43,7 +43,7 @@ public final class MultiFactorUtils {
      */
     public static String getFulfilledAuthenticationMethodsAsString(final Authentication authentication) {
         final Set<String> previouslyAchievedAuthenticationMethods = getSatisfiedAuthenticationMethods(authentication);
-        if (previouslyAchievedAuthenticationMethods.size() > 0) {
+        if (!previouslyAchievedAuthenticationMethods.isEmpty()) {
             return StringUtils.join(previouslyAchievedAuthenticationMethods, " ");
         }
         return null;
@@ -101,7 +101,7 @@ public final class MultiFactorUtils {
      */
     public static Authentication getAuthenticationFromAssertion(final Assertion assertion) {
         final List<Authentication> chainedAuthentications = assertion.getChainedAuthentications();
-        if (chainedAuthentications.size() > 0) {
+        if (!chainedAuthentications.isEmpty()) {
             final int index = chainedAuthentications.size() - 1;
             return chainedAuthentications.get(index);
         }

@@ -26,7 +26,7 @@ import net.unicon.cas.mfa.authentication.RequestedAuthenticationMethodRankingStr
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.web.flow.AuthenticationViaFormAction;

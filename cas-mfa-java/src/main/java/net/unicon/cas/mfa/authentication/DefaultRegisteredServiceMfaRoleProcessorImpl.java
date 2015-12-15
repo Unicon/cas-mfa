@@ -3,7 +3,7 @@ package net.unicon.cas.mfa.authentication;
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.authentication.principal.Response.ResponseType;
@@ -140,7 +140,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
             }
         }
 
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             logger.debug("No multifactor authentication requests could be resolved based on [{}].",
                     authenticationMethodAttributeName);
             return null;

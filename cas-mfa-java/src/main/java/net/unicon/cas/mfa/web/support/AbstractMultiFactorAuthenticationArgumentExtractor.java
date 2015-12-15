@@ -2,7 +2,7 @@ package net.unicon.cas.mfa.web.support;
 
 import net.unicon.cas.mfa.authentication.AuthenticationMethodTranslator;
 import net.unicon.cas.mfa.authentication.StubAuthenticationMethodTranslator;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.jasig.cas.authentication.principal.Response.ResponseType;

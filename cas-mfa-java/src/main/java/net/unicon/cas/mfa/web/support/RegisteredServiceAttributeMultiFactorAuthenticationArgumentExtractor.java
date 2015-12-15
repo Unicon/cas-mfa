@@ -4,7 +4,7 @@ import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.RegisteredServiceMfaRoleProcessor;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.services.RegisteredService;
@@ -160,7 +160,7 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
         }
 
         final List<MultiFactorAuthenticationRequestContext> mfaRequestContexts = mfaRoleProcessor.resolve(authentication, targetService);
-        if (mfaRequestContexts == null || mfaRequestContexts.size() == 0) {
+        if (mfaRequestContexts == null || mfaRequestContexts.isEmpty()) {
             logger.debug("no 'mfa_role' assigned contexts were found.");
             return null;
         }

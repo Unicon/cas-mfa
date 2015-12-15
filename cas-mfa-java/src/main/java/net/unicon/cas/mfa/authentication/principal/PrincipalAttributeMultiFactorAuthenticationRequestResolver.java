@@ -8,7 +8,7 @@ import net.unicon.cas.mfa.authentication.RegisteredServiceMfaRoleProcessor;
 import net.unicon.cas.mfa.authentication.StubAuthenticationMethodTranslator;
 import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.authentication.principal.Response.ResponseType;
@@ -133,7 +133,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
             }
         }
 
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             logger.debug("No multifactor authentication requests could be resolved based on [{}]",
                     this.authenticationMethodAttributeName);
         }

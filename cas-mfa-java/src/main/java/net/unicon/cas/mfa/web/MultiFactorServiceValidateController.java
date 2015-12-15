@@ -23,8 +23,9 @@ import net.unicon.cas.mfa.ticket.UnacceptableMultiFactorAuthenticationMethodExce
 import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.CentralAuthenticationService;
+import org.jasig.cas.authentication.Credential;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.HttpBasedServiceCredentials;
 import org.jasig.cas.authentication.principal.WebApplicationService;
@@ -124,7 +125,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
      * provided.
      *
      */
-    protected Credentials getServiceCredentialsFromRequest(final HttpServletRequest request) {
+    protected Credential getServiceCredentialsFromRequest(final HttpServletRequest request) {
         final String pgtUrl = request.getParameter("pgtUrl");
         final String authnMethod = getAuthenticationMethodFromRequest(request);
 
@@ -172,7 +173,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
         }
 
         try {
-            final Credentials serviceCredentials = getServiceCredentialsFromRequest(request);
+            final Credential serviceCredentials = getServiceCredentialsFromRequest(request);
             String proxyGrantingTicketId = null;
 
             if (serviceCredentials != null) {

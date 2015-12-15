@@ -62,7 +62,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
                                 }
 
                                 @Override
-                                public Response getResponse(String ticketId) {
+                                public Response getResponse(final String ticketId) {
                                     return null;
                                 }
 
@@ -72,17 +72,17 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
                                 }
 
                                 @Override
-                                public void setPrincipal(Principal principal) {
+                                public void setPrincipal(final Principal principal) {
 
                                 }
 
                                 @Override
-                                public boolean logOutOfService(String sessionIdentifier) {
+                                public boolean logOutOfService(final String sessionIdentifier) {
                                     return false;
                                 }
 
                                 @Override
-                                public boolean matches(Service service) {
+                                public boolean matches(final Service service) {
                                     return false;
                                 }
 

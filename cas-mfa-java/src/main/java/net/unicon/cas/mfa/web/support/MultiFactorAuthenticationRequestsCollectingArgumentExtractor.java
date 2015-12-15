@@ -59,7 +59,7 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
     public WebApplicationService extractService(final HttpServletRequest request) {
         MultiFactorAuthenticationTransactionContext mfaTxCtx = null;
 
-        for (AbstractMultiFactorAuthenticationArgumentExtractor extractor : this.mfaArgumentExstractors) {
+        for (final AbstractMultiFactorAuthenticationArgumentExtractor extractor : this.mfaArgumentExstractors) {
             final MultiFactorAuthenticationSupportingWebApplicationService service =
                     MultiFactorAuthenticationSupportingWebApplicationService.class.cast(extractor.extractService(request));
 

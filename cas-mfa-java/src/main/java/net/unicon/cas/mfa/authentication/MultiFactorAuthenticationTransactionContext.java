@@ -132,7 +132,7 @@ public final class MultiFactorAuthenticationTransactionContext implements Serial
         if (this.mfaRequests.isEmpty()) {
             return false;
         }
-        for (MultiFactorAuthenticationRequestContext ctx : this.mfaRequests) {
+        for (final MultiFactorAuthenticationRequestContext ctx : this.mfaRequests) {
             if (ctx.getMfaService().getAuthenticationMethodSource() == authenticationMethodSource) {
                 return true;
             }

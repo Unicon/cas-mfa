@@ -1,10 +1,16 @@
 package net.unicon.cas.mfa;
 
-import com.github.inspektr.audit.annotation.Audit;
+import com.codahale.metrics.annotation.Counted;
+import com.codahale.metrics.annotation.Metered;
+import com.codahale.metrics.annotation.Timed;
+import org.jasig.cas.authentication.Credential;
+import org.jasig.cas.authentication.handler.AuthenticationException;
+import org.jasig.cas.ticket.Ticket;
+import org.jasig.inspektr.audit.annotation.Audit;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.AuthenticationManager;
@@ -29,7 +35,7 @@ import org.jasig.cas.ticket.registry.TicketRegistry;
 import org.jasig.cas.util.UniqueTicketIdGenerator;
 import org.jasig.cas.validation.Assertion;
 import org.jasig.cas.validation.ImmutableAssertionImpl;
-import org.perf4j.aop.Profiled;
+import org.jasig.inspektr.audit.annotation.Audit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -99,8 +105,10 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
             action="TICKET_GRANTING_TICKET",
             actionResolverName="CREATE_TICKET_GRANTING_TICKET_RESOLVER",
             resourceResolverName="CREATE_TICKET_GRANTING_TICKET_RESOURCE_RESOLVER")
-    @Profiled(tag = "CREATE_TICKET_GRANTING_TICKET", logFailuresSeparately = false)
-    public String createTicketGrantingTicket(final Credentials credentials) throws TicketException {
+    @Timed(name = "CREATE_TICKET_GRANTING_TICKET_TIMER")
+    @Metered(name = "CREATE_TICKET_GRANTING_TICKET_METER")
+    @Counted(name="CREATE_TICKET_GRANTING_TICKET_COUNTER", monotonic=true)
+    public TicketGrantingTicket createTicketGrantingTicket(final Credential... credentials) throws TicketException {
         final MultiFactorCredentials mfaCredentials = (MultiFactorCredentials) credentials;
         final Authentication authentication = mfaCredentials.getAuthentication();
 
@@ -109,22 +117,33 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
                 this.ticketGrantingTicketExpirationPolicy);
 
         this.ticketRegistry.addTicket(ticketGrantingTicket);
-        return ticketGrantingTicket.getId();
+        return ticketGrantingTicket;
+    }
+
+    @Timed(name = "GET_TICKET_TIMER")
+    @Metered(name = "GET_TICKET_METER")
+    @Counted(name="GET_TICKET_COUNTER", monotonic=true)
+    @Override
+    public <T extends Ticket> T getTicket(final String ticketId, final Class<? extends Ticket> clazz)
+            throws InvalidTicketException {
+        return delegate.getTicket(ticketId, clazz);
+
     }
 
     /*
      * Implements Audit Trail participation by virtue of the delegate's audit trail participation.
      */
     @Override
-    public String grantServiceTicket(final String ticketGrantingTicketId, final Service service) throws TicketException {
-        return this.delegate.grantServiceTicket(ticketGrantingTicketId, service);
+    public ServiceTicket  grantServiceTicket(final String ticketGrantingTicketId, final Service service)
+     throws AuthenticationException, TicketException{
+        return this.delegate.grantServiceTicket(ticketGrantingTicketId, service, null);
     }
 
     /*
      * Implements Audit Trail participation by virtue of the delegate's audit trail participation.
      */
     @Override
-    public String grantServiceTicket(final String ticketGrantingTicketId, final Service service, final Credentials credentials)
+    public ServiceTicket grantServiceTicket(final String ticketGrantingTicketId, final Service service, final Credential... credentials)
             throws TicketException {
         return this.delegate.grantServiceTicket(ticketGrantingTicketId, service, credentials);
     }
@@ -241,7 +260,7 @@ public final class MultiFactorAwareCentralAuthenticationService implements Centr
             actionResolverName="GRANT_PROXY_GRANTING_TICKET_RESOLVER",
             resourceResolverName="GRANT_PROXY_GRANTING_TICKET_RESOURCE_RESOLVER")
     @Profiled(tag="GRANT_PROXY_GRANTING_TICKET", logFailuresSeparately = false)
-    public String delegateTicketGrantingTicket(final String serviceTicketId, final Credentials credentials) throws TicketException {
+    public String delegateTicketGrantingTicket(final String serviceTicketId, final Credential credentials) throws TicketException {
         return this.delegate.delegateTicketGrantingTicket(serviceTicketId, credentials);
     }
 

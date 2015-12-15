@@ -1,6 +1,6 @@
 package net.unicon.cas.mfa.web.support;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jasig.cas.authentication.principal.AbstractWebApplicationService;
 import org.jasig.cas.authentication.principal.Response;
 import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;

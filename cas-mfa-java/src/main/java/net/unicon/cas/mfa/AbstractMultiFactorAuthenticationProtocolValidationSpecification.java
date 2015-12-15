@@ -3,7 +3,7 @@ package net.unicon.cas.mfa;
 import net.unicon.cas.mfa.ticket.UnacceptableMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.ticket.UnrecognizedMultiFactorAuthenticationMethodException;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.validation.Assertion;
 import org.jasig.cas.validation.Cas20ProtocolValidationSpecification;
@@ -83,7 +83,7 @@ public abstract class AbstractMultiFactorAuthenticationProtocolValidationSpecifi
                     MultiFactorUtils.getSatisfiedAuthenticationMethods(authentication);
 
             if (!StringUtils.isBlank(getAuthenticationMethod())) {
-                if (previouslyAchievedAuthenticationMethods.size() == 0) {
+                if (previouslyAchievedAuthenticationMethods.isEmpty()) {
                     final String msg = String.format("Requested authentication method [%s] is not available", getAuthenticationMethod());
                     logger.debug(msg);
                     throw new UnacceptableMultiFactorAuthenticationMethodException("UNACCEPTABLE_AUTHENTICATION_METHOD", msg,
