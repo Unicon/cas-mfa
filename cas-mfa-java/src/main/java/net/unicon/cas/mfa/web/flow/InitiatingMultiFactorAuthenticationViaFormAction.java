@@ -94,6 +94,8 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
             return primaryAuthnEvent;
         }
 
+        context.getFlowScope().put("ticketGrantingTicketId", WebUtils.getTicketGrantingTicketId(context));
+
         final List<MultiFactorAuthenticationRequestContext> mfaRequests =
                 getMfaRequestOrNull(this.authenticationSupport.getAuthenticationFrom(WebUtils.getTicketGrantingTicketId(context)),
                         WebUtils.getService(context), context);
