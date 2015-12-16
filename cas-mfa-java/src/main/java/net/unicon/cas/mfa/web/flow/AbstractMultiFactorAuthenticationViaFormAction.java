@@ -260,7 +260,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      */
     protected abstract Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
                                                                  final Credential credentials, final MessageContext messageContext,
-                                                                 final String id) throws TicketException;
+                                                                 final String id) throws Exception;
 
     /**
      * CAS instance used to handle authentications. This CAS instance is only

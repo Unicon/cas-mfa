@@ -8,6 +8,7 @@ import org.jasig.cas.web.support.CookieRetrievingCookieGenerator;
 import org.jasig.cas.web.support.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.webflow.action.AbstractAction;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
@@ -30,7 +31,7 @@ import javax.validation.constraints.NotNull;
  *
  * @author Misagh Moayyed
  */
-public final class SendTicketGrantingTicketAction extends org.springframework.webflow.action.AbstractAction {
+public final class SendTicketGrantingTicketAction extends AbstractAction {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @NotNull

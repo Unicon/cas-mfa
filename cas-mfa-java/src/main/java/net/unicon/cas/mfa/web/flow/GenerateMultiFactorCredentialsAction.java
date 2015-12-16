@@ -5,8 +5,8 @@ import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.authentication.Authentication;
-import org.jasig.cas.authentication.principal.Credentials;
-import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
+import org.jasig.cas.authentication.Credential;
+import org.jasig.cas.authentication.UsernamePasswordCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.webflow.action.AbstractAction;
@@ -35,7 +35,7 @@ public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
      * that indicates the {@link MultiFactorCredentials} instance created
      * and put into the scope.
      */
-    protected static final String ATTRIBUTE_ID_MFA_CREDENTIALS= "mfaCredentials";
+    public static final String ATTRIBUTE_ID_MFA_CREDENTIALS = "mfaCredentials";
 
     /** The authentication support. */
     private AuthenticationSupport authenticationSupport;
@@ -51,7 +51,7 @@ public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
     }
 
     /**
-     * Construct the {@link MultiFactorCredentials} instance by chaining current {@link Credentials}
+     * Construct the {@link MultiFactorCredentials} instance by chaining current {@link Credential}
      * and the {@link Authentication}.
      * @param context the request context
      * @param upCredentials the credentials to authenticate
@@ -60,7 +60,7 @@ public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
      * @throws NoAuthenticationContextAvailable if the authentication cannot be established from the flow context
      * from what has already been authenticated as the principal
      */
-    private Credentials createCredentials(final RequestContext context, @NotNull final Credentials upCredentials,
+    private Credential createCredentials(final RequestContext context, @NotNull final Credential upCredentials,
             @NotNull final String id) throws NoAuthenticationContextAvailable {
         final Authentication authentication = getCasAuthentication(context);
         if (authentication == null) {
@@ -112,7 +112,7 @@ public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
      * @param context the context
      * @return the mfa credentials instance from context
      */
-    private MultiFactorCredentials getMfaCredentialsInstanceFromContext(final RequestContext context) {
+    private static MultiFactorCredentials getMfaCredentialsInstanceFromContext(final RequestContext context) {
         LOGGER.debug("Attempting to collect multifactor credentials from the context...");
         final MultiFactorCredentials c = MultiFactorRequestContextUtils.getMfaCredentials(context);
         if (c == null) {
@@ -128,11 +128,11 @@ public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
         final FlowSession session = context.getFlowExecutionContext().getActiveSession();
         LOGGER.debug("Authentication has entered the flow [{}] executing state [{}",
                 context.getActiveFlow().getId(), session.getState().getId());
-        final UsernamePasswordCredentials creds = (UsernamePasswordCredentials)
-                session.getScope().getRequired("credentials", UsernamePasswordCredentials.class);
+        final UsernamePasswordCredential creds = (UsernamePasswordCredential)
+                session.getScope().getRequired("credentials", UsernamePasswordCredential.class);
         final String id = creds != null ? creds.getUsername() : null;
 
-        final Credentials mfaCreds = createCredentials(context, creds, id);
+        final Credential mfaCreds = createCredentials(context, creds, id);
         final AttributeMap map = new LocalAttributeMap(ATTRIBUTE_ID_MFA_CREDENTIALS, mfaCreds);
         return new Event(this, EVENT_ID_SUCCESS, map);
     }

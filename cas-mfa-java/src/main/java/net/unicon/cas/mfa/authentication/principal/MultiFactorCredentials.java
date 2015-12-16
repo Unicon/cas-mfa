@@ -1,5 +1,13 @@
 package net.unicon.cas.mfa.authentication.principal;
 
+import net.unicon.cas.mfa.authentication.DefaultCompositeAuthentication;
+import net.unicon.cas.mfa.util.MultiFactorUtils;
+import org.jasig.cas.authentication.Authentication;
+import org.jasig.cas.authentication.Credential;
+import org.jasig.cas.authentication.principal.Principal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -7,18 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.unicon.cas.mfa.authentication.DefaultCompositeAuthentication;
-import net.unicon.cas.mfa.util.MultiFactorUtils;
-
-import org.jasig.cas.authentication.Authentication;
-import org.jasig.cas.authentication.Credential;
-import org.jasig.cas.authentication.principal.Credentials;
-import org.jasig.cas.authentication.principal.Principal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * A {@link Credentials} implementation that is to ease multifactor authentication.
+ * A {@link Credential} implementation that is to ease multifactor authentication.
  * It primarily carries the following entities:
  * <ul>
  *  <li><strong>Chain of credentials:</strong> represent various forms of credentials during an MFA flow</li>
@@ -42,11 +40,9 @@ import org.slf4j.LoggerFactory;
  */
 public class MultiFactorCredentials implements Credential {
 
-    private static final long serialVersionUID = -2958788799684788738L;
+    private final Map<String, Credential> chainedCredentials = new LinkedHashMap<String, Credential>();
 
-    private Map<String, Credential> chainedCredentials = new LinkedHashMap<String, Credential>();
-
-    private List<Authentication> chainedAuthentication = new LinkedList<Authentication>();
+    private final List<Authentication> chainedAuthentication = new LinkedList<Authentication>();
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -171,5 +167,13 @@ public class MultiFactorCredentials implements Credential {
 
     public final Credential getCredentials() {
         return getChainedCredentials().values().iterator().next();
+    }
+
+    @Override
+    public String getId() {
+        if (getPrincipal() != null) {
+            return getPrincipal().getId();
+        }
+        return Credential.UNKNOWN_ID;
     }
 }

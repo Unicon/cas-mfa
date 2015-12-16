@@ -26,6 +26,7 @@ import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebAppl
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.Credential;
+import org.jasig.cas.authentication.HttpBasedServiceCredential;
 import org.jasig.cas.authentication.principal.Credentials;
 import org.jasig.cas.authentication.principal.HttpBasedServiceCredentials;
 import org.jasig.cas.authentication.principal.WebApplicationService;
@@ -135,7 +136,7 @@ public class MultiFactorServiceValidateController extends DelegateController {
                 if (StringUtils.isNotBlank(authnMethod)) {
                     builder.getQueryParams().add(new Pair<String, String>(MODEL_AUTHN_METHOD, authnMethod));
                 }
-                return new HttpBasedServiceCredentials(new URL(builder.buildURL()));
+                return new HttpBasedServiceCredential(new URL(builder.buildURL()));
             } catch (final Exception e) {
                 logger.error("Error constructing pgtUrl", e);
             }

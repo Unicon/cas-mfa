@@ -1,10 +1,9 @@
 package net.unicon.cas.mfa.authentication;
 
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
-
-import org.jasig.cas.authentication.Authentication;
+import org.jasig.cas.authentication.AuthenticationBuilder;
 import org.jasig.cas.authentication.AuthenticationMetaDataPopulator;
-import org.jasig.cas.authentication.principal.Credentials;
+import org.jasig.cas.authentication.Credential;
 import org.jasig.cas.authentication.principal.Service;
 import org.jasig.cas.web.support.WebUtils;
 import org.slf4j.Logger;
@@ -24,8 +23,7 @@ public class RememberAuthenticationMethodMetaDataPopulator implements Authentica
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public final Authentication populateAttributes(final Authentication authentication, final Credentials credentials) {
-
+    public void populateAttributes(final AuthenticationBuilder authenticationBuilder, final Credential credential) {
         final RequestContext context = RequestContextHolder.getRequestContext();
         if (context != null) {
             final Service svc = WebUtils.getService(context);
@@ -34,14 +32,18 @@ public class RememberAuthenticationMethodMetaDataPopulator implements Authentica
                 final MultiFactorAuthenticationSupportingWebApplicationService mfaSvc =
                         (MultiFactorAuthenticationSupportingWebApplicationService) svc;
 
-                authentication.getAttributes().put(
+                authenticationBuilder.addAttribute(
                         MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD,
                         mfaSvc.getAuthenticationMethod());
 
-                logger.debug("Captured authentication method [{}] into the authentation context",
+                logger.debug("Captured authentication method [{}] into the authentication context",
                         mfaSvc.getAuthenticationMethod());
             }
         }
-        return authentication;
+    }
+
+    @Override
+    public boolean supports(final Credential credential) {
+        return true;
     }
 }

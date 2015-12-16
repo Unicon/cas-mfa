@@ -16,6 +16,11 @@
   <dependencies>
 
       <dependency>
+          <groupId>org.jasig.cas</groupId>
+          <artifactId>cas-server-webapp-support</artifactId>
+      </dependency>
+
+      <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-core</artifactId>
       </dependency>
