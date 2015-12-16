@@ -6,7 +6,7 @@
 > This project is made public here on Github as part of Unicon's [Open Source Support program](https://unicon.net/opensource).
 Professional Support / Integration Assistance for this module is available. For more information [visit](https://unicon.net/opensource/cas).
 
-This is a project to develop free and open source compatibly licensed extensions for the CAS server `v3.6.x` product implementing
+This is a project to develop free and open source compatibly licensed extensions for the CAS server `v4.1.x` product implementing
 
 * support for authenticating using multiple authentication factors
 * support for relying parties (CAS-using applications) understanding how strongly the user authenticated from the ticket validation response, and
@@ -21,11 +21,6 @@ The intention is to develop a solution that can be adopted by current CAS adopte
 
 ## MultiFactor Support
 * `duo-two-factor` (via DuoSecurity)
-* `yubikey-two-factor` (via YubiKey)
-* `toopher-two-factor` (via Toopher)
-* `authy-two-factor` (via Authy)
-* `radius-two-factor` (via RADIUS OTP)
-* `strong-two-factor` (Custom)
 
 ## Documentation
 Please review [the project wiki](https://github.com/Unicon/cas-mfa/wiki) for additional information on scope, functionality and how-to walkthroughs.
