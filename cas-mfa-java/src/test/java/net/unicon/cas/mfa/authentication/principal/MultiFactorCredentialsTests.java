@@ -10,6 +10,7 @@ import java.util.Set;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
 import org.jasig.cas.authentication.Authentication;
+import org.jasig.cas.authentication.principal.DefaultPrincipalFactory;
 import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.SimplePrincipal;
 import org.junit.Test;
@@ -25,12 +26,12 @@ public class MultiFactorCredentialsTests {
     @Test(expected = UnknownPrincipalMatchException.class)
     public void testMultifactorMismatchedPrincipals() {
 
-        final Principal firstPrincipal = new SimplePrincipal("casuser");
+        final Principal firstPrincipal = new DefaultPrincipalFactory().createPrincipal("casuser");
 
         final Authentication firstAuthentication = mock(Authentication.class);
         when(firstAuthentication.getPrincipal()).thenReturn(firstPrincipal);
 
-        final Principal secondPrincipal = new SimplePrincipal("antheruser");
+        final Principal secondPrincipal =  new DefaultPrincipalFactory().createPrincipal("antheruser");
 
         final Authentication secondAuthentication = mock(Authentication.class);
         when(secondAuthentication.getPrincipal()).thenReturn(secondPrincipal);
@@ -42,12 +43,12 @@ public class MultiFactorCredentialsTests {
 
     @Test
     public void testMultifactorAddMatchingCredentials() {
-        final Principal firstPrincipal = new SimplePrincipal("casuser");
+        final Principal firstPrincipal =  new DefaultPrincipalFactory().createPrincipal("casuser");
 
         final Authentication firstAuthentication = mock(Authentication.class);
         when(firstAuthentication.getPrincipal()).thenReturn(firstPrincipal);
 
-        final Principal secondPrincipal = new SimplePrincipal("casuser");
+        final Principal secondPrincipal =  new DefaultPrincipalFactory().createPrincipal("casuser");
 
         final Authentication secondAuthentication = mock(Authentication.class);
         when(secondAuthentication.getPrincipal()).thenReturn(secondPrincipal);
@@ -64,7 +65,7 @@ public class MultiFactorCredentialsTests {
         attributes1.put("attr1", "attr2");
         attributes1.put("uid", "username");
 
-        final Principal firstPrincipal = new SimplePrincipal("casuser", attributes1);
+        final Principal firstPrincipal =  new DefaultPrincipalFactory().createPrincipal("casuser", attributes1);
 
         final Authentication firstAuthentication = mock(Authentication.class);
         when(firstAuthentication.getPrincipal()).thenReturn(firstPrincipal);
@@ -76,7 +77,7 @@ public class MultiFactorCredentialsTests {
         attributes2.put("attr1", "attr3");
         attributes2.put("cn", "commonName");
 
-        final Principal secondPrincipal = new SimplePrincipal("casuser", attributes2);
+        final Principal secondPrincipal =  new DefaultPrincipalFactory().createPrincipal("casuser", attributes2);
 
         final Authentication secondAuthentication = mock(Authentication.class);
         when(secondAuthentication.getPrincipal()).thenReturn(secondPrincipal);
@@ -90,6 +91,7 @@ public class MultiFactorCredentialsTests {
         assertEquals(2, c.countChainedAuthentications());
 
         final Authentication authn = c.getAuthentication();
+        assertNotNull(authn);
         assertTrue(authn.getPrincipal().equals(firstPrincipal));
         assertTrue(authn.getPrincipal().equals(secondPrincipal));
 

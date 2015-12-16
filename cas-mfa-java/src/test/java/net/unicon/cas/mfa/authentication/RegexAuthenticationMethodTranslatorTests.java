@@ -40,7 +40,7 @@ public class RegexAuthenticationMethodTranslatorTests {
     public void testTranslateException() {
         final DefaultMultiFactorAuthenticationSupportingWebApplicationService svc =
                 new DefaultMultiFactorAuthenticationSupportingWebApplicationService("https://www.github.com",
-                        "https://www.github.com", null, Response.ResponseType.REDIRECT, null, "test_authn_method");
+                        "https://www.github.com", null, Response.ResponseType.REDIRECT, "test_authn_method");
 
         final Map<String, String> testMap = getLookupMap();
 
@@ -48,7 +48,7 @@ public class RegexAuthenticationMethodTranslatorTests {
         regexAuthenticationMethodTranslator.translate(svc, "CN=sudoers,OU=AdminGroups,DC=example,DC=edu");
     }
 
-    private Map<String, String> getLookupMap() {
+    private static Map<String, String> getLookupMap() {
         final Map<String, String> testMap = new LinkedHashMap<String, String>();
         testMap.put("CN=Staff,OU=Groups,DC=example,DC=edu", "mfa1");
         testMap.put("CN=Students,OU=Groups,DC=example,DC=edu", "mfa2");

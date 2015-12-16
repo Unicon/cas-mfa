@@ -164,18 +164,18 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         };
     }
 
-    private ServicesManager getServicesManager(final RegisteredServiceWithAttributes rswa) {
+    private static ServicesManager getServicesManager(final RegisteredServiceWithAttributes rswa) {
         final ServicesManager testSM = Mockito.mock(ServicesManager.class);
         when(testSM.findServiceBy(any(Service.class))).thenReturn(rswa);
         return testSM;
     }
 
-    private MultiFactorAuthenticationSupportingWebApplicationService getMfaService() {
+    private static MultiFactorAuthenticationSupportingWebApplicationService getMfaService() {
         return new DefaultMultiFactorAuthenticationSupportingWebApplicationService(CAS_SERVICE, CAS_SERVICE, null,
-                Response.ResponseType.REDIRECT, null, CAS_AUTHN_METHOD);
+                Response.ResponseType.REDIRECT, CAS_AUTHN_METHOD);
     }
 
-    private MultiFactorWebApplicationServiceFactory getMFWASF(final WebApplicationService was) {
+    private static MultiFactorWebApplicationServiceFactory getMFWASF(final WebApplicationService was) {
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
         when(factory.create(anyString(), anyString(), anyString(), Response.ResponseType.REDIRECT, anyString(),
                 any(MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource.class)))
@@ -183,7 +183,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         return factory;
     }
 
-    private WebApplicationService getTargetService() {
+    private static WebApplicationService getTargetService() {
         final WebApplicationService was = Mockito.mock(WebApplicationService.class);
         when(was.getId()).thenReturn(CAS_SERVICE);
         when(was.getArtifactId()).thenReturn("test");

@@ -4,7 +4,7 @@ import net.unicon.cas.mfa.authentication.AuthenticationMethod;
 import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.jasig.cas.web.support.CasArgumentExtractor;
-import org.jasig.cas.web.support.SamlArgumentExtractor;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -29,8 +29,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
     public RequestParameterMultiFactorAuthenticationArgumentExtractorTests() {
         this.supportedArgumentExtractors = new ArrayList<ArgumentExtractor>();
         this.supportedArgumentExtractors.add(new CasArgumentExtractor());
-        this.supportedArgumentExtractors.add(new SamlArgumentExtractor());
-        this.mfaWebApplicationServiceFactory = new DefaultMultiFactorWebApplicationServiceFactory(true, null);
+        this.mfaWebApplicationServiceFactory = new DefaultMultiFactorWebApplicationServiceFactory();
     }
 
     /**
@@ -113,6 +112,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
          final MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
                 (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(request);
 
+        assertNotNull(authenticationMethodRequiringService);
         assertEquals("strong_two_factor", authenticationMethodRequiringService.getAuthenticationMethod());
     }
 
@@ -151,6 +151,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         final MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
                 (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(request);
 
+        assertNotNull(authenticationMethodRequiringService);
         assertEquals("personal_attestation", authenticationMethodRequiringService.getAuthenticationMethod());
     }
 
@@ -207,6 +208,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         final MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
                 (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(request);
 
+        assertNotNull(authenticationMethodRequiringService);
         assertEquals("strong_two_factor", authenticationMethodRequiringService.getAuthenticationMethod());
     }
 }

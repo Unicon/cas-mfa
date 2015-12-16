@@ -1,12 +1,18 @@
 package net.unicon.cas.mfa.authentication.duo
 
 import groovy.util.logging.Slf4j
-import org.jasig.cas.authentication.handler.AuthenticationException
-import org.jasig.cas.authentication.handler.AuthenticationHandler
-import org.jasig.cas.authentication.principal.Credentials
+import org.jasig.cas.MessageDescriptor
+import org.jasig.cas.authentication.Credential
+import org.jasig.cas.authentication.HandlerResult
+import org.jasig.cas.authentication.PreventedException
+import org.jasig.cas.authentication.handler.support.AbstractPreAndPostProcessingAuthenticationHandler
+import org.jasig.cas.authentication.principal.Principal
+
+import javax.security.auth.login.FailedLoginException
+import java.security.GeneralSecurityException
 
 @Slf4j
-class DuoAuthenticationHandler implements AuthenticationHandler {
+class DuoAuthenticationHandler extends AbstractPreAndPostProcessingAuthenticationHandler  {
 
     private final DuoAuthenticationService duoAuthenticationService
 
@@ -15,26 +21,38 @@ class DuoAuthenticationHandler implements AuthenticationHandler {
     }
 
     @Override
-    boolean authenticate(Credentials credentials) throws AuthenticationException {
-        final duoCredentials = credentials as DuoCredentials
+    protected HandlerResult doAuthentication(final Credential credential) throws GeneralSecurityException, PreventedException {
+        try {
+            final DuoCredentials duoCredential = (DuoCredentials) credential;
 
-        // Do an out of band request using the DuoWeb api (encapsulated in DuoAuthenticationService) to the hosted duo service, if it is successful
-        // it will return a String containing the username of the successfully authenticated user, but if not - will
-        // return a blank String or null.
-        final duoVerifyResponse = this.duoAuthenticationService.authenticate(duoCredentials.signedDuoResponse)
-        log.debug("Response from Duo verify: [{}]", duoVerifyResponse)
-        final primaryCredentialsUsername = duoCredentials.username
-        final isGoodAuthentication = duoVerifyResponse == primaryCredentialsUsername
-        if (isGoodAuthentication) {
-            log.info("Successful Duo authentication for [{}]", primaryCredentialsUsername)
-            return true
+            if (!duoCredential.isValid()) {
+                throw new GeneralSecurityException("Duo credential validation failed. Ensure a username "
+                        + " and the signed Duo response is configured and passed. Credential received: " + duoCredential);
+            }
+
+            final String duoVerifyResponse = this.duoAuthenticationService.authenticate(duoCredential.getSignedDuoResponse());
+            logger.debug("Response from Duo verify: [{}]", duoVerifyResponse);
+            final String primaryCredentialsUsername = duoCredential.getUsername();
+
+            final boolean isGoodAuthentication = duoVerifyResponse.equals(primaryCredentialsUsername);
+
+            if (isGoodAuthentication) {
+                logger.info("Successful Duo authentication for [{}]", primaryCredentialsUsername);
+
+                final Principal principal = this.principalFactory.createPrincipal(duoVerifyResponse);
+                return createHandlerResult(credential, principal, new ArrayList<MessageDescriptor>());
+            }
+            throw new FailedLoginException("Duo authentication username "
+                    + primaryCredentialsUsername + " does not match Duo response: " + duoVerifyResponse);
+
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new FailedLoginException(e.getMessage());
         }
-        log.error("Duo authentication error! Login username: [{}], Duo response: [{}]", primaryCredentialsUsername ?: 'null', duoVerifyResponse)
-        false
     }
 
     @Override
-    boolean supports(Credentials credentials) {
-        DuoCredentials.isAssignableFrom(credentials.class)
+    boolean supports(final Credential credential) {
+        DuoCredentials.isAssignableFrom(credential.class)
     }
 }
