@@ -1,12 +1,5 @@
 <jsp:directive.include file="includes/top.jsp"/>
-<script src="<c:url value='js/duo/Duo-Web-v1.bundled.min.js'/>"></script>
-<script>
-    Duo.init({
-        'host': '${apiHost}',
-        'sig_request': '${sigRequest}',
-        'post_argument': 'signedDuoResponse'
-    });
-</script>
+<script src="<c:url value='js/duo/Duo-Web-v2.min.js'/>"></script>
 
 <div id="msg" class="info">
     <h2><spring:message code="service.mfa.service.mfa.inprogress.header" /></h2>
@@ -21,7 +14,14 @@
     <input type="hidden" name="_eventId" value="submit"/>
 
     <div class="box fl-panel" id="login">
-        <iframe id="duo_iframe" width="100%" height="360" frameborder="0"></iframe>
+        <iframe id="duo_iframe"
+                width="620"
+                height="330"
+                frameborder="0"
+                data-host="${apiHost}"
+                data-sig-request="${sigRequest}"
+                data-post-argument="signedDuoResponse">
+        </iframe>
     </div>
 
     <p>
