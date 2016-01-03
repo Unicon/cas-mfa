@@ -48,7 +48,7 @@ public class OrderedMultiFactorMethodRankingStrategy implements RequestedAuthent
      * @param sortedRequests the sorted requests
      * @return the list
      */
-    protected List<MultiFactorAuthenticationRequestContext> sortRequests(
+    protected static List<MultiFactorAuthenticationRequestContext> sortRequests(
             final List<MultiFactorAuthenticationRequestContext> sortedRequests) {
         AnnotationAwareOrderComparator.sort(sortedRequests);
         return sortedRequests;

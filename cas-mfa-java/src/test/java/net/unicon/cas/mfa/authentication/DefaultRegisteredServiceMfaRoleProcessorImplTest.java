@@ -1,9 +1,11 @@
 package net.unicon.cas.mfa.authentication;
 
+
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.web.support.DefaultMultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
+import org.jasig.cas.TestUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.Response;
@@ -15,16 +17,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by jgasper on 5/25/15.
@@ -131,6 +129,18 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         assertEquals(0, result.size());
     }
 
+    private static Authentication getAuthentication(final boolean inRole) {
+        final Map<String, Object> attributes = new HashMap<String, Object>();
+
+        if (inRole) {
+            attributes.put(MEMBER_OF, MEMBER_OF_VALUE);
+        }
+
+        final Principal principal = TestUtils.getPrincipal("jdoe", attributes);
+        final Authentication auth = TestUtils.getAuthentication(principal);
+        return auth;
+    }
+
     @Test
     public void testResolveServiceWithOnlyAuthnMethodAttribute() throws Exception {
         final WebApplicationService was = getTargetService();
@@ -150,7 +160,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         assertEquals(0, result.size());
     }
 
-    private AuthenticationMethodConfigurationProvider getAMCP() {
+    private static AuthenticationMethodConfigurationProvider getAMCP() {
         return new AuthenticationMethodConfigurationProvider() {
             @Override
             public boolean containsAuthenticationMethod(final String name) {
@@ -191,40 +201,6 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         return was;
     }
 
-    private Authentication getAuthentication(final boolean inRole) {
-        return new Authentication() {
-            @Override
-            public Principal getPrincipal() {
-                return new Principal() {
-                    @Override
-                    public String getId() {
-                        return "jdoe";
-                    }
-
-                    @Override
-                    public Map<String, Object> getAttributes() {
-                        final Map<String, Object> attributes = new HashMap<String, Object>();
-
-                        if (inRole) {
-                            attributes.put(MEMBER_OF, MEMBER_OF_VALUE);
-                        }
-
-                        return attributes;
-                    }
-                };
-            }
-
-            @Override
-            public Date getAuthenticatedDate() {
-                return new Date();
-            }
-
-            @Override
-            public Map<String, Object> getAttributes() {
-                return null;
-            }
-        };
-    }
 
 
 }

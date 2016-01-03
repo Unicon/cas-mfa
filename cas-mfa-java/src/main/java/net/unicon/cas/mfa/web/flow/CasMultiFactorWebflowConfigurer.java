@@ -315,7 +315,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param state the state to include the default transition
      * @param targetState the id of the destination state to which the flow should transfer
      */
-    protected void addDefaultTransitionToState(final TransitionableState state, final String targetState) {
+    protected static void addDefaultTransitionToState(final TransitionableState state, final String targetState) {
         if (state == null) {
             LOGGER.debug("Cant add default transition of [{}] to the given state is null and cannot be found in the flow.", targetState);
             return;
@@ -331,8 +331,8 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param criteriaOutcome the criteria outcome
      * @param targetState     the target state
      */
-    protected void addTransitionToActionState(final ActionState actionState,
-                                            final String criteriaOutcome, final String targetState) {
+    protected static void addTransitionToActionState(final ActionState actionState,
+                                                     final String criteriaOutcome, final String targetState) {
         try {
             final Transition transition = createTransition(criteriaOutcome, targetState);
             actionState.getTransitionSet().add(transition);
@@ -350,7 +350,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param targetState     the target state
      * @return the transition
      */
-    protected Transition createTransition(final String criteriaOutcome, final String targetState) {
+    protected static Transition createTransition(final String criteriaOutcome, final String targetState) {
         final DefaultTransitionCriteria criteria = new DefaultTransitionCriteria(new LiteralExpression(criteriaOutcome));
         final DefaultTargetStateResolver resolver = new DefaultTargetStateResolver(targetState);
 
@@ -363,7 +363,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param targetState     the target state
      * @return the transition
      */
-    protected Transition createTransition(final String targetState) {
+    protected static Transition createTransition(final String targetState) {
         final DefaultTargetStateResolver resolver = new DefaultTargetStateResolver(targetState);
         return new Transition(resolver);
     }
@@ -469,7 +469,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param mappings the mappings
      * @return the mapper
      */
-    protected Mapper createMapperToSubflowState(final List<DefaultMapping> mappings) {
+    protected static Mapper createMapperToSubflowState(final List<DefaultMapping> mappings) {
         final DefaultMapper inputMapper = new DefaultMapper();
         for (final DefaultMapping mapping : mappings) {
             inputMapper.addMapping(mapping);
@@ -510,7 +510,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param outputMapper the output mapper
      * @return the subflow attribute mapper
      */
-    protected SubflowAttributeMapper createSubflowAttributeMapper(final Mapper inputMapper, final Mapper outputMapper) {
+    protected static SubflowAttributeMapper createSubflowAttributeMapper(final Mapper inputMapper, final Mapper outputMapper) {
         return new GenericSubflowAttributeMapper(inputMapper, outputMapper);
     }
 

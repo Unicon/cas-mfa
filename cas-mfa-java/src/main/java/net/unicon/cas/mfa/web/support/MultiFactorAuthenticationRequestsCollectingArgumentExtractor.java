@@ -97,8 +97,8 @@ public final class MultiFactorAuthenticationRequestsCollectingArgumentExtractor 
      *
      * @return mfa request
      */
-    private MultiFactorAuthenticationRequestContext createMfaRequest(final MultiFactorAuthenticationSupportingWebApplicationService service,
-                                                                     final int mfaMethodRank) {
+    private static MultiFactorAuthenticationRequestContext createMfaRequest(final MultiFactorAuthenticationSupportingWebApplicationService service,
+                                                                            final int mfaMethodRank) {
         return new MultiFactorAuthenticationRequestContext(service, mfaMethodRank);
     }
 }

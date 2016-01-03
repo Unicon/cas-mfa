@@ -9,15 +9,13 @@ import net.unicon.cas.mfa.authentication.OrderedMultiFactorMethodRankingStrategy
 import net.unicon.cas.mfa.web.flow.event.ErroringMultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.flow.event.MultiFactorAuthenticationSpringWebflowEventBuilder;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
-import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
+import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
 import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.AuthenticationManager;
-import org.jasig.cas.authentication.handler.AuthenticationException;
-import org.jasig.cas.authentication.principal.Credentials;
-import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
-import org.jasig.cas.web.bind.CredentialsBinder;
+import org.jasig.cas.authentication.Credential;
+import org.jasig.cas.authentication.UsernamePasswordCredential;
 import org.jasig.cas.web.flow.AuthenticationViaFormAction;
 import org.jasig.cas.web.support.WebUtils;
 import org.junit.Before;
@@ -57,9 +55,6 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
     private AuthenticationViaFormAction authViaFormAction;
 
     @Mock
-    private CredentialsBinder binder;
-
-    @Mock
     private CentralAuthenticationService cas;
 
     @Mock
@@ -90,12 +85,11 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
     private AuthenticationMethodVerifier verifier;
 
     @Before
-    public void setup() throws AuthenticationException {
+    public void setup() throws Exception {
 
         MockitoAnnotations.initMocks(this);
 
         this.authViaFormAction.setCentralAuthenticationService(this.cas);
-        this.authViaFormAction.setCredentialsBinder(this.binder);
         this.authViaFormAction.setWarnCookieGenerator(this.cookieGenerator);
 
         final MutableAttributeMap flowScope = mock(MutableAttributeMap.class);
@@ -122,7 +116,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         when(ctx.getConversationScope().get(MultiFactorAuthenticationTransactionContext.class.getSimpleName()))
                 .thenReturn(new MultiFactorAuthenticationTransactionContext("test service"));
 
-        when(manager.authenticate(any(Credentials.class))).thenReturn(this.authentication);
+        when(manager.authenticate(any(Credential.class))).thenReturn(this.authentication);
 
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
                 new TreeSet<AuthenticationMethod>();
@@ -136,7 +130,6 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
                 "https://sso.school.edu");
 
         this.action.setCentralAuthenticationService(this.cas);
-        this.action.setCredentialsBinder(this.binder);
         this.action.setWarnCookieGenerator(this.cookieGenerator);
         this.action.setMultiFactorAuthenticationManager(manager);
     }
@@ -167,7 +160,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         final TransitionDefinition def = mock(TransitionDefinition.class);
         when(def.getId()).thenReturn(id);
 
-        when((this.ctx.getMatchingTransition(anyString()))).thenReturn(def);
+        when(this.ctx.getMatchingTransition(anyString())).thenReturn(def);
 
         final Event ev = this.action.doExecute(this.ctx);
         assertNotNull(ev);
@@ -178,8 +171,8 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         assertEquals(ev.getId(), id);
     }
 
-    private Credentials getCredentials() {
-        final UsernamePasswordCredentials c = new UsernamePasswordCredentials();
+    private static Credential getCredentials() {
+        final UsernamePasswordCredential c = new UsernamePasswordCredential();
         c.setUsername("user");
         c.setPassword("psw");
         return c;

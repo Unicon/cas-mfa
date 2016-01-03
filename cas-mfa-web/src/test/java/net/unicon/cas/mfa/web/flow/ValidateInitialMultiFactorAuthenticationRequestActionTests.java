@@ -51,6 +51,8 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
             new MultiFactorAuthenticationTransactionContext("test service").addMfaRequest(
                     new MultiFactorAuthenticationRequestContext(
                             new MultiFactorAuthenticationSupportingWebApplicationService() {
+                                private static final long serialVersionUID = 2674549680880441113L;
+
                                 @Override
                                 public String getAuthenticationMethod() {
                                     return "strong_two_factor";
@@ -72,13 +74,13 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
                                 }
 
                                 @Override
-                                public void setPrincipal(final Principal principal) {
-
+                                public String getOriginalUrl() {
+                                    return "test service";
                                 }
 
                                 @Override
-                                public boolean logOutOfService(final String sessionIdentifier) {
-                                    return false;
+                                public void setPrincipal(final Principal principal) {
+
                                 }
 
                                 @Override

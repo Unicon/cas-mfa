@@ -1,6 +1,5 @@
 package net.unicon.cas.mfa.authentication.principal;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 

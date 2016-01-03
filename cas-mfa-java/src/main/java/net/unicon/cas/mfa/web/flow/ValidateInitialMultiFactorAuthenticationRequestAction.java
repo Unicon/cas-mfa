@@ -169,7 +169,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
      * {@link MultiFactorAuthenticationSpringWebflowEventBuilder#MFA_EVENT_ID_PREFIX}
      * prepended to the authentication method.
      */
-    private String getMultiFactorEventIdByAuthenticationMethod(final String authnMethod) {
+    private static String getMultiFactorEventIdByAuthenticationMethod(final String authnMethod) {
         return MultiFactorAuthenticationSpringWebflowEventBuilder.MFA_EVENT_ID_PREFIX + authnMethod;
     }
 }

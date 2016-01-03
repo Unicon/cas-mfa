@@ -4,10 +4,11 @@ import net.unicon.cas.addons.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.CompositeAuthentication;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.jasig.cas.authentication.Authentication;
-import org.jasig.cas.authentication.principal.Credentials;
+import org.jasig.cas.authentication.Credential;
+import org.jasig.cas.authentication.UsernamePasswordCredential;
 import org.jasig.cas.authentication.principal.Principal;
-import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -105,7 +106,7 @@ public class GenerateMultiFactorCredentialsActionTests {
     @Test(expected=NoAuthenticationContextAvailable.class)
     public void testNoCredentialId() {
         when(this.sessionFlowScope.getRequired(anyString(),
-                any(UsernamePasswordCredentials.class.getClass()))).thenReturn(new UsernamePasswordCredentials());
+                any(UsernamePasswordCredentials.class.getClass()))).thenReturn(new UsernamePasswordCredential());
         this.action.doExecute(this.requestContext);
     }
 
@@ -121,12 +122,12 @@ public class GenerateMultiFactorCredentialsActionTests {
         setMockAuthenticationContextWith(authentication);
         setMockTgtContextWith(null);
 
-        final Credentials c = getCredentials();
+        final Credential c = getCredentials();
 
         when(this.sessionFlowScope.getRequired(anyString(),
                 any(UsernamePasswordCredentials.class.getClass()))).thenReturn(c);
         final Event event = this.action.doExecute(this.requestContext);
-        final Credentials creds = (Credentials)
+        final Credential creds = (Credential)
                 event.getAttributes().get(GenerateMultiFactorCredentialsAction.ATTRIBUTE_ID_MFA_CREDENTIALS);
 
         assertTrue(creds instanceof MultiFactorCredentials);
@@ -144,12 +145,12 @@ public class GenerateMultiFactorCredentialsActionTests {
         setMockAuthenticationContextWith(null);
         setMockTgtContextWith(TGT_ID);
 
-        final Credentials c = getCredentials();
+        final Credential c = getCredentials();
 
         when(this.sessionFlowScope.getRequired(anyString(),
                 any(UsernamePasswordCredentials.class.getClass()))).thenReturn(c);
         final Event event = this.action.doExecute(this.requestContext);
-        final Credentials creds = (Credentials)
+        final Credential creds = (Credential)
                 event.getAttributes().get(GenerateMultiFactorCredentialsAction.ATTRIBUTE_ID_MFA_CREDENTIALS);
 
         assertTrue(creds instanceof MultiFactorCredentials);
@@ -162,8 +163,8 @@ public class GenerateMultiFactorCredentialsActionTests {
         assertEquals(mfaCreds.getCredentials(), c);
     }
 
-    private Credentials getCredentials() {
-        final UsernamePasswordCredentials c = new UsernamePasswordCredentials();
+    private static Credential getCredentials() {
+        final UsernamePasswordCredential c = new UsernamePasswordCredential();
         c.setUsername("user");
         c.setPassword("psw");
         return c;

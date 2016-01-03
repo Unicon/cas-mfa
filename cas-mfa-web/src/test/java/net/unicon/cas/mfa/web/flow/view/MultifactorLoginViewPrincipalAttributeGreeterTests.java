@@ -1,7 +1,8 @@
 package net.unicon.cas.mfa.web.flow.view;
 
+import org.jasig.cas.authentication.principal.DefaultPrincipalFactory;
 import org.jasig.cas.authentication.principal.Principal;
-import org.jasig.cas.authentication.principal.SimplePrincipal;
+import org.jasig.cas.authentication.principal.PrincipalFactory;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -18,6 +19,8 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 public class MultifactorLoginViewPrincipalAttributeGreeterTests {
+
+    private PrincipalFactory principalFactory = new DefaultPrincipalFactory();
 
     @Mock
     private MessageContext messageContext;
@@ -42,7 +45,7 @@ public class MultifactorLoginViewPrincipalAttributeGreeterTests {
         map.put("firstName", Arrays.asList("cas", "sso"));
         map.put("lastName", "user");
 
-        final Principal p = new SimplePrincipal("userid", map);
+        final Principal p = principalFactory.createPrincipal("userid", map);
 
         final MultifactorLoginViewPrincipalAttributeGreeter greeter = new MultifactorLoginViewPrincipalAttributeGreeter(
                 "firstName");
@@ -58,7 +61,7 @@ public class MultifactorLoginViewPrincipalAttributeGreeterTests {
         map.put("firstName", "cas");
         map.put("lastName", "user");
 
-        final Principal p = new SimplePrincipal("userid", map);
+        final Principal p = principalFactory.createPrincipal("userid", map);
 
         final MultifactorLoginViewPrincipalAttributeGreeter greeter = new MultifactorLoginViewPrincipalAttributeGreeter(
                 "firstName");
@@ -71,7 +74,7 @@ public class MultifactorLoginViewPrincipalAttributeGreeterTests {
     @Test
     public void testInvalidPrincipalAttributeToGreet() {
         final Map map = new HashMap();
-        final Principal p = new SimplePrincipal("userid", map);
+        final Principal p = principalFactory.createPrincipal("userid", map);
 
         final MultifactorLoginViewPrincipalAttributeGreeter greeter = new MultifactorLoginViewPrincipalAttributeGreeter(
                 "firstName");
