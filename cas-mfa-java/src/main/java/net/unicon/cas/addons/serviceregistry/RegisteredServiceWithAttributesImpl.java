@@ -6,7 +6,7 @@ import java.util.Map;
 import org.jasig.cas.services.RegisteredServiceImpl;
 
 /**
- * An extention to <code>RegisteredServiceImpl</code> with extra arbitrary attributes
+ * An extention to <code>RegisteredServiceImpl</code> with extra arbitrary attributes.
  *
  * @author Dmitriy Kopylenko
  * @author Unicon, inc.

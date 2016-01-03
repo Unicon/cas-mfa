@@ -1,9 +1,12 @@
 package net.unicon.cas.mfa.authentication.principal
 
+import groovy.util.logging.Slf4j
 import net.unicon.cas.mfa.authentication.AuthenticationMethod
 import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider
+import net.unicon.cas.mfa.web.support.DefaultMultiFactorWebApplicationServiceFactory
 import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService
+import org.jasig.cas.authentication.principal.Response
 
 import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource
 import org.jasig.cas.authentication.Authentication
@@ -20,7 +23,10 @@ import spock.lang.Unroll
  * @author Dmitriy Kopylenko
  * @author Unicon inc.
  */
+@Slf4j
 class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Specification {
+
+    static WebApplicationService targetService = new SimpleWebApplicationServiceImpl('test target service')
 
     @Shared
     def authenticationWithValidPrincipalAttributeFor_strong_two_factor = Stub(Authentication) {
@@ -38,18 +44,7 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
     }
 
     @Shared
-    WebApplicationService targetService = new SimpleWebApplicationServiceImpl('test target service')
-
-    @Shared
-    MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory = Stub(MultiFactorWebApplicationServiceFactory) {
-        create('test target service', 'test target service', null, 'strong_two_factor', AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE) >>
-                Stub(MultiFactorAuthenticationSupportingWebApplicationService) {
-                    getId() >> 'test target service'
-                    getAuthenticationMethod() >> 'strong_two_factor'
-                    getAuthenticationMethodSource() >> AuthenticationMethodSource.PRINCIPAL_ATTRIBUTE
-                }
-    }
-
+    MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory = new DefaultMultiFactorWebApplicationServiceFactory();
     @Subject
     def s1 = [new AuthenticationMethod("strong_two_factor",1),
               new AuthenticationMethod("lower_factor",2),
@@ -63,7 +58,7 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
     @Unroll
     def "either authentication OR service OR both null arguments OR no authn_method principal attribute SHOULD result in empty list"() {
         expect:
-        mfaAuthnReqResolverUnderTest.resolve(authn, svc).size() == 0
+        mfaAuthnReqResolverUnderTest.resolve(authn, svc, Response.ResponseType.REDIRECT).size() == 0
 
         where:
         authn                                                          | svc
@@ -74,11 +69,14 @@ class PrincipalAttributeMultiFactorAuthenticationRequestResolverTests extends Sp
 
     }
 
-    def "correct MultiFactorAuthenticationRequestContext returned when valid target service is passed and THERE IS a principal attribute 'authn_method'"() {
+    def "correct MultiFactorAuthenticationRequestContext returned when valid service is passed and a principal attribute 'authn_method'"() {
         given:
-        def mfaReq = mfaAuthnReqResolverUnderTest.resolve(authenticationWithValidPrincipalAttributeFor_strong_two_factor, targetService)
+
+        def mfaReq = mfaAuthnReqResolverUnderTest.resolve(authenticationWithValidPrincipalAttributeFor_strong_two_factor, targetService,
+                Response.ResponseType.REDIRECT)
         def mfaContext = mfaReq.get(0);
 
+        log.warn(mfaContext.mfaService.getId())
         expect:
         mfaContext.mfaService.id == 'test target service'
 

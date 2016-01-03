@@ -2,6 +2,8 @@ package net.unicon.cas.mfa.web.support;
 
 import net.unicon.cas.mfa.authentication.AuthenticationMethod;
 import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider;
+import org.jasig.cas.authentication.principal.Service;
+import org.jasig.cas.support.saml.web.support.SamlArgumentExtractor;
 import org.jasig.cas.web.support.ArgumentExtractor;
 import org.jasig.cas.web.support.CasArgumentExtractor;
 
@@ -27,8 +29,9 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
     private final MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory;
 
     public RequestParameterMultiFactorAuthenticationArgumentExtractorTests() {
-        this.supportedArgumentExtractors = new ArrayList<ArgumentExtractor>();
+        this.supportedArgumentExtractors = new ArrayList<>();
         this.supportedArgumentExtractors.add(new CasArgumentExtractor());
+        this.supportedArgumentExtractors.add(new SamlArgumentExtractor());
         this.mfaWebApplicationServiceFactory = new DefaultMultiFactorWebApplicationServiceFactory();
     }
 
@@ -47,7 +50,8 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 
-        final JsonBackedAuthenticationMethodConfigurationProvider loader = new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
+        final JsonBackedAuthenticationMethodConfigurationProvider loader =
+                new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -95,7 +99,8 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
                 new TreeSet<AuthenticationMethod>();
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 1));
-        final JsonBackedAuthenticationMethodConfigurationProvider loader = new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
+        final JsonBackedAuthenticationMethodConfigurationProvider loader =
+                new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -132,7 +137,8 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 
-        final JsonBackedAuthenticationMethodConfigurationProvider loader = new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
+        final JsonBackedAuthenticationMethodConfigurationProvider loader =
+                new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -169,7 +175,8 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 
-        final JsonBackedAuthenticationMethodConfigurationProvider loader = new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
+        final JsonBackedAuthenticationMethodConfigurationProvider loader =
+                new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
                         this.mfaWebApplicationServiceFactory, new DefaultAuthenticationMethodVerifier(loader));
@@ -190,7 +197,8 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
                 new TreeSet<AuthenticationMethod>();
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 1));
-        final JsonBackedAuthenticationMethodConfigurationProvider loader = new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
+        final JsonBackedAuthenticationMethodConfigurationProvider loader =
+                new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
         final RequestParameterMultiFactorAuthenticationArgumentExtractor extractor =
                 new RequestParameterMultiFactorAuthenticationArgumentExtractor(this.supportedArgumentExtractors,
@@ -203,7 +211,8 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         when(request.getParameter(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD))
                 .thenReturn("strong_two_factor");
 
-        assertTrue(extractor.extractService(request) instanceof MultiFactorAuthenticationSupportingWebApplicationService);
+        final Service svc = extractor.extractService(request);
+        assertTrue(svc instanceof MultiFactorAuthenticationSupportingWebApplicationService);
 
         final MultiFactorAuthenticationSupportingWebApplicationService authenticationMethodRequiringService =
                 (MultiFactorAuthenticationSupportingWebApplicationService) extractor.extractService(request);

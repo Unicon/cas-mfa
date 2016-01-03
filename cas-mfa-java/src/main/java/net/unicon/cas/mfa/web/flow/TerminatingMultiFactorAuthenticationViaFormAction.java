@@ -8,7 +8,6 @@ import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.AuthenticationMethodVerifier;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.Credential;
-import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.web.support.WebUtils;
 import org.springframework.binding.message.MessageContext;
@@ -61,7 +60,7 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
      * @param messageContext the message context
      * @param id             the id
      * @return the event
-     * @throws TicketException if the TGT cannot be created
+     * @throws Exception the exception
      */
     private Event createTicketGrantingTicket(final Authentication authentication, final RequestContext context,
                                              final Credential credentials, final MessageContext messageContext,

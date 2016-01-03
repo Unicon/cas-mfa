@@ -5,13 +5,18 @@ import org.jasig.cas.services.RegisteredService;
 import java.util.Map;
 
 /**
- * An extention to <code>RegisteredService</code> with extra arbitrary attributes
+ * An extension to <code>RegisteredService</code> with extra arbitrary attributes.
  *
  * @author Dmitriy Kopylenko
  * @author Unicon, inc.
  */
 public interface RegisteredServiceWithAttributes extends RegisteredService {
 
+    /**
+     * Gets extra attributes.
+     *
+     * @return the extra attributes
+     */
     Map<String, Object> getExtraAttributes();
 
 }

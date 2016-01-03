@@ -221,6 +221,13 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.jasig.cas</groupId>
+                <artifactId>cas-server-support-saml</artifactId>
+                <version>${cas.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>

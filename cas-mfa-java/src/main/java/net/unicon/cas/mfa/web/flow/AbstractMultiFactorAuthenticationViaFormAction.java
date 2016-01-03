@@ -19,7 +19,6 @@ import org.jasig.cas.authentication.handler.AuthenticationException;
 import org.jasig.cas.authentication.principal.Response.ResponseType;
 import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;
 import org.jasig.cas.authentication.principal.WebApplicationService;
-import org.jasig.cas.ticket.TicketException;
 import org.jasig.cas.web.support.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -247,14 +246,12 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * Multifactor authentication successful.
      *
      * @param authentication the authentication
-     * @param context the context
-     * @param credentials the credentials
+     * @param context        the context
+     * @param credentials    the credentials
      * @param messageContext the message context
-     * @param id the id
-     *
+     * @param id             the id
      * @return the event
-     *
-     * @throws TicketException in the event that granting the TGT fails.
+     * @throws Exception the exception
      */
     protected abstract Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
                                                                  final Credential credentials, final MessageContext messageContext,

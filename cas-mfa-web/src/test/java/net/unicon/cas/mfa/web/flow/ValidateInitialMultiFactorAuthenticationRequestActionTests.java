@@ -113,9 +113,11 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         validAuthenticationMethods.add(new AuthenticationMethod("sample_two_factor", 2));
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 
-        final JsonBackedAuthenticationMethodConfigurationProvider loader = new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
+        final JsonBackedAuthenticationMethodConfigurationProvider loader =
+                new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
 
-        this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support, new OrderedMultiFactorMethodRankingStrategy(loader));
+        this.action = new ValidateInitialMultiFactorAuthenticationRequestAction(support,
+                new OrderedMultiFactorMethodRankingStrategy(loader));
 
         mockFlowScope = mock(MutableAttributeMap.class);
         when(requestContext.getFlowScope()).thenReturn(mockFlowScope);

@@ -32,7 +32,8 @@ public class RegexAuthenticationMethodTranslatorTests {
 
         final String result = "duo-strong";
 
-        final RegexAuthenticationMethodTranslator regexAuthenticationMethodTranslator = new RegexAuthenticationMethodTranslator(testMap, result);
+        final RegexAuthenticationMethodTranslator regexAuthenticationMethodTranslator =
+                new RegexAuthenticationMethodTranslator(testMap, result);
         assertEquals(result, regexAuthenticationMethodTranslator.translate(null, "CN=sudoers,OU=AdminGroups,DC=example,DC=edu"));
     }
 

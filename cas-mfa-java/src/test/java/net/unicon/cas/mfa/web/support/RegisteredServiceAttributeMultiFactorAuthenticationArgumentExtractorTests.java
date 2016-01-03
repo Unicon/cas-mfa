@@ -16,14 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 
 public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractorTests {
@@ -50,7 +44,7 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
         set.add(new CasArgumentExtractor());
         
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
-        when(factory.create(anyString(), anyString(), anyString(), Response.ResponseType.REDIRECT,
+        when(factory.create(anyString(), anyString(), anyString(), any(Response.ResponseType.class),
                 anyString(), any(AuthenticationMethodSource.class)))
             .thenReturn(getMfaService());
         
@@ -111,7 +105,7 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
         set.add(new CasArgumentExtractor());
 
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
-        when(factory.create(anyString(), anyString(), anyString(), Response.ResponseType.REDIRECT,
+        when(factory.create(anyString(), anyString(), anyString(), any(Response.ResponseType.class),
                 anyString(), any(AuthenticationMethodSource.class)))
                 .thenReturn(getMfaService());
 

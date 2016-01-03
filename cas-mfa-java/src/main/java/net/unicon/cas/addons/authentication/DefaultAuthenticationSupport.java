@@ -17,8 +17,16 @@ import java.util.Map;
  */
 public class DefaultAuthenticationSupport implements AuthenticationSupport {
 
+    /**
+     * The Ticket registry.
+     */
     private TicketRegistry ticketRegistry;
 
+    /**
+     * Instantiates a new Default authentication support.
+     *
+     * @param ticketRegistry the ticket registry
+     */
     public DefaultAuthenticationSupport(final TicketRegistry ticketRegistry) {
         this.ticketRegistry = ticketRegistry;
     }
@@ -26,7 +34,7 @@ public class DefaultAuthenticationSupport implements AuthenticationSupport {
     @Override
     /** {@inheritDoc} */
     public Authentication getAuthenticationFrom(final String ticketGrantingTicketId) throws RuntimeException {
-        final TicketGrantingTicket tgt = (TicketGrantingTicket) this.ticketRegistry.getTicket(ticketGrantingTicketId, TicketGrantingTicket.class);
+        final TicketGrantingTicket tgt = this.ticketRegistry.getTicket(ticketGrantingTicketId, TicketGrantingTicket.class);
         return tgt == null ? null : tgt.getAuthentication();
     }
 

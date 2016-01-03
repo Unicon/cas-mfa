@@ -30,8 +30,7 @@ import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupporting
  * @author Dmitriy Kopylenko
  * @author Unicon, inc.
  */
-public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implements
-        MultiFactorAuthenticationRequestResolver {
+public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implements MultiFactorAuthenticationRequestResolver {
 
     /**
      * The logger.
@@ -68,6 +67,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * The mfa_role processor.
      */
     private RegisteredServiceMfaRoleProcessor mfaRoleProcessor;
+
 
     /**
      * Ctor.

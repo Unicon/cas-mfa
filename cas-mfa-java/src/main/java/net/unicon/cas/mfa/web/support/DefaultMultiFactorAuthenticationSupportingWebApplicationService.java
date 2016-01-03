@@ -112,14 +112,15 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
         this.authenticationMethodSource = authenticationMethodSource;
     }
 
+    @Override
     public Response getResponse(final String ticketId) {
         final HashMap parameters = new HashMap();
         if(StringUtils.hasText(ticketId)) {
             parameters.put("ticket", ticketId);
         }
 
-        return ResponseType.POST == this.responseType ? DefaultResponse.getPostResponse(this.getOriginalUrl(), parameters):
-                DefaultResponse.getRedirectResponse(this.getOriginalUrl(), parameters);
+        return ResponseType.POST == this.responseType ? DefaultResponse.getPostResponse(this.getOriginalUrl(), parameters)
+                : DefaultResponse.getRedirectResponse(this.getOriginalUrl(), parameters);
     }
 
     @Override
