@@ -8,6 +8,7 @@ import net.unicon.cas.mfa.web.flow.event.MultiFactorAuthenticationSpringWebflowE
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import org.apache.commons.lang3.StringUtils;
+import org.jasig.cas.CasProtocolConstants;
 import org.jasig.cas.authentication.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +95,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
         final MultiFactorAuthenticationSupportingWebApplicationService mfaService =
                 this.authnMethodRankingStrategy.computeHighestRankingAuthenticationMethod(mfaTx);
 
-        final String requestedAuthenticationMethod = (mfaService != null) ? mfaService.getAuthenticationMethod() : null;
+        final String requestedAuthenticationMethod = mfaService != null ? mfaService.getAuthenticationMethod() : null;
         final String tgt = MultiFactorRequestContextUtils.getTicketGrantingTicketId(context);
 
         /*
@@ -147,7 +148,7 @@ public final class ValidateInitialMultiFactorAuthenticationRequestAction extends
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
-        if (context.getRequestParameters().get("renew") != null) {
+        if (context.getRequestParameters().get(CasProtocolConstants.PARAMETER_RENEW) != null) {
             return new Event(this, EVENT_ID_REQUIRE_TGT);
         }
 
