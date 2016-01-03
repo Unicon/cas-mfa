@@ -15,7 +15,6 @@ import java.util.Set;
 /**
  * Validate the requested protocol spec, primarily based on the requested authentication method.
  * @author Misagh Moayyed
- * @see net.unicon.cas.mfa.web.MultiFactorServiceValidateController
  */
 public abstract class AbstractMultiFactorAuthenticationProtocolValidationSpecification extends Cas20ProtocolValidationSpecification {
 

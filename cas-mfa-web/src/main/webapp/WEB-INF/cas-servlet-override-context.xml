@@ -19,11 +19,11 @@
 
     <aop:aspectj-autoproxy/>
 
-    <webflow:flow-registry id="flowRegistry" flow-builder-services="builder" base-path="/WEB-INF/subflows">
-        <webflow:flow-location-pattern value="**/*-webflow.xml"/>
+    <webflow:flow-registry id="loginFlowRegistry" flow-builder-services="builder" base-path="/WEB-INF/webflow">
+        <webflow:flow-location-pattern value="/**/*-webflow.xml"/>
     </webflow:flow-registry>
 
-    <bean id="abstractValidateController" class="net.unicon.cas.mfa.web.MultiFactorServiceValidateController"
+    <bean id="abstractValidateController" class="org.jasig.cas.web.ServiceValidateController"
           abstract="true"
           p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
           p:proxyHandler-ref="proxy20Handler"
@@ -34,11 +34,6 @@
 
     <bean id="serviceValidateController" parent="abstractValidateController"
           p:validationSpecificationClass="net.unicon.cas.mfa.AbstractMultiFactorAuthenticationProtocolValidationSpecification.WithoutProxy"/>
-
-    <bean id="samlValidateController" parent="serviceValidateController"
-          p:argumentExtractor-ref="samlArgumentExtractor"
-          p:successView="casSamlServiceSuccessView"
-          p:failureView="casSamlServiceFailureView"/>
 
     <bean id="validateInitialMfaRequestAction"
           class="net.unicon.cas.mfa.web.flow.ValidateInitialMultiFactorAuthenticationRequestAction"
@@ -56,25 +51,8 @@
           p:ticketGrantingTicketExpirationPolicy-ref="grantingTicketExpirationPolicy"
           p:ticketGrantingTicketUniqueTicketIdGenerator-ref="ticketGrantingTicketUniqueIdGenerator"
           p:centralAuthenticationServiceDelegate-ref="centralAuthenticationService"
-          p:servicesManager-ref="servicesManager"
-          p:authenticationMethodAttributeName="${mfa.method.response.attribute:authn_method}"
-          p:persistentIdGenerator-ref="persistentIdGenerator"
-          p:authenticationManager-ref="mfaAuthenticationManager"/>
+          p:authenticationManager-ref="authenticationManager"/>
 
-    <bean id="mfaAuthenticationManager" class="net.unicon.cas.mfa.authentication.CasMultiFactorAuthenticationManager">
-        <property name="authenticationMetaDataPopulators">
-            <list>
-                <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator"/>
-            </list>
-        </property>
-        <property name="credentialsToPrincipalResolvers">
-            <list>
-                <bean class="net.unicon.cas.mfa.authentication.principal.ChainingCredentialsToPrincipalResolver"
-                      p:chain-ref="mfaCredentialsToPrincipalResolvers" />
-            </list>
-        </property>
-        <property name="delegate" ref="authenticationManager" />
-    </bean>
 
     <!-- This will be automatically populated at runtime, when necessary, by each module -->
     <util:list id="mfaCredentialsToPrincipalResolvers" />
@@ -92,7 +70,7 @@
     <bean id="abstractAuthenticationViaFormAction" abstract="true"
           class="net.unicon.cas.mfa.web.flow.AbstractMultiFactorAuthenticationViaFormAction"
           p:centralAuthenticationService-ref="mfaAwareCentralAuthenticationService"
-          p:multiFactorAuthenticationManager-ref="mfaAuthenticationManager"
+          p:multiFactorAuthenticationManager-ref="authenticationManager"
           c:authenticationMethodRankingStrategy-ref="authenticationMethodRankingStrategy"
           c:authenticationMethodVerifier-ref="authenticationMethodVerifier"
           c:hostname="${server.prefix}"

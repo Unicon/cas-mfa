@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.binding.convert.ConversionExecutor;
 import org.springframework.binding.convert.service.RuntimeBindingConversionExecutor;
 import org.springframework.binding.expression.EvaluationException;
@@ -76,6 +77,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
     private FlowBuilderServices flowBuilderServices;
 
     @Autowired
+    @Qualifier("loginFlowRegistry")
     private FlowDefinitionRegistry flowDefinitionRegistry;
 
     @Autowired
