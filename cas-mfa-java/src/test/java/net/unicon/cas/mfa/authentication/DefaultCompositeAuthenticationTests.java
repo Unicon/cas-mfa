@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import net.unicon.cas.mfa.authentication.principal.MutablePrincipal;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 
+import org.jasig.cas.authentication.principal.Principal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -24,7 +24,7 @@ public class DefaultCompositeAuthenticationTests {
     public DefaultCompositeAuthenticationTests() {
 
         final Map map = mock(Map.class);
-        final MutablePrincipal p = mock(MutablePrincipal.class);
+        final Principal p = mock(Principal.class);
         when(p.getId()).thenReturn("casuser");
         when(p.getAttributes()).thenReturn(map);
 

@@ -42,12 +42,12 @@
       Will use a second set of authentication handlers to verify credentials.
     -->
     <bean id="duo_terminatingAuthenticationManager"  class="org.jasig.cas.authentication.PolicyBasedAuthenticationManager"
-          c:handlers="duo_listOfTwoFactorStrongAuthenticationHandlers">
+          c:handlers-ref="duo_listOfTwoFactorStrongAuthenticationHandlers">
         <property name="authenticationMetaDataPopulators">
-            <list>
-                <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator" />
-            </list>
-        </property>
+        <list>
+            <bean class="net.unicon.cas.mfa.authentication.RememberAuthenticationMethodMetaDataPopulator" />
+        </list>
+    </property>
     </bean>
 
     <!-- Custom set of authentication handlers for the second factor authentication. Duo in this case. -->

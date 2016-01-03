@@ -164,8 +164,10 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
                     MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context,
                             getHighestRankedMfaRequestFromMfaTransaction(context));
                 } else {
-                    MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context,
-                            addToMfaTransactionAndGetHighestRankedMfaRequest(mfaRequest, context));
+                    final MultiFactorAuthenticationSupportingWebApplicationService highestService =
+                            addToMfaTransactionAndGetHighestRankedMfaRequest(mfaRequest, context);
+                    MultiFactorRequestContextUtils.setMultifactorWebApplicationService(context, highestService);
+                    MultiFactorRequestContextUtils.setRequiredAuthenticationMethod(context, highestService.getAuthenticationMethod());
                 }
             }
 
@@ -335,12 +337,12 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
 
     @Override
     protected final Event doExecute(final RequestContext ctx) throws Exception {
-        final Credential credentials = (Credential) ctx.getFlowScope().get("credentials");
+        final Credential credentials = WebUtils.getCredential(ctx);
         final MessageContext messageContext = ctx.getMessageContext();
 
 
         if (credentials != null) {
-            final String id = credentials.toString();
+            final String id = credentials.getId();
             return submit(ctx, credentials, messageContext, id);
         }
         logger.warn("Credentials could not be determined, or no username was associated with the request.");

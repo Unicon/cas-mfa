@@ -4,10 +4,13 @@ import net.unicon.cas.mfa.authentication.DefaultCompositeAuthentication;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.Credential;
+import org.jasig.cas.authentication.principal.DefaultPrincipalFactory;
 import org.jasig.cas.authentication.principal.Principal;
+import org.jasig.cas.authentication.principal.PrincipalFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -38,13 +41,15 @@ import java.util.Map;
  * @see #getChainedCredentials()
  * @see #getAuthentication()
  */
-public class MultiFactorCredentials implements Credential {
+public class MultiFactorCredentials implements Credential, Serializable {
+
+    private final PrincipalFactory principalFactory = new DefaultPrincipalFactory();
 
     private final Map<String, Credential> chainedCredentials = new LinkedHashMap<String, Credential>();
 
     private final List<Authentication> chainedAuthentication = new LinkedList<Authentication>();
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultiFactorCredentials.class);
 
     public final Map<String, Credential> getChainedCredentials() {
         return this.chainedCredentials;
@@ -74,7 +79,7 @@ public class MultiFactorCredentials implements Credential {
      */
     public final void addAuthenticationToChain(final Authentication authentication) {
         if (!doesPrincipalMatchAuthenticationChain(authentication)) {
-            logger.warn("The provided principal [{}] does not match the authentication chain. CAS has no record of "
+            LOGGER.warn("The provided principal [{}] does not match the authentication chain. CAS has no record of "
                     + "this principal ever having authenticated in the active authentication context.",
                     authentication.getPrincipal());
             throw new UnknownPrincipalMatchException(authentication);
@@ -86,12 +91,11 @@ public class MultiFactorCredentials implements Credential {
      * Enumerates the list of available principals in the authentication chain
      * and ensures that the newly given and provided principal is compliant
      * and equals the rest of the principals in the chain. The match
-     * is explicitly controlled by {@link MutablePrincipal#equals(Object)}
+     * is explicitly controlled by {@link Principal#equals(Object)}
      * implementation.
      *
      * @param authentication the authentication object whose principal is compared against the chain
      * @return true if no mismatch is found; false otherwise.
-     * @see MutablePrincipal
      */
     private boolean doesPrincipalMatchAuthenticationChain(final Authentication authentication) {
         for (final Authentication authn : this.chainedAuthentication) {
@@ -111,7 +115,7 @@ public class MultiFactorCredentials implements Credential {
      *
      * <p>Principal attributes are merged from all principals that are already resolved in the authentication chain.
      * Attributes with the same name that belong to the same principal are merged into one, with the latter value
-     * overwriting the first. The established principal will be one that is based of {@link MutablePrincipal}.</p>
+     * overwriting the first. The established principal will be one that is based of {@link Principal}.</p>
      *
      * <p>Authentication attributes are merged from all authentications that make up the chain.
      * The merging strategy is such that duplicate attribute names are grouped together into an instance of
@@ -126,13 +130,13 @@ public class MultiFactorCredentials implements Credential {
              * when composing the authentication chain for the caller.
              */
             final String principalId = this.chainedAuthentication.get(0).getPrincipal().getId();
-            final MutablePrincipal compositePrincipal = new MutablePrincipal(principalId);
+            final Map<String, Object> principalAttributes = new Hashtable<String, Object>();
 
             final Map<String, Object> authenticationAttributes = new Hashtable<String, Object>();
 
             for (final Authentication authn : this.chainedAuthentication) {
                 final Principal authenticatedPrincipal = authn.getPrincipal();
-                compositePrincipal.getAttributes().putAll(authenticatedPrincipal.getAttributes());
+                principalAttributes.putAll(authenticatedPrincipal.getAttributes());
 
                 for (final String attrName : authn.getAttributes().keySet()) {
                     if (!authenticationAttributes.containsKey(attrName)) {
@@ -146,7 +150,7 @@ public class MultiFactorCredentials implements Credential {
                     }
                 }
             }
-
+            final Principal compositePrincipal = principalFactory.createPrincipal(principalId, principalAttributes);
             return new DefaultCompositeAuthentication(compositePrincipal, authenticationAttributes);
         }
         return null;

@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.Credential;
 import org.jasig.cas.authentication.UsernamePasswordCredential;
+import org.jasig.cas.web.support.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.webflow.action.AbstractAction;
@@ -128,9 +129,8 @@ public final class GenerateMultiFactorCredentialsAction extends AbstractAction {
         final FlowSession session = context.getFlowExecutionContext().getActiveSession();
         LOGGER.debug("Authentication has entered the flow [{}] executing state [{}",
                 context.getActiveFlow().getId(), session.getState().getId());
-        final UsernamePasswordCredential creds = (UsernamePasswordCredential)
-                session.getScope().getRequired("credentials", UsernamePasswordCredential.class);
-        final String id = creds != null ? creds.getUsername() : null;
+        final Credential creds = WebUtils.getCredential(context);
+        final String id = creds != null ? creds.getId() : null;
 
         final Credential mfaCreds = createCredentials(context, creds, id);
         final AttributeMap map = new LocalAttributeMap(ATTRIBUTE_ID_MFA_CREDENTIALS, mfaCreds);

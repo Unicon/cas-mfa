@@ -63,6 +63,7 @@
         <on-entry>
             <set name="flowScope.mfaCredentials" value="mfaCredentials"
                  type="net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials" />
+            <set name="flowScope.credential" value="credentials" />
         </on-entry>
         <evaluate expression="duo_terminatingTwoFactorAuthenticationViaFormAction" />
         <transition on="mfa-duo-two-factor" to="mfaSuccess" />
@@ -71,7 +72,6 @@
     </action-state>
 
     <end-state id="mfaSuccess" />
-    <end-state id="unknownPrincipalError" />
     <end-state id="mfaUnrecognizedAuthnMethodError" />
 
     <global-transitions>

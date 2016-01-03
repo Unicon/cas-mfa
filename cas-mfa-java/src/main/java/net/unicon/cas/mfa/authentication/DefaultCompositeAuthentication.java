@@ -1,6 +1,5 @@
 package net.unicon.cas.mfa.authentication;
 
-import net.unicon.cas.mfa.authentication.principal.MutablePrincipal;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import org.jasig.cas.authentication.CredentialMetaData;
 import org.jasig.cas.authentication.HandlerResult;
@@ -14,7 +13,7 @@ import java.util.Set;
 
 /**
  * A {@link CompositeAuthentication} implementation that houses an instance of
- * {@link MutablePrincipal} inside, restricts the {@link #getAuthenticationDate()} to
+ * {@link Principal} inside, restricts the {@link #getAuthenticationDate()} to
  * the instance at which this authentication is created and exposes a mutable
  * instance of authentication attributes via {@link #getAttributes()}.
  * @author Misagh Moayyed
@@ -23,7 +22,7 @@ public final class DefaultCompositeAuthentication implements CompositeAuthentica
 
     private static final long serialVersionUID = 6594344317585898494L;
 
-    private final MutablePrincipal principal;
+    private final Principal principal;
     private final Date authenticationDate = new Date();
     private final Map<String, Object> authenticationAttributes;
 
@@ -32,7 +31,7 @@ public final class DefaultCompositeAuthentication implements CompositeAuthentica
      * @param p the principal
      * @param attributes attributes for this authentication
      */
-    public DefaultCompositeAuthentication(final MutablePrincipal p, final Map<String, Object> attributes) {
+    public DefaultCompositeAuthentication(final Principal p, final Map<String, Object> attributes) {
         this.principal = p;
         this.authenticationAttributes = attributes;
     }
@@ -42,7 +41,7 @@ public final class DefaultCompositeAuthentication implements CompositeAuthentica
      * for attributes.
      * @param p the principal
      */
-    public DefaultCompositeAuthentication(final MutablePrincipal p) {
+    public DefaultCompositeAuthentication(final Principal p) {
         this(p, new Hashtable<String, Object>());
     }
 

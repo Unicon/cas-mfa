@@ -64,8 +64,9 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CasMultiFactorWebflowConfigurer.class);
 
     private static final String FLOW_ID_LOGIN = "login";
+    private static final String FLOW_ID_LOGOUT = "logout";
 
-    private static final String STATE_DEFINITION_ID_TGT_EXISTS_CHECK = "ticketGrantingTicketExistsCheck";
+    private static final String STATE_DEFINITION_ID_TGT_EXISTS_CHECK = "ticketGrantingTicketCheck";
     private static final String STATE_DEFINITION_ID_REAL_SUBMIT = "realSubmit";
     private static final String STATE_DEFINITION_ID_SERVICE_CHECK = "serviceCheck";
     private static final String UNKNOWN_PRINCIPAL_ERROR_EVENT_ID = "unknownPrincipalError";
@@ -89,7 +90,8 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
         try {
 
             String[] flowIds = flowDefinitionRegistry.getFlowDefinitionIds();
-            flowIds = (String[]) ArrayUtils.removeElement(flowIds, FLOW_ID_LOGIN);
+            flowIds = ArrayUtils.removeElement(flowIds, FLOW_ID_LOGIN);
+            flowIds = ArrayUtils.removeElement(flowIds, FLOW_ID_LOGOUT);
 
             LOGGER.debug("Detected {} flow configurations: [{}]",
                     flowIds.length,
