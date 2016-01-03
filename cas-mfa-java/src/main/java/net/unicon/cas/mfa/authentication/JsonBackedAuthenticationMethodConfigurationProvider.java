@@ -43,7 +43,7 @@ public final class JsonBackedAuthenticationMethodConfigurationProvider implement
      * @throws IOException the iO exception
      */
     public JsonBackedAuthenticationMethodConfigurationProvider(final Resource configuration) throws IOException {
-        this.authnMethods = new TreeSet<AuthenticationMethod>();
+        this.authnMethods = new TreeSet<>();
         final String json = FileUtils.readFileToString(configuration.getFile());
         final Set<?> set = this.objectMapper.readValue(json, Set.class);
         for (final Iterator<?> it = set.iterator(); it.hasNext();) {
@@ -66,7 +66,7 @@ public final class JsonBackedAuthenticationMethodConfigurationProvider implement
      * Instantiates a new Authentication method loader.
      */
     public JsonBackedAuthenticationMethodConfigurationProvider() {
-        this.authnMethods = new TreeSet<AuthenticationMethod>();
+        this.authnMethods = new TreeSet<>();
     }
 
     /** {@inheritDoc} **/

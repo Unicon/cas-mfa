@@ -44,7 +44,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
         // let's say we support all sorts of interesting authentication methods,
         // but this login request isn't going to require any of these
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
-                new TreeSet<AuthenticationMethod>();
+                new TreeSet<>();
         validAuthenticationMethods.add(new AuthenticationMethod("fingerprint", 1));
         validAuthenticationMethods.add(new AuthenticationMethod("retina_scan", 2));
         validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
@@ -97,7 +97,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
     @Test
     public void testRecognizedAuthenticationMethodParameterYieldsAuthenticationMethodRequiringService() {
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
-                new TreeSet<AuthenticationMethod>();
+                new TreeSet<>();
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 1));
         final JsonBackedAuthenticationMethodConfigurationProvider loader =
                 new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);
@@ -131,7 +131,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
         // this is a bit of testing paranoia, but always want to check that one item isn't an edge case
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
-                new TreeSet<AuthenticationMethod>();
+                new TreeSet<>();
         validAuthenticationMethods.add(new AuthenticationMethod("fingerprint", 1));
         validAuthenticationMethods.add(new AuthenticationMethod("retina_scan", 2));
         validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
@@ -169,7 +169,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
 
         // this is a bit of testing paranoia, but always want to check that one item isn't an edge case
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
-                new TreeSet<AuthenticationMethod>();
+                new TreeSet<>();
         validAuthenticationMethods.add(new AuthenticationMethod("fingerprint", 1));
         validAuthenticationMethods.add(new AuthenticationMethod("retina_scan", 2));
         validAuthenticationMethods.add(new AuthenticationMethod("personal_attestation", 3));
@@ -195,7 +195,7 @@ public class RequestParameterMultiFactorAuthenticationArgumentExtractorTests {
     @Test
     public void testRecognizedAuthenticationMethodParameterInSamlRequest() {
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
-                new TreeSet<AuthenticationMethod>();
+                new TreeSet<>();
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 1));
         final JsonBackedAuthenticationMethodConfigurationProvider loader =
                 new JsonBackedAuthenticationMethodConfigurationProvider(validAuthenticationMethods);

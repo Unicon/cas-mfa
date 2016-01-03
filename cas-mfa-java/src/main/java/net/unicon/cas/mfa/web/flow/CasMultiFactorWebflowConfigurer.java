@@ -418,7 +418,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
 
         final SubflowState subflowState = createSubflowState(flow, id, id, action);
 
-        final List<DefaultMapping> mappings = new ArrayList<DefaultMapping>();
+        final List<DefaultMapping> mappings = new ArrayList<>();
         mappings.add(createMappingToSubflowState("mfaCredentials", "flowScope.mfaCredentials", true,
                 MultiFactorCredentials.class));
         mappings.add(createMappingToSubflowState("mfaService", "flowScope.service", true,

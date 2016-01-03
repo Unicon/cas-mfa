@@ -35,7 +35,7 @@ public class RegexAuthenticationMethodTranslator implements AuthenticationMethod
     public RegexAuthenticationMethodTranslator(final Map<String, String> translationMap, final String defaultMfaMethod) {
         this.defaultMfaMethod = defaultMfaMethod;
 
-        final Map<Pattern, String> optimizedMap = new LinkedHashMap<Pattern, String>();
+        final Map<Pattern, String> optimizedMap = new LinkedHashMap<>();
 
         for (final String pattern : translationMap.keySet()) {
             optimizedMap.put(Pattern.compile(pattern), translationMap.get(pattern));

@@ -36,7 +36,7 @@ public class OrderedMultiFactorMethodRankingStrategy implements RequestedAuthent
     public MultiFactorAuthenticationSupportingWebApplicationService
     computeHighestRankingAuthenticationMethod(@NotNull final MultiFactorAuthenticationTransactionContext mfaTransaction) {
         final List<MultiFactorAuthenticationRequestContext> sortedRequests =
-                new ArrayList<MultiFactorAuthenticationRequestContext>(mfaTransaction.getMfaRequests());
+                new ArrayList<>(mfaTransaction.getMfaRequests());
 
         AnnotationAwareOrderComparator.sort(sortedRequests);
         return sortedRequests.get(0).getMfaService();

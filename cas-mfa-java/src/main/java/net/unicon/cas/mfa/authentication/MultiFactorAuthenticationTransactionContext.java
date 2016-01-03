@@ -36,7 +36,7 @@ public final class MultiFactorAuthenticationTransactionContext implements Serial
     /**
      * A collection of mfa requests or empty if none.
      */
-    private Set<MultiFactorAuthenticationRequestContext> mfaRequests = new HashSet<MultiFactorAuthenticationRequestContext>();
+    private Set<MultiFactorAuthenticationRequestContext> mfaRequests = new HashSet<>();
 
 
     /**

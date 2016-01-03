@@ -119,7 +119,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
         when(manager.authenticate(any(Credential.class))).thenReturn(this.authentication);
 
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
-                new TreeSet<AuthenticationMethod>();
+                new TreeSet<>();
         validAuthenticationMethods.add(new AuthenticationMethod("sample_two_factor", 2));
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 

@@ -100,7 +100,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     public List<MultiFactorAuthenticationRequestContext> resolve(@NotNull final Authentication authentication,
                                                                  @NotNull final WebApplicationService targetService,
                                                                  @NotNull final ResponseType responseType) {
-        final List<MultiFactorAuthenticationRequestContext> list = new ArrayList<MultiFactorAuthenticationRequestContext>();
+        final List<MultiFactorAuthenticationRequestContext> list = new ArrayList<>();
         if ((authentication != null) && (targetService != null)) {
 
             if (mfaRoleProcessor != null) {

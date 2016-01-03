@@ -40,7 +40,7 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
     
     @Test
     public void testServiceWithDefaultMfaAttribute() {
-        final List<ArgumentExtractor> set = new ArrayList<ArgumentExtractor>();
+        final List<ArgumentExtractor> set = new ArrayList<>();
         set.add(new CasArgumentExtractor());
         
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
@@ -50,7 +50,7 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
         
         final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
         
-        final Map<String, Object> attrs = new HashMap<String, Object>();
+        final Map<String, Object> attrs = new HashMap<>();
         attrs.put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, CAS_AUTHN_METHOD);
         
         final RegisteredServiceWithAttributes svc = mock(RegisteredServiceWithAttributes.class);
@@ -73,13 +73,13 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
     
     @Test
     public void testServiceWithNoAttributeValue() {
-        final List<ArgumentExtractor> set = new ArrayList<ArgumentExtractor>();
+        final List<ArgumentExtractor> set = new ArrayList<>();
         set.add(new CasArgumentExtractor());
         
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
         final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
         
-        final Map<String, Object> attrs = new HashMap<String, Object>();
+        final Map<String, Object> attrs = new HashMap<>();
         attrs.put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, "");
         
         final RegisteredServiceWithAttributes svc = mock(RegisteredServiceWithAttributes.class);
@@ -101,7 +101,7 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
 
     @Test
     public void testServiceWithMfaRole() {
-        final List<ArgumentExtractor> set = new ArrayList<ArgumentExtractor>();
+        final List<ArgumentExtractor> set = new ArrayList<>();
         set.add(new CasArgumentExtractor());
 
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
@@ -111,7 +111,7 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
 
         final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
 
-        final Map<String, Object> attrs = new HashMap<String, Object>();
+        final Map<String, Object> attrs = new HashMap<>();
         attrs.put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, CAS_AUTHN_METHOD);
         attrs.put("mfa_role", new HashMap<String, Object>());
 
@@ -134,7 +134,7 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
 
     @Test
     public void testServiceWithDifferentServiceType() {
-        final List<ArgumentExtractor> set = new ArrayList<ArgumentExtractor>();
+        final List<ArgumentExtractor> set = new ArrayList<>();
         set.add(new CasArgumentExtractor());
         
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);

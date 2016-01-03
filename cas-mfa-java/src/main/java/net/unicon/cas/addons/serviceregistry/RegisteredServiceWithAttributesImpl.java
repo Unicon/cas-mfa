@@ -15,7 +15,7 @@ public class RegisteredServiceWithAttributesImpl extends RegisteredServiceImpl i
 
     private static final long   serialVersionUID = 1L;
 
-    private Map<String, Object> extraAttributes = new HashMap<String, Object>();
+    private Map<String, Object> extraAttributes = new HashMap<>();
 
     @Override
     public Map<String, Object> getExtraAttributes() {

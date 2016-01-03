@@ -43,7 +43,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         final Authentication auth = getAuthentication(true);
 
         final RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
-        final HashMap<String, Object> extraAttributes = new HashMap<String, Object>();
+        final HashMap<String, Object> extraAttributes = new HashMap<>();
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 
         final DefaultRegisteredServiceMfaRoleProcessorImpl resolver = new DefaultRegisteredServiceMfaRoleProcessorImpl(
@@ -60,10 +60,10 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         final Authentication auth = getAuthentication(true);
 
         final RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
-        final HashMap<String, Object> extraAttributes = new HashMap<String, Object>();
+        final HashMap<String, Object> extraAttributes = new HashMap<>();
         extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.AUTHN_METHOD, CAS_AUTHN_METHOD);
 
-        final Map<String, Object> roleMap = new HashMap<String, Object>();
+        final Map<String, Object> roleMap = new HashMap<>();
         // making mfa_role incomplete: roleMap.put("mfa_attribute_name", "memberOf");
         roleMap.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
 
@@ -85,10 +85,10 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         final Authentication auth = getAuthentication(true);
 
         final RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
-        final HashMap<String, Object> extraAttributes = new HashMap<String, Object>();
+        final HashMap<String, Object> extraAttributes = new HashMap<>();
         extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.AUTHN_METHOD, CAS_AUTHN_METHOD);
 
-        final Map<String, Object> roleMap = new HashMap<String, Object>();
+        final Map<String, Object> roleMap = new HashMap<>();
         roleMap.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ATTRIBUTE_NAME, MEMBER_OF);
         roleMap.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
 
@@ -110,10 +110,10 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         final Authentication auth = getAuthentication(false);
 
         final RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
-        final HashMap<String, Object> extraAttributes = new HashMap<String, Object>();
+        final HashMap<String, Object> extraAttributes = new HashMap<>();
         extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.AUTHN_METHOD, CAS_AUTHN_METHOD);
 
-        final Map<String, Object> roleMap = new HashMap<String, Object>();
+        final Map<String, Object> roleMap = new HashMap<>();
         roleMap.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ATTRIBUTE_NAME, MEMBER_OF);
         roleMap.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
 
@@ -130,7 +130,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
     }
 
     private static Authentication getAuthentication(final boolean inRole) {
-        final Map<String, Object> attributes = new HashMap<String, Object>();
+        final Map<String, Object> attributes = new HashMap<>();
 
         if (inRole) {
             attributes.put(MEMBER_OF, MEMBER_OF_VALUE);
@@ -147,7 +147,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         final Authentication auth = getAuthentication(true);
 
         final RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
-        final HashMap<String, Object> extraAttributes = new HashMap<String, Object>();
+        final HashMap<String, Object> extraAttributes = new HashMap<>();
         extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.AUTHN_METHOD, CAS_AUTHN_METHOD);
         when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
 

@@ -103,7 +103,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
                                                                  @NotNull final WebApplicationService targetService) {
 
         String authenticationMethodAttributeName = null;
-        final List<MultiFactorAuthenticationRequestContext> list = new ArrayList<MultiFactorAuthenticationRequestContext>();
+        final List<MultiFactorAuthenticationRequestContext> list = new ArrayList<>();
         if ((authentication != null) && (targetService != null)) {
             final ServiceMfaData serviceMfaData = getServicesAuthenticationData(targetService);
 

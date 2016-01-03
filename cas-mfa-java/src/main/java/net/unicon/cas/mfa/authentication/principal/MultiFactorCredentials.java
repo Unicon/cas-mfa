@@ -45,9 +45,9 @@ public class MultiFactorCredentials implements Credential, Serializable {
 
     private final PrincipalFactory principalFactory = new DefaultPrincipalFactory();
 
-    private final Map<String, Credential> chainedCredentials = new LinkedHashMap<String, Credential>();
+    private final Map<String, Credential> chainedCredentials = new LinkedHashMap<>();
 
-    private final List<Authentication> chainedAuthentication = new LinkedList<Authentication>();
+    private final List<Authentication> chainedAuthentication = new LinkedList<>();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiFactorCredentials.class);
 
@@ -130,9 +130,9 @@ public class MultiFactorCredentials implements Credential, Serializable {
              * when composing the authentication chain for the caller.
              */
             final String principalId = this.chainedAuthentication.get(0).getPrincipal().getId();
-            final Map<String, Object> principalAttributes = new Hashtable<String, Object>();
+            final Map<String, Object> principalAttributes = new Hashtable<>();
 
-            final Map<String, Object> authenticationAttributes = new Hashtable<String, Object>();
+            final Map<String, Object> authenticationAttributes = new Hashtable<>();
 
             for (final Authentication authn : this.chainedAuthentication) {
                 final Principal authenticatedPrincipal = authn.getPrincipal();

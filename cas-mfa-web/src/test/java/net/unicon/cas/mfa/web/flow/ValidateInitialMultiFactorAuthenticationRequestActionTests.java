@@ -109,7 +109,7 @@ public class ValidateInitialMultiFactorAuthenticationRequestActionTests {
         when(support.getAuthenticationFrom(TGT_ID)).thenReturn(authentication);
 
         final SortedSet<AuthenticationMethod> validAuthenticationMethods =
-                new TreeSet<AuthenticationMethod>();
+                new TreeSet<>();
         validAuthenticationMethods.add(new AuthenticationMethod("sample_two_factor", 2));
         validAuthenticationMethods.add(new AuthenticationMethod("strong_two_factor", 4));
 

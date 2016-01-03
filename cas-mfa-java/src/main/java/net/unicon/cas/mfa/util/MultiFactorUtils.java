@@ -56,7 +56,7 @@ public final class MultiFactorUtils {
      */
     @SuppressWarnings("unchecked")
     public static Set<Object> convertValueToCollection(final Object obj) {
-        final Set<Object> c = new HashSet<Object>();
+        final Set<Object> c = new HashSet<>();
 
         if (obj instanceof Collection) {
             c.addAll((Collection<Object>) obj);
@@ -86,7 +86,7 @@ public final class MultiFactorUtils {
                     MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD);
             if (methods != null) {
                 final Set<Object> valuesAsACollection = convertValueToCollection(methods);
-                return new HashSet<String>(Arrays.asList(valuesAsACollection.toArray(new String[] {})));
+                return new HashSet<>(Arrays.asList(valuesAsACollection.toArray(new String[]{})));
             }
         }
         return Collections.emptySet();

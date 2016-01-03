@@ -50,7 +50,7 @@ public class RegexAuthenticationMethodTranslatorTests {
     }
 
     private static Map<String, String> getLookupMap() {
-        final Map<String, String> testMap = new LinkedHashMap<String, String>();
+        final Map<String, String> testMap = new LinkedHashMap<>();
         testMap.put("CN=Staff,OU=Groups,DC=example,DC=edu", "mfa1");
         testMap.put("CN=Students,OU=Groups,DC=example,DC=edu", "mfa2");
         testMap.put(".*,OU=Groups,DC=example,DC=edu", "mfa3");
