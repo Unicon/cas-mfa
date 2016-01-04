@@ -1,7 +1,9 @@
 package net.unicon.cas.mfa.authentication;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +31,7 @@ public class DefaultCompositeAuthenticationTests {
         when(p.getAttributes()).thenReturn(map);
 
         final Map authnAttrs = mock(Map.class);
-        this.authentication = new DefaultCompositeAuthentication(p, authnAttrs);
+        this.authentication = new DefaultCompositeAuthentication(p, authnAttrs, new ArrayList(), new HashMap(), new HashMap());
     }
 
     @Test

@@ -9,21 +9,21 @@ Professional Support / Integration Assistance for this module is available. For 
 This is a project to develop free and open source compatibly licensed extensions for the CAS server `v4.1.x` product implementing
 
 * support for authenticating using multiple authentication factors
-* support for relying parties (CAS-using applications) understanding how strongly the user authenticated from the ticket validation response, and
+* support for relying parties (CAS-using applications) understanding how strongly the user authenticated from the 
+ticket validation response, and
 * support for relying parties exerting authentication strength requirements.
 
 The intention is to develop a solution that can be adopted by current CAS adopters.
 
 ## Requirements
-* JDK 7~8
-* Maven 3
-* Tomcat 7~8
+* JDK 7+
 
 ## MultiFactor Support
 * `duo-two-factor` (via DuoSecurity)
 
 ## Documentation
-Please review [the project wiki](https://github.com/Unicon/cas-mfa/wiki) for additional information on scope, functionality and how-to walkthroughs.
+Please review [the project wiki](https://github.com/Unicon/cas-mfa/wiki) for additional information on scope, 
+functionality and how-to walkthroughs.
 
 ## Build Status
 * [![Build Status](https://secure.travis-ci.org/Unicon/cas-mfa.png)](http://travis-ci.org/Unicon/cas-mfa)

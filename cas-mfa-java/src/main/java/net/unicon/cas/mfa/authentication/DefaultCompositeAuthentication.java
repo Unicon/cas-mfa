@@ -6,7 +6,6 @@ import org.jasig.cas.authentication.HandlerResult;
 import org.jasig.cas.authentication.principal.Principal;
 
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,24 +24,25 @@ public final class DefaultCompositeAuthentication implements CompositeAuthentica
     private final Principal principal;
     private final Date authenticationDate = new Date();
     private final Map<String, Object> authenticationAttributes;
+    private final List<CredentialMetaData> credentials;
+    private final Map<String, HandlerResult> successes;
+    private final Map<String, Class<? extends Exception>> failures;
 
     /**
      * Initialize this instance with a principal and given authentication attributes.
      * @param p the principal
      * @param attributes attributes for this authentication
+     * @param credentials
      */
-    public DefaultCompositeAuthentication(final Principal p, final Map<String, Object> attributes) {
+    public DefaultCompositeAuthentication(final Principal p, final Map<String, Object> attributes,
+                                          final List<CredentialMetaData> credentials,
+                                          final Map<String, HandlerResult> successes,
+                                          final Map<String, Class<? extends Exception>>  failures) {
         this.principal = p;
         this.authenticationAttributes = attributes;
-    }
-
-    /**
-     * Initialize this instance with a principal and an empty {@link Hashtable}.
-     * for attributes.
-     * @param p the principal
-     */
-    public DefaultCompositeAuthentication(final Principal p) {
-        this(p, new Hashtable<String, Object>());
+        this.credentials = credentials;
+        this.successes = successes;
+        this.failures = failures;
     }
 
     @Override
@@ -62,17 +62,17 @@ public final class DefaultCompositeAuthentication implements CompositeAuthentica
 
     @Override
     public List<CredentialMetaData> getCredentials() {
-        return null;
+        return this.credentials;
     }
 
     @Override
     public Map<String, HandlerResult> getSuccesses() {
-        return null;
+        return this.successes;
     }
 
     @Override
     public Map<String, Class<? extends Exception>> getFailures() {
-        return null;
+        return this.failures;
     }
 
     @Override

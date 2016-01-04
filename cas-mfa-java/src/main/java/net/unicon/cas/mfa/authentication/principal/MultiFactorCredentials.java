@@ -4,6 +4,8 @@ import net.unicon.cas.mfa.authentication.DefaultCompositeAuthentication;
 import net.unicon.cas.mfa.util.MultiFactorUtils;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.Credential;
+import org.jasig.cas.authentication.CredentialMetaData;
+import org.jasig.cas.authentication.HandlerResult;
 import org.jasig.cas.authentication.principal.DefaultPrincipalFactory;
 import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.PrincipalFactory;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -134,9 +137,17 @@ public class MultiFactorCredentials implements Credential, Serializable {
 
             final Map<String, Object> authenticationAttributes = new Hashtable<>();
 
+            final List<CredentialMetaData> credentials = new ArrayList<>();
+            final Map<String, HandlerResult> successes = new LinkedHashMap<>();
+            final Map<String, Class<? extends Exception>> failures = new LinkedHashMap<>();
+
             for (final Authentication authn : this.chainedAuthentication) {
                 final Principal authenticatedPrincipal = authn.getPrincipal();
                 principalAttributes.putAll(authenticatedPrincipal.getAttributes());
+
+                credentials.addAll(authn.getCredentials());
+                successes.putAll(authn.getSuccesses());
+                failures.putAll(authn.getFailures());
 
                 for (final String attrName : authn.getAttributes().keySet()) {
                     if (!authenticationAttributes.containsKey(attrName)) {
@@ -151,7 +162,11 @@ public class MultiFactorCredentials implements Credential, Serializable {
                 }
             }
             final Principal compositePrincipal = principalFactory.createPrincipal(principalId, principalAttributes);
-            return new DefaultCompositeAuthentication(compositePrincipal, authenticationAttributes);
+            final DefaultCompositeAuthentication finalAuth =
+                    new DefaultCompositeAuthentication(compositePrincipal,
+                            authenticationAttributes, credentials, successes, failures);
+
+            return finalAuth;
         }
         return null;
     }
