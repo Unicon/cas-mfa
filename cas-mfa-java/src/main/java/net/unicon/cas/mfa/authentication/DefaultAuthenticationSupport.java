@@ -1,4 +1,4 @@
-package net.unicon.cas.addons.authentication;
+package net.unicon.cas.mfa.authentication;
 
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.principal.Principal;

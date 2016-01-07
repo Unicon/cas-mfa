@@ -1,6 +1,6 @@
 package net.unicon.cas.mfa.web.flow;
 
-import net.unicon.cas.addons.authentication.AuthenticationSupport;
+import net.unicon.cas.mfa.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.AuthenticationMethod;
 import net.unicon.cas.mfa.authentication.JsonBackedAuthenticationMethodConfigurationProvider;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;

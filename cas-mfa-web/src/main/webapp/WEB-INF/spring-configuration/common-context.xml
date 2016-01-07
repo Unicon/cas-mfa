@@ -6,7 +6,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd" >
 
-    <bean id="authenticationSupport" class="net.unicon.cas.addons.authentication.DefaultAuthenticationSupport"
+    <bean id="authenticationSupport" class="net.unicon.cas.mfa.authentication.DefaultAuthenticationSupport"
           c:ticketRegistry-ref="ticketRegistry" />
 
     <bean id="cas3ServiceSuccessView" class="net.unicon.cas.mfa.web.view.Cas30ResponseView"

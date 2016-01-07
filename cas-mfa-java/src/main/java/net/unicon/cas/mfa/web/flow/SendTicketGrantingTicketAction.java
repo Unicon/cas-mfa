@@ -1,6 +1,6 @@
 package net.unicon.cas.mfa.web.flow;
 
-import net.unicon.cas.addons.authentication.AuthenticationSupport;
+import net.unicon.cas.mfa.authentication.AuthenticationSupport;
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.flow.util.MultiFactorRequestContextUtils;
 import org.jasig.cas.CentralAuthenticationService;

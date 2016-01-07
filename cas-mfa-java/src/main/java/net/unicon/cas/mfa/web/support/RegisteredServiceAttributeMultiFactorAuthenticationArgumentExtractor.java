@@ -1,6 +1,6 @@
 package net.unicon.cas.mfa.web.support;
 
-import net.unicon.cas.addons.authentication.AuthenticationSupport;
+import net.unicon.cas.mfa.authentication.AuthenticationSupport;
 import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.RegisteredServiceMfaRoleProcessor;
@@ -72,7 +72,7 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
     protected String getAuthenticationMethod(final HttpServletRequest request, final WebApplicationService targetService) {
         logger.debug("Attempting to extract multifactor authentication method from registered service attribute...");
 
-        if (mfaRoleProcessor != null) {
+        if (this.mfaRoleProcessor != null) {
             final String mfaRolesResult = checkMfaRoles(targetService);
             if (!StringUtils.isEmpty(mfaRolesResult)) {
                 return mfaRolesResult;
@@ -84,14 +84,8 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
             logger.debug("No registered service is found. Delegating to the next argument extractor in the chain...");
             return null;
         }
-        if (!(registeredService instanceof RegisteredServiceWithAttributes)) {
-            logger.debug("Registered service is not capable of defining an mfa attribute. ");
-            return determineDefaultAuthenticationMethod();
-        }
 
-        final Map<String, Object> extraAttributes = RegisteredServiceWithAttributes.class.cast(registeredService)
-                .getExtraAttributes();
-
+        final Map<String, Object> extraAttributes =
         if (extraAttributes != null && extraAttributes.containsKey("mfa_role")) {
             logger.debug("Deferring mfa authn method for Principal Attribute Resolver");
             return null;
