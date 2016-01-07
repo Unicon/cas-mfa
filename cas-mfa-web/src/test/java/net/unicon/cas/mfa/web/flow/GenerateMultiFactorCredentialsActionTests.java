@@ -9,6 +9,7 @@ import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.Credential;
 import org.jasig.cas.authentication.UsernamePasswordCredential;
 import org.jasig.cas.authentication.principal.Principal;
+import org.jasig.cas.web.support.WebUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,6 +70,9 @@ public class GenerateMultiFactorCredentialsActionTests {
         when(support.getAuthenticationFrom(TGT_ID)).thenReturn(this.authentication);
         this.action.setAuthenticationSupport(support);
 
+        final MutableAttributeMap requestScope = mock(MutableAttributeMap.class);
+        when(requestContext.getRequestScope()).thenReturn(requestScope);
+
         final MutableAttributeMap flowScope = mock(MutableAttributeMap.class);
         when(requestContext.getFlowScope()).thenReturn(flowScope);
 
@@ -126,6 +130,8 @@ public class GenerateMultiFactorCredentialsActionTests {
 
         when(this.sessionFlowScope.getRequired(anyString(),
                 any(UsernamePasswordCredentials.class.getClass()))).thenReturn(c);
+        when(this.requestContext.getFlowScope().get("credential")).thenReturn(c);
+
         final Event event = this.action.doExecute(this.requestContext);
         final Credential creds = (Credential)
                 event.getAttributes().get(GenerateMultiFactorCredentialsAction.ATTRIBUTE_ID_MFA_CREDENTIALS);
@@ -136,7 +142,7 @@ public class GenerateMultiFactorCredentialsActionTests {
         assertEquals(mfaCreds.countChainedAuthentications(), 1);
         assertEquals(mfaCreds.getChainedCredentials().size(), 1);
 
-        assertEquals(mfaCreds.getAuthentication().getPrincipal(), authentication.getPrincipal());
+        assertEquals(mfaCreds.getAuthentication().getPrincipal().getId(), authentication.getPrincipal().getId());
         assertEquals(mfaCreds.getCredentials(), c);
     }
 
@@ -149,6 +155,8 @@ public class GenerateMultiFactorCredentialsActionTests {
 
         when(this.sessionFlowScope.getRequired(anyString(),
                 any(UsernamePasswordCredentials.class.getClass()))).thenReturn(c);
+        when(this.requestContext.getFlowScope().get("credential")).thenReturn(c);
+
         final Event event = this.action.doExecute(this.requestContext);
         final Credential creds = (Credential)
                 event.getAttributes().get(GenerateMultiFactorCredentialsAction.ATTRIBUTE_ID_MFA_CREDENTIALS);
@@ -159,7 +167,7 @@ public class GenerateMultiFactorCredentialsActionTests {
         assertEquals(mfaCreds.countChainedAuthentications(), 1);
         assertEquals(mfaCreds.getChainedCredentials().size(), 1);
 
-        assertEquals(mfaCreds.getAuthentication().getPrincipal(), authentication.getPrincipal());
+        assertEquals(mfaCreds.getAuthentication().getPrincipal().getId(), authentication.getPrincipal().getId());
         assertEquals(mfaCreds.getCredentials(), c);
     }
 

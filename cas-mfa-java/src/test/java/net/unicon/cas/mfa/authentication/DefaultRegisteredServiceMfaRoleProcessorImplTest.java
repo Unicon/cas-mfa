@@ -1,7 +1,6 @@
 package net.unicon.cas.mfa.authentication;
 
 
-import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.web.support.DefaultMultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
@@ -11,12 +10,15 @@ import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.Response;
 import org.jasig.cas.authentication.principal.Service;
 import org.jasig.cas.authentication.principal.WebApplicationService;
+import org.jasig.cas.services.DefaultRegisteredServiceProperty;
+import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,10 +44,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         final WebApplicationService was = getTargetService();
         final Authentication auth = getAuthentication(true);
 
-        final RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
-        final HashMap<String, Object> extraAttributes = new HashMap<>();
-        when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
-
+        final RegisteredService rswa = TestUtils.getRegisteredService("test1");
         final DefaultRegisteredServiceMfaRoleProcessorImpl resolver = new DefaultRegisteredServiceMfaRoleProcessorImpl(
             getMFWASF(was), getAMCP(), getServicesManager(rswa));
 
@@ -59,17 +58,15 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         final WebApplicationService was = getTargetService();
         final Authentication auth = getAuthentication(true);
 
-        final RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
-        final HashMap<String, Object> extraAttributes = new HashMap<>();
-        extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.AUTHN_METHOD, CAS_AUTHN_METHOD);
+        final RegisteredService rswa = TestUtils.getRegisteredService("test1");
 
-        final Map<String, Object> roleMap = new HashMap<>();
-        // making mfa_role incomplete: roleMap.put("mfa_attribute_name", "memberOf");
-        roleMap.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
+        DefaultRegisteredServiceProperty prop = new DefaultRegisteredServiceProperty();
+        prop.setValues(Collections.singleton(CAS_AUTHN_METHOD));
+        rswa.getProperties().put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, prop);
 
-        extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ROLE, roleMap);
-        when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
-
+        prop = new DefaultRegisteredServiceProperty();
+        prop.setValues(Collections.singleton(MEMBER_OF_VALUE));
+        rswa.getProperties().put(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN, prop);
 
         final DefaultRegisteredServiceMfaRoleProcessorImpl resolver = new DefaultRegisteredServiceMfaRoleProcessorImpl(
                 getMFWASF(was), getAMCP(), getServicesManager(rswa));
@@ -79,55 +76,6 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         assertEquals(0, result.size());
     }
 
-    @Test
-    public void testResolveServiceWithMfaAttributesUserInRole() throws Exception {
-        final WebApplicationService was = getTargetService();
-        final Authentication auth = getAuthentication(true);
-
-        final RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
-        final HashMap<String, Object> extraAttributes = new HashMap<>();
-        extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.AUTHN_METHOD, CAS_AUTHN_METHOD);
-
-        final Map<String, Object> roleMap = new HashMap<>();
-        roleMap.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ATTRIBUTE_NAME, MEMBER_OF);
-        roleMap.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
-
-        extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ROLE, roleMap);
-        when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
-
-
-        final DefaultRegisteredServiceMfaRoleProcessorImpl resolver = new DefaultRegisteredServiceMfaRoleProcessorImpl(
-                getMFWASF(was), getAMCP(), getServicesManager(rswa));
-
-        final List<MultiFactorAuthenticationRequestContext> result = resolver.resolve(auth, was);
-        assertNotNull(result);
-        assertEquals(CAS_AUTHN_METHOD, result.get(0).getMfaService().getAuthenticationMethod());
-    }
-
-    @Test
-    public void testResolveServiceWithMfaAttributesUserNotInRole() throws Exception {
-        final WebApplicationService was = getTargetService();
-        final Authentication auth = getAuthentication(false);
-
-        final RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
-        final HashMap<String, Object> extraAttributes = new HashMap<>();
-        extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.AUTHN_METHOD, CAS_AUTHN_METHOD);
-
-        final Map<String, Object> roleMap = new HashMap<>();
-        roleMap.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ATTRIBUTE_NAME, MEMBER_OF);
-        roleMap.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ATTRIBUTE_PATTERN, MEMBER_OF_VALUE);
-
-        extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.MFA_ROLE, roleMap);
-        when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
-
-
-        final DefaultRegisteredServiceMfaRoleProcessorImpl resolver = new DefaultRegisteredServiceMfaRoleProcessorImpl(
-                getMFWASF(was), getAMCP(), getServicesManager(rswa));
-
-        final List<MultiFactorAuthenticationRequestContext> result = resolver.resolve(auth, was);
-        assertNotNull(result);
-        assertEquals(0, result.size());
-    }
 
     private static Authentication getAuthentication(final boolean inRole) {
         final Map<String, Object> attributes = new HashMap<>();
@@ -141,19 +89,48 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         return auth;
     }
 
+
+    @Test
+    public void testResolveServiceWithMfaAttributesUserInRole() throws Exception {
+        final WebApplicationService was = getTargetService();
+        final Authentication auth = getAuthentication(true);
+
+
+        final RegisteredService rswa = TestUtils.getRegisteredService("test1");
+
+        DefaultRegisteredServiceProperty prop = new DefaultRegisteredServiceProperty();
+        prop.setValues(Collections.singleton(CAS_AUTHN_METHOD));
+        rswa.getProperties().put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, prop);
+
+        prop = new DefaultRegisteredServiceProperty();
+        prop.setValues(Collections.singleton(MEMBER_OF));
+        rswa.getProperties().put(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_NAME, prop);
+
+        prop = new DefaultRegisteredServiceProperty();
+        prop.setValues(Collections.singleton(MEMBER_OF_VALUE));
+        rswa.getProperties().put(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN, prop);
+
+        final DefaultRegisteredServiceMfaRoleProcessorImpl resolver = new DefaultRegisteredServiceMfaRoleProcessorImpl(
+                getMFWASF(was), getAMCP(), getServicesManager(rswa));
+
+        final List<MultiFactorAuthenticationRequestContext> result = resolver.resolve(auth, was);
+        assertNotNull(result);
+        assertEquals(CAS_AUTHN_METHOD, result.get(0).getMfaService().getAuthenticationMethod());
+    }
+
     @Test
     public void testResolveServiceWithOnlyAuthnMethodAttribute() throws Exception {
         final WebApplicationService was = getTargetService();
         final Authentication auth = getAuthentication(true);
 
-        final RegisteredServiceWithAttributes rswa = Mockito.mock(RegisteredServiceWithAttributes.class);
-        final HashMap<String, Object> extraAttributes = new HashMap<>();
-        extraAttributes.put(DefaultRegisteredServiceMfaRoleProcessorImpl.AUTHN_METHOD, CAS_AUTHN_METHOD);
-        when(rswa.getExtraAttributes()).thenReturn(extraAttributes);
+        final RegisteredService rswa = TestUtils.getRegisteredService("test1");
+
+        final DefaultRegisteredServiceProperty prop = new DefaultRegisteredServiceProperty();
+        prop.setValues(Collections.singleton(CAS_AUTHN_METHOD));
+        rswa.getProperties().put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, prop);
 
         final DefaultRegisteredServiceMfaRoleProcessorImpl resolver = new DefaultRegisteredServiceMfaRoleProcessorImpl(
-                getMFWASF(was), getAMCP(), getServicesManager(rswa)
-);
+                getMFWASF(was), getAMCP(), getServicesManager(rswa));
 
         final List<MultiFactorAuthenticationRequestContext> result = resolver.resolve(auth, was);
         assertNotNull(result);
@@ -174,7 +151,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
         };
     }
 
-    private static ServicesManager getServicesManager(final RegisteredServiceWithAttributes rswa) {
+    private static ServicesManager getServicesManager(final RegisteredService rswa) {
         final ServicesManager testSM = Mockito.mock(ServicesManager.class);
         when(testSM.findServiceBy(any(Service.class))).thenReturn(rswa);
         return testSM;
@@ -187,7 +164,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImplTest {
 
     private static MultiFactorWebApplicationServiceFactory getMFWASF(final WebApplicationService was) {
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
-        when(factory.create(anyString(), anyString(), anyString(), Response.ResponseType.REDIRECT, anyString(),
+        when(factory.create(anyString(), anyString(), anyString(), any(Response.ResponseType.class), anyString(),
                 any(MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource.class)))
                 .thenReturn(getMfaService());
         return factory;

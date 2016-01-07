@@ -1,12 +1,11 @@
 package net.unicon.cas.mfa.authentication;
 
-import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import net.unicon.cas.mfa.web.support.MultiFactorWebApplicationServiceFactory;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jasig.cas.authentication.Authentication;
-import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.authentication.principal.Response.ResponseType;
+import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
 import org.slf4j.Logger;
@@ -28,26 +27,6 @@ import java.util.regex.Pattern;
  */
 
 public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredServiceMfaRoleProcessor {
-    /**
-     * mfa_role.
-     */
-    public static final String MFA_ROLE = "mfa_role";
-
-    /**
-     * mfa_attribute_name.
-     */
-    public static final String MFA_ATTRIBUTE_NAME = "mfa_attribute_name";
-
-    /**
-     * mfa_attribute_name.
-     */
-    public static final String MFA_ATTRIBUTE_PATTERN = "mfa_attribute_pattern";
-
-    /**
-     * authn_method.
-     */
-    public static final String AUTHN_METHOD = "authn_method";
-
     /**
      * The logger.
      */
@@ -78,9 +57,9 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
     /**
      * Ctor.
      *
-     * @param mfaServiceFactory mfaServiceFactory
+     * @param mfaServiceFactory                 mfaServiceFactory
      * @param authenticationMethodConfiguration the authentication method loader
-     * @param servicesManager a CAS Service Manager instance
+     * @param servicesManager                   a CAS Service Manager instance
      */
     public DefaultRegisteredServiceMfaRoleProcessorImpl(
             final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
@@ -95,8 +74,9 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
 
     /**
      * Resolves the authn_method for a given service if it supports mfa_role and the user has the appropriate attribute.
+     *
      * @param authentication the user authentication object
-     * @param targetService the target service being tested
+     * @param targetService  the target service being tested
      * @return a list (usually one) mfa authn request context.
      */
     public List<MultiFactorAuthenticationRequestContext> resolve(@NotNull final Authentication authentication,
@@ -104,12 +84,12 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
 
         String authenticationMethodAttributeName = null;
         final List<MultiFactorAuthenticationRequestContext> list = new ArrayList<>();
-        if ((authentication != null) && (targetService != null)) {
+        if (authentication != null && targetService != null) {
             final ServiceMfaData serviceMfaData = getServicesAuthenticationData(targetService);
 
-            if (serviceMfaData == null) {
-                logger.debug("No specific mfa_role service attributes found");
-                return null;
+            if (serviceMfaData == null || !serviceMfaData.isValid()) {
+                logger.debug("No specific mfa role service attributes found");
+                return list;
             }
 
             logger.debug("Found mfa_role: {}", serviceMfaData);
@@ -153,15 +133,18 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
      *
      * @param serviceMfaData service specific mfa settings
      * @param attributeValue the value found in the attribute
-     * @param targetService the target service
+     * @param targetService  the target service
      * @return the mfa request context
      */
     private MultiFactorAuthenticationRequestContext getMfaRequestContext(final ServiceMfaData serviceMfaData,
                                                                          final String attributeValue,
                                                                          final WebApplicationService targetService) {
         final RegisteredService registeredService = this.servicesManager.findServiceBy(targetService);
-        final RegisteredServiceWithAttributes service = RegisteredServiceWithAttributes.class.cast(registeredService);
-        final String method = String.class.cast(service.getExtraAttributes().get("method"));
+
+        String method = null;
+        if (registeredService.getProperties().containsKey("method")) {
+            method = registeredService.getProperties().get("method").getValue();
+        }
 
         if (match(serviceMfaData.getAttributePattern(), attributeValue)) {
             if (!this.authenticationMethodConfiguration.containsAuthenticationMethod(serviceMfaData.getAuthenticationMethod())) {
@@ -187,8 +170,9 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
 
     /**
      * Match will compare the value to the pattern.
+     *
      * @param attributePattern the pattern to check
-     * @param attributeValue the value to check
+     * @param attributeValue   the value to check
      * @return true if a match is found. otherwise false
      */
     private boolean match(final String attributePattern, final String attributeValue) {
@@ -208,6 +192,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
 
     /**
      * Looks up the mfa data for a specific service.
+     *
      * @param targetService the service to check
      * @return service specific mfa settings
      */
@@ -218,29 +203,24 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
             return null;
         }
 
-        if (!(registeredService instanceof RegisteredServiceWithAttributes)) {
-            logger.debug("Registered service is not capable of defining an mfa attribute.");
-            return null;
-        }
-
         final ServiceMfaData serviceData = new ServiceMfaData();
 
-        final RegisteredServiceWithAttributes service = RegisteredServiceWithAttributes.class.cast(registeredService);
-
-        final Map mfaRole = Map.class.cast(service.getExtraAttributes().get(MFA_ROLE));
-        if (mfaRole == null) {
-            return null;
+        if (registeredService.getProperties().containsKey(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_NAME)) {
+            serviceData.setAttributeName(registeredService.getProperties()
+                    .get(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_NAME).getValue());
         }
 
-        serviceData.setAttributeName(String.class.cast(mfaRole.get(MFA_ATTRIBUTE_NAME)));
-        serviceData.setAttributePattern(String.class.cast(mfaRole.get(MFA_ATTRIBUTE_PATTERN)));
-        serviceData.setAuthenticationMethod(String.class.cast(service.getExtraAttributes().get(AUTHN_METHOD)));
-
-        if (serviceData.isValid()) {
-            return serviceData;
+        if (registeredService.getProperties().containsKey(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN)) {
+            serviceData.setAttributePattern(registeredService.getProperties().
+                    get(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN).getValue());
         }
 
-        return null;
+        if (registeredService.getProperties().containsKey(MultiFactorAuthenticationRequestResolver.DEFAULT_MFA_METHOD_ATTRIBUTE_NAME)) {
+            serviceData.setAuthenticationMethod(registeredService.getProperties().
+                    get(MultiFactorAuthenticationRequestResolver.DEFAULT_MFA_METHOD_ATTRIBUTE_NAME).getValue());
+        }
+
+        return serviceData;
     }
 
     /**
@@ -277,23 +257,23 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
 
         /**
          * Checks the the class stores valid data.
+         *
          * @return true if valid data, otherwise false
          */
         public boolean isValid() {
-            if (this.authenticationMethod != null && this.attributeName != null && this.attributePattern != null) {
-                return true;
-            }
             if (this.attributeName == null) {
-                logger.warn("'mfa_attribute_name' cannot be null when using '{}'", MFA_ROLE);
+                logger.warn("'mfa_attribute_name' cannot be null");
                 return false;
             }
             if (this.attributePattern == null) {
-                logger.warn("'mfa_attribute_pattern' cannot be null when using '{}'", MFA_ROLE);
+                logger.warn("'mfa_attribute_pattern' cannot be null");
                 return false;
             }
-
-            logger.warn("'authn_method` cannot be null when using '{}'", MFA_ROLE);
-            return false;
+            if (this.authenticationMethod == null) {
+                logger.warn("'authn_method' cannot be null");
+                return false;
+            }
+            return true;
         }
 
         @Override

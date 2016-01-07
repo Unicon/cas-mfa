@@ -18,6 +18,11 @@ import java.util.Map;
  * @author Misagh Moayyed
  */
 public class Cas30ResponseView extends org.jasig.cas.web.view.Cas30ResponseView {
+    /**
+     * Instantiates a new Cas 30 response view.
+     *
+     * @param view the view
+     */
     protected Cas30ResponseView(final AbstractUrlBasedView view) {
         super(view);
     }

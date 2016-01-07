@@ -54,11 +54,6 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     private final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration;
 
     /**
-     * Default principal attribute name for retrieving requested mfa authentication method.
-     */
-    public static final String DEFAULT_MFA_METHOD_ATTRIBUTE_NAME = "authn_method";
-
-    /**
      * The Authentication method translator.
      */
     private AuthenticationMethodTranslator authenticationMethodTranslator = new StubAuthenticationMethodTranslator();

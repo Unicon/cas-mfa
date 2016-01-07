@@ -1,7 +1,6 @@
 package net.unicon.cas.mfa.web.support;
 
 import net.unicon.cas.mfa.authentication.AuthenticationSupport;
-import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
 import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext;
 import net.unicon.cas.mfa.authentication.RegisteredServiceMfaRoleProcessor;
 import org.apache.commons.lang3.StringUtils;
@@ -10,16 +9,13 @@ import org.jasig.cas.authentication.principal.WebApplicationService;
 import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
 import org.jasig.cas.web.support.ArgumentExtractor;
-
 import org.springframework.webflow.execution.RequestContext;
 import org.springframework.webflow.execution.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 
-import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
-import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD;
+import static net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.*;
 
 /**
  * The multifactor authentication argument extractor, responsible to
@@ -85,22 +81,18 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
             return null;
         }
 
-        final Map<String, Object> extraAttributes =
-        if (extraAttributes != null && extraAttributes.containsKey("mfa_role")) {
+        if (registeredService.getProperties().containsKey(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_NAME)
+            || registeredService.getProperties().containsKey(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN)) {
             logger.debug("Deferring mfa authn method for Principal Attribute Resolver");
             return null;
         }
 
-        final String authenticationMethod =
-                String.class.cast(extraAttributes.get(this.authenticationMethodAttribute));
-
-
-        if (StringUtils.isBlank(authenticationMethod)) {
-            logger.debug("Registered service does not define authentication method attribute [{}]. ",
-                    this.authenticationMethodAttribute);
+        if (!registeredService.getProperties().containsKey(this.authenticationMethodAttribute)) {
+            logger.debug("Registered service does not define authentication method attribute [{}]. ", this.authenticationMethodAttribute);
             return determineDefaultAuthenticationMethod();
         }
 
+        final String authenticationMethod = registeredService.getProperties().get(this.authenticationMethodAttribute).getValue();
         return authenticationMethod;
     }
 

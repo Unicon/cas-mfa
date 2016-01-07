@@ -30,9 +30,12 @@ public final class DefaultCompositeAuthentication implements CompositeAuthentica
 
     /**
      * Initialize this instance with a principal and given authentication attributes.
-     * @param p the principal
-     * @param attributes attributes for this authentication
-     * @param credentials
+     *
+     * @param p           the principal
+     * @param attributes  attributes for this authentication
+     * @param credentials the credentials
+     * @param successes   the successes
+     * @param failures    the failures
      */
     public DefaultCompositeAuthentication(final Principal p, final Map<String, Object> attributes,
                                           final List<CredentialMetaData> credentials,

@@ -17,6 +17,13 @@ import java.util.List;
  */
 public interface MultiFactorAuthenticationRequestResolver {
 
+
+    /**
+     * Default attribute name for retrieving requested mfa authentication method.
+     */
+    String DEFAULT_MFA_METHOD_ATTRIBUTE_NAME = "authn_method";
+
+
     /**
      * Resolve potential {@link net.unicon.cas.mfa.authentication.MultiFactorAuthenticationRequestContext} from passed in primary
      * authentication instance, for a passed in target service.

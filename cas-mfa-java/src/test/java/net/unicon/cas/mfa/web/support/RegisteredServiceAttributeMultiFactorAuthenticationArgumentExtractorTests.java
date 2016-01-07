@@ -1,9 +1,11 @@
 package net.unicon.cas.mfa.web.support;
 
-import net.unicon.cas.addons.serviceregistry.RegisteredServiceWithAttributes;
+import net.unicon.cas.mfa.authentication.RegisteredServiceMfaRoleProcessor;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService.AuthenticationMethodSource;
+import org.jasig.cas.TestUtils;
 import org.jasig.cas.authentication.principal.Response;
 import org.jasig.cas.authentication.principal.Service;
+import org.jasig.cas.services.DefaultRegisteredServiceProperty;
 import org.jasig.cas.services.RegisteredService;
 import org.jasig.cas.services.ServicesManager;
 import org.jasig.cas.web.support.ArgumentExtractor;
@@ -12,9 +14,8 @@ import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -49,14 +50,11 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
             .thenReturn(getMfaService());
         
         final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
-        
-        final Map<String, Object> attrs = new HashMap<>();
-        attrs.put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, CAS_AUTHN_METHOD);
-        
-        final RegisteredServiceWithAttributes svc = mock(RegisteredServiceWithAttributes.class);
-        when(svc.getId()).thenReturn(0L);
-        when(svc.getServiceId()).thenReturn(CAS_SERVICE);
-        when(svc.getExtraAttributes()).thenReturn(attrs);
+
+        final RegisteredService svc = TestUtils.getRegisteredService(CAS_SERVICE);
+        final DefaultRegisteredServiceProperty prop = new DefaultRegisteredServiceProperty();
+        prop.setValues(Collections.singleton(CAS_AUTHN_METHOD));
+        svc.getProperties().put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, prop);
         
         final ServicesManager mgmr = mock(ServicesManager.class);
         when(mgmr.findServiceBy(anyInt())).thenReturn(svc);
@@ -78,14 +76,10 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
         
         final MultiFactorWebApplicationServiceFactory factory = mock(MultiFactorWebApplicationServiceFactory.class);
         final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
-        
-        final Map<String, Object> attrs = new HashMap<>();
-        attrs.put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, "");
-        
-        final RegisteredServiceWithAttributes svc = mock(RegisteredServiceWithAttributes.class);
-        when(svc.getId()).thenReturn(0L);
-        when(svc.getServiceId()).thenReturn(CAS_SERVICE);
-        when(svc.getExtraAttributes()).thenReturn(attrs);
+
+        final RegisteredService svc = TestUtils.getRegisteredService(CAS_SERVICE);
+        final DefaultRegisteredServiceProperty prop = new DefaultRegisteredServiceProperty();
+        svc.getProperties().put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, prop);
         
         final ServicesManager mgmr = mock(ServicesManager.class);
         when(mgmr.findServiceBy(anyInt())).thenReturn(svc);
@@ -111,14 +105,17 @@ public class RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtracto
 
         final AuthenticationMethodVerifier verifier = mock(AuthenticationMethodVerifier.class);
 
-        final Map<String, Object> attrs = new HashMap<>();
-        attrs.put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, CAS_AUTHN_METHOD);
-        attrs.put("mfa_role", new HashMap<String, Object>());
+        final RegisteredService svc = TestUtils.getRegisteredService(CAS_SERVICE);
+        DefaultRegisteredServiceProperty prop = new DefaultRegisteredServiceProperty();
+        prop.setValues(Collections.singleton(CAS_AUTHN_METHOD));
+        svc.getProperties().put(MultiFactorAuthenticationSupportingWebApplicationService.CONST_PARAM_AUTHN_METHOD, prop);
 
-        final RegisteredServiceWithAttributes svc = mock(RegisteredServiceWithAttributes.class);
-        when(svc.getId()).thenReturn(0L);
-        when(svc.getServiceId()).thenReturn(CAS_SERVICE);
-        when(svc.getExtraAttributes()).thenReturn(attrs);
+        prop = new DefaultRegisteredServiceProperty();
+        svc.getProperties().put(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_NAME, prop);
+
+        prop = new DefaultRegisteredServiceProperty();
+        prop.setValues(Collections.singleton(CAS_AUTHN_METHOD));
+        svc.getProperties().put(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN, prop);
 
         final ServicesManager mgmr = mock(ServicesManager.class);
         when(mgmr.findServiceBy(anyInt())).thenReturn(svc);

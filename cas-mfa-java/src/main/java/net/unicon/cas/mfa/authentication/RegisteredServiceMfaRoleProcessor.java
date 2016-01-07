@@ -15,6 +15,16 @@ import java.util.List;
 public interface RegisteredServiceMfaRoleProcessor {
 
     /**
+     * mfa_attribute_name.
+     */
+    String MFA_ATTRIBUTE_NAME = "mfa_attribute_name";
+
+    /**
+     * mfa_attribute_name.
+     */
+    String MFA_ATTRIBUTE_PATTERN = "mfa_attribute_pattern";
+
+    /**
      * Resolves the authn_method for a given service if it supports mfa_role and the user has the appropriate attribute.
      * @param authentication the user authentication object
      * @param targetService the target service being tested
