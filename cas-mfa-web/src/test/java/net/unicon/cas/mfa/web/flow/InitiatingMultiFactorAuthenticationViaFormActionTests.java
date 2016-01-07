@@ -108,7 +108,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
         when(ctx.getRequestScope().get("ticketGrantingTicketId")).thenReturn(TGT_ID);
         when(ctx.getFlowScope().get("ticketGrantingTicketId")).thenReturn(TGT_ID);
-        when(ctx.getFlowScope().get("credentials")).thenReturn(getCredentials());
+        when(ctx.getFlowScope().get("credential")).thenReturn(getCredentials());
 
         when(ctx.getRequestParameters()).thenReturn(mock(ParameterMap.class));
         when(ctx.getRequestParameters().get("lt")).thenReturn(LOGIN_TICKET);
@@ -147,7 +147,7 @@ public class InitiatingMultiFactorAuthenticationViaFormActionTests {
 
     @Test
     public void testBadInvalidCredentials() throws Exception {
-        when(ctx.getFlowScope().get("credentials")).thenReturn(null);
+        when(ctx.getFlowScope().get("credential")).thenReturn(null);
         final Event ev = this.action.doExecute(this.ctx);
         assertNotNull(ev);
 
