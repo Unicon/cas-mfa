@@ -540,7 +540,7 @@
 
     <properties>
         <!-- CAS Versions -->
-        <cas.version>4.1.4-SNAPSHOT</cas.version>
+        <cas.version>4.1.4</cas.version>
         <cas-addons.version>1.16</cas-addons.version>
 
         <!-- Dependency Versions -->
