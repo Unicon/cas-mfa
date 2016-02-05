@@ -102,11 +102,11 @@ public final class MultiFactorAuthenticationTransactionContext implements Serial
                             + "the current authentication transaction target service {%s}",
                     mfaRequest.getMfaService().getId(), this.targetServiceId));
         }
-        if (authnMethodSourceAlreadyExists(mfaRequest.getMfaService().getAuthenticationMethodSource())) {
-            throw new IllegalArgumentException(String.format("Requested mfa method source {%s} already exists",
-                    mfaRequest.getMfaService().getAuthenticationMethodSource()));
+
+        if (!authnMethodSourceAlreadyExists(mfaRequest.getMfaService().getAuthenticationMethodSource())) {
+            this.mfaRequests.add(mfaRequest);
         }
-        this.mfaRequests.add(mfaRequest);
+
         return this;
     }
 
