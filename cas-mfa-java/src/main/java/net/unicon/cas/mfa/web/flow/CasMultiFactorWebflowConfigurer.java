@@ -72,7 +72,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
     private static final String UNKNOWN_PRINCIPAL_ERROR_EVENT_ID = "unknownPrincipalError";
     private static final String MFA_UNRECOGNIZED_AUTHN_METHOD_ERROR_EVENT_ID = "mfaUnrecognizedAuthnMethodError";
     private static final String MFA_SUCCESS_EVENT_ID = "mfaSuccess";
-    private static final String SEND_TICKET_GRANTING_TICKET_EVENT_ID = "sendTicketGrantingTicket";
+    private static final String SUCCESS_EVENT_ID = "success";
 
     @Autowired
     private FlowBuilderServices flowBuilderServices;
@@ -428,7 +428,9 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
         final SubflowAttributeMapper subflowMapper = createSubflowAttributeMapper(inputMapper, null);
         subflowState.setAttributeMapper(subflowMapper);
 
-        subflowState.getTransitionSet().add(createTransition(MFA_SUCCESS_EVENT_ID, SEND_TICKET_GRANTING_TICKET_EVENT_ID));
+        final ActionState actionState = (ActionState) flow.getState(STATE_DEFINITION_ID_REAL_SUBMIT);
+        final String targettedStateId = actionState.getTransition(SUCCESS_EVENT_ID).getTargetStateId();
+        subflowState.getTransitionSet().add(createTransition(MFA_SUCCESS_EVENT_ID, targettedStateId));
         subflowState.getTransitionSet().add(createTransition(UNKNOWN_PRINCIPAL_ERROR_EVENT_ID,
                 "viewUnknownPrincipalErrorView"));
         subflowState.getTransitionSet().add(createTransition(MFA_UNRECOGNIZED_AUTHN_METHOD_ERROR_EVENT_ID,

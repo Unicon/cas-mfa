@@ -12,6 +12,7 @@ import org.jasig.cas.ticket.TicketGrantingTicket;
 import org.jasig.cas.web.support.WebUtils;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.webflow.execution.Event;
+import org.springframework.webflow.execution.FlowSession;
 import org.springframework.webflow.execution.RequestContext;
 
 /**
@@ -75,6 +76,9 @@ public class TerminatingMultiFactorAuthenticationViaFormAction extends AbstractM
 
         final TicketGrantingTicket tgt = this.cas.createTicketGrantingTicket(mfa);
         WebUtils.putTicketGrantingTicketInScopes(context, tgt);
+        final FlowSession session = context.getFlowExecutionContext().getActiveSession();
+        logger.debug("Located active webflow session {}", session.getDefinition().getId());
+        session.getParent().getScope().put("ticketGrantingTicketId", tgt.getId());
         return getSuccessEvent(context);
 
     }

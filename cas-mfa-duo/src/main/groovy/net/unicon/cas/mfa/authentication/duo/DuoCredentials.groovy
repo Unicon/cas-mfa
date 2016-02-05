@@ -15,7 +15,6 @@ class DuoCredentials implements Credential, Serializable {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("username", this.username)
-                .append("signedDuoResponse", this.signedDuoResponse)
                 .toString();
     }
 

@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
  * @author John Gasper
  * @author Unicon, inc.
  */
-
 public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredServiceMfaRoleProcessor {
     /**
      * The logger.
@@ -52,7 +51,6 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
      * the services manager.
      */
     private final ServicesManager servicesManager;
-
 
     /**
      * Ctor.
@@ -115,7 +113,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
                         }
                     }
                 } else {
-                    logger.debug("Not MFA Attribute found.");
+                    logger.debug("No MFA attribute found.");
                 }
             }
         }
@@ -262,15 +260,15 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
          */
         public boolean isValid() {
             if (this.attributeName == null) {
-                logger.warn("'mfa_attribute_name' cannot be null");
+                logger.debug("{} cannot be null", MFA_ATTRIBUTE_NAME);
                 return false;
             }
             if (this.attributePattern == null) {
-                logger.warn("'mfa_attribute_pattern' cannot be null");
+                logger.debug("{} cannot be null", MFA_ATTRIBUTE_PATTERN);
                 return false;
             }
             if (this.authenticationMethod == null) {
-                logger.warn("'authn_method' cannot be null");
+                logger.debug("{} cannot be null", MultiFactorAuthenticationRequestResolver.DEFAULT_MFA_METHOD_ATTRIBUTE_NAME);
                 return false;
             }
             return true;
