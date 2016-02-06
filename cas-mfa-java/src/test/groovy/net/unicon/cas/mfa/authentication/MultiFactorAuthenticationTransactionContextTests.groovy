@@ -55,12 +55,12 @@ class MultiFactorAuthenticationTransactionContextTests extends Specification {
     }
 
     def "no duplicate authentication method source are allowed"() {
-        when:
+        given:
         @Subject
         def authnTxCtxUnderTest = new MultiFactorAuthenticationTransactionContext('test service').addMfaRequest(mfaReqViaParam).addMfaRequest(mfaReqViaParam)
 
-        then:
-        thrown(IllegalArgumentException)
+        expect:
+        authnTxCtxUnderTest.mfaRequests.size() == 1
     }
 
     def "unmodifiable Set is returned for mfaRequests property"() {
