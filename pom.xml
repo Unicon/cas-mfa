@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
     <name>CAS MFA Parent</name>
     <description>Apereo CAS SSO server multifactor authentication libraries and web application.</description>
-    <version>2.0.0-RC2-SNAPSHOT</version>
+    <version>2.0.0-RC2</version>
     <url>https://github.com/Unicon/cas-mfa</url>
     <inceptionYear>2015</inceptionYear>
     <organization>
