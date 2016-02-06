@@ -2,10 +2,6 @@
 
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/Unicon/cas-mfa?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-
-> This project is made public here on Github as part of Unicon's [Open Source Support program](https://unicon.net/opensource).
-Professional Support / Integration Assistance for this module is available. For more information [visit](https://unicon.net/opensource/cas).
-
 This is a project to develop free and open source compatibly licensed extensions for the CAS server `v4.1.x` product implementing
 
 * support for authenticating using multiple authentication factors
@@ -27,6 +23,9 @@ ticket validation response, and
 
 ## Configuration
 
+### Maven Overlay
+Use [the following maven overlay](https://github.com/Unicon/cas-mfa/blob/master/cas-mfa-overlay/pom.xml) as an example.
+
 ### AuthN Methods
 An `authn-methods.conf` file is expected to be found at `/etc/cas` with the following content:
 
@@ -37,6 +36,34 @@ An `authn-methods.conf` file is expected to be found at `/etc/cas` with the foll
 } ]
 
 ```
+
+### Messages
+The following UI messages should be put into `messages.properties` file:
+
+```properties
+# Multifactor Authentication Messages
+UNACCEPTABLE_AUTHENTICATION_METHOD=Ticket ''{0}'' did not fulfill the required authentication method ''{1}''.
+UNRECOGNIZED_AUTHENTICATION_METHOD=This CAS server does not recognize the authentication method [''{0}''] specified on the validation request.
+service.mfa.unrecognized.authn.method.header=Unrecognized Authentication Method
+service.mfa.unrecognized.authn.method.message=You are trying to log in to <strong>''{0}''</strong> with a required authentication method of <strong>''{1}''</strong>. \
+Unfortunately, CAS doesn't recognize that authentication method and so does not know how to require you to authenticate in that way.
+service.mfa.service.requires.mfa.header=This service requires a specific authentication method in addition to username and password.
+service.mfa.service.requires.mfa.message=The additional required authentication method is [''{0}'']. After successfully providing username and password, you will be prompted for this additional authentication factor.
+service.mfa.service.mfa.inprogress.header=Multifactor Authentication is in progress...
+service.mfa.service.mfa.inprogress.message=The additional required authentication method is [''{0}'']. The authentication is requested by [''{1}''].
+screen.mfa.welcome.instructions=Enter your one-time password
+screen.mfa.button.cancel=Not you?
+screen.mfa.welcome.back=Welcome back, {0}!
+service.mfa.unknown.principal.header=User not recognized
+service.mfa.unknown.principal.message=CAS cannot establish an authentication context because it doesn't recognize one or more of the \
+provided credentials. It is likely that the newly provided credentials are resolved in such a way that do not match at least one of the \
+authenticated user ids (otherwise known as the 'Principal').
+
+service.mfa.generic.error.heading=An authentication error has occurred!
+service.mfa.generic.error.message=Additional information: {0}
+```
+
+### Properties
 The following settings are required for MFA in `cas.properties`:
 
 ```properties
