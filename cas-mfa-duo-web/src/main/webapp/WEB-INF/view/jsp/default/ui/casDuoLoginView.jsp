@@ -21,7 +21,7 @@
     <input type="hidden" name="_eventId" value="submit"/>
 
     <div class="box fl-panel" id="login">
-        <iframe id="duo_iframe" width="100%" height="360" frameborder="0"></iframe>
+        <iframe id="duo_iframe" width="100%" height="330" frameborder="0"></iframe>
     </div>
 
     <p>
