@@ -1,16 +1,17 @@
 package net.unicon.cas.mfa.web.support;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.jasig.cas.authentication.principal.AbstractWebApplicationService;
-import org.jasig.cas.authentication.principal.Response;
-import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;
+import org.jasig.cas.authentication.principal.*;
 import org.jasig.cas.util.HttpClient;
 import org.jasig.cas.authentication.principal.Response.ResponseType;
+import org.jasig.cas.web.support.GoogleAccountsArgumentExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-
+import org.springframework.webflow.execution.RequestContext;
+import org.springframework.webflow.execution.RequestContextHolder;
 import javax.validation.constraints.NotNull;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,9 +25,11 @@ import java.util.Map;
  *
  * @author Misagh Moayyed
  */
+
+
 public final class DefaultMultiFactorAuthenticationSupportingWebApplicationService
         extends AbstractWebApplicationService
-        implements MultiFactorAuthenticationSupportingWebApplicationService {
+        implements MultiFactorAuthenticationSupportingWebApplicationService    {
 
     /** The logger instance. **/
     protected static final Logger LOGGER =
@@ -46,10 +49,11 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
     /** The type of HTTP response. **/
     private final ResponseType responseType;
 
+
+
     /**
      * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}.
-     *
-     * @param id the service id, potentially with a jsessionid; still needing excised
+     *  @param id the service id, potentially with a jsessionid; still needing excised
      * @param originalUrl the service url
      * @param artifactId the artifact id
      * @param responseType the HTTP method for the response
@@ -57,12 +61,30 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
      * @param authnMethod the authentication method required for this service
      */
     public DefaultMultiFactorAuthenticationSupportingWebApplicationService(final String id, final String originalUrl,
-            final String artifactId, final ResponseType responseType, final HttpClient httpClient, @NotNull final String authnMethod) {
-        super(cleanupUrl(id), originalUrl, artifactId, httpClient);
+                                                                           final String artifactId, final ResponseType responseType, final HttpClient httpClient, @NotNull final String authnMethod ) {
+        super( id, originalUrl, artifactId, httpClient);
+
+
+        //final HttpServletRequest request = HttpServletRequest.class.cast(context.getEnvironment().getNativeRequest());
+
+        LOGGER.debug("id = " + id);
+        LOGGER.debug("originalUrl = " + originalUrl);
+        LOGGER.debug("artifactId = " + artifactId);
+        LOGGER.debug("cleanupUrl(id) = " + cleanupUrl(id));
+        LOGGER.debug("responseType = " + responseType);
+
+       //super(cleanupUrl(id), originalUrl, artifactId, httpClient);
         this.wrapperService = new SimpleWebApplicationServiceImpl(id, httpClient);
+
         this.authenticationMethod = authnMethod;
         this.responseType = responseType;
-    }
+
+       // final List<ArgumentExtractor> list = context.getBean("argumentExtractors", List.class);
+
+
+        }
+
+
 
     @Override
     public boolean equals(final Object o) {
@@ -118,8 +140,37 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
     public Response getResponse(final String ticketId) {
         final Map<String, String> parameters = new HashMap<String, String>();
 
+        RequestContext requestContext =  RequestContextHolder.getRequestContext();
+        LOGGER.debug("$$$$$$ getRequestParameters = " + requestContext.getRequestParameters());
+
+        HttpServletRequest req = (HttpServletRequest )requestContext.getExternalContext().getNativeRequest();
+        LOGGER.debug("$$$$$$ getRequestParameters from native request = " + req.getQueryString());
+
+        final String relayState = req.getParameter("RelayState");
+        LOGGER.debug("$$$$$$ getRequestParameters relayState = " + relayState);
+        final String samlRequest =  req.getParameter("SAMLRequest");
+        LOGGER.debug("$$$$$$ xmlRequest = " + samlRequest);
+
         if (StringUtils.hasText(ticketId)) {
             parameters.put(CONST_PARAM_TICKET, ticketId);
+        }
+        if(StringUtils.hasText(samlRequest)) {
+            try {
+                GoogleAccountsArgumentExtractor googleAccountsArgumentExtractor = getBean("googleAccountsArgumentExtractor", GoogleAccountsArgumentExtractor.class);
+                GoogleAccountsService googleAccountsService = (GoogleAccountsService) googleAccountsArgumentExtractor.extractService(req);
+                googleAccountsService.setPrincipal(getPrincipal());
+                Response rs = googleAccountsService.getResponse(ticketId);
+                String samlResponse = rs.getAttributes().get("SAMLResponse");
+                if (StringUtils.hasText(samlResponse)) {
+                    parameters.put("SAMLResponse", samlResponse);
+                    parameters.put("RelayState", relayState);
+                    return Response.getPostResponse(getOriginalUrl(), parameters);
+                }
+            }catch (Exception e)
+            {
+                LOGGER.error(e.getMessage());
+            }
+ 
         }
 
         if (ResponseType.POST == this.responseType) {
@@ -137,4 +188,13 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
     public AuthenticationMethodSource getAuthenticationMethodSource() {
         return this.authenticationMethodSource;
     }
+
+
+
+    public <T> T getBean(String name, Class<T> clazz) {
+        RequestContext context = RequestContextHolder.getRequestContext();
+        //return context.getActiveFlow().getApplicationContext().getBean(name, clazz);
+        return context.getActiveFlow().getApplicationContext().getBean(clazz);
+    }
+
 }
