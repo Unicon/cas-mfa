@@ -15,7 +15,7 @@ import org.jasig.cas.CentralAuthenticationService;
 import org.jasig.cas.authentication.Authentication;
 import org.jasig.cas.authentication.AuthenticationManager;
 import org.jasig.cas.authentication.Credential;
-import org.jasig.cas.authentication.handler.AuthenticationException;
+import org.jasig.cas.authentication.AuthenticationException;
 import org.jasig.cas.authentication.principal.Response.ResponseType;
 import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;
 import org.jasig.cas.authentication.principal.WebApplicationService;
@@ -175,7 +175,7 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
             MultiFactorRequestContextUtils.setAuthentication(context, auth);
             return result;
         } catch (final AuthenticationException e) {
-            populateErrorsInstance(e.getCode(), messageContext);
+            populateErrorsInstance(e.getMessage(), messageContext);
             MultiFactorRequestContextUtils.setAuthenticationExceptionInFlowScope(context, e);
             logger.error(e.getMessage(), e);
         }

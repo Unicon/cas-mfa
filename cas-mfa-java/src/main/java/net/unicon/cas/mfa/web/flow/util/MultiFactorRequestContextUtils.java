@@ -22,7 +22,7 @@ import net.unicon.cas.mfa.authentication.MultiFactorAuthenticationTransactionCon
 import net.unicon.cas.mfa.authentication.principal.MultiFactorCredentials;
 import net.unicon.cas.mfa.web.support.MultiFactorAuthenticationSupportingWebApplicationService;
 import org.jasig.cas.authentication.Authentication;
-import org.jasig.cas.authentication.handler.AuthenticationException;
+import org.jasig.cas.authentication.AuthenticationException;
 import org.jasig.cas.authentication.principal.Principal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
