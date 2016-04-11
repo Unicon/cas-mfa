@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -108,6 +109,15 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
                     for (final String mfaAttributeValue : mfaAttributeValues) {
                         final MultiFactorAuthenticationRequestContext ctx = getMfaRequestContext(
                                 serviceMfaData, mfaAttributeValue, targetService);
+                        if (ctx != null) {
+                            list.add(ctx);
+                        }
+                    }
+                } else if (mfaAttributeValueAsObject instanceof Collection) {
+                    final Collection mfaAttributeValues = (Collection) mfaAttributeValueAsObject;
+                    for (final Object mfaAttributeValue : mfaAttributeValues) {
+                        final MultiFactorAuthenticationRequestContext ctx = getMfaRequestContext(
+                                serviceMfaData, String.valueOf(mfaAttributeValue), targetService);
                         if (ctx != null) {
                             list.add(ctx);
                         }
