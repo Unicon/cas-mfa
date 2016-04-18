@@ -1076,7 +1076,7 @@ public class Base64 {
      * @since 2.3.1
      */
 	public static byte[] decode(final byte[] source) throws IOException {
-		byte[] decoded = null;
+		byte[] decoded;
 		// try {
 		decoded = decode(source, 0, source.length, Base64.NO_OPTIONS);
 		// } catch( java.io.IOException ex ) {
@@ -1140,8 +1140,8 @@ public class Base64 {
 		final byte[] b4 = new byte[4]; // Four byte buffer from source, eliminating
 									// white space
 		int b4Posn = 0; // Keep track of four byte input buffer
-		int i = 0; // Source array counter
-		byte sbiDecode = 0; // Special value from DECODABET
+		int i; // Source array counter
+		byte sbiDecode; // Special value from DECODABET
 
 		for (i = off; i < off + len; i++) { // Loop through source
 
