@@ -54,8 +54,8 @@ public final class DuoWeb {
 
 	public static String verifyResponse(final String ikey, final String skey, final String akey, final String sig_response)
 		throws DuoWebException, NoSuchAlgorithmException, InvalidKeyException, IOException {
-		String auth_user = null;
-		String app_user = null;
+		String auth_user;
+		String app_user;
 
 		final String[] sigs = sig_response.split(":");
 		final String auth_sig = sigs[0];

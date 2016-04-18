@@ -66,7 +66,7 @@ public class OrderedMultiFactorMethodRankingStrategy implements RequestedAuthent
         }
 
         final Integer requestedRank = getRank(requestedAuthenticationMethod);
-        Integer prevRank = null;
+        Integer prevRank;
         for (final String prevMethod : previouslyAchievedAuthenticationMethods) {
             prevRank = getRank(prevMethod);
             //Lower rank value == stronger (higher order)
