@@ -23,8 +23,8 @@ public final class DuoWeb {
 	public static final String ERR_UNKNOWN = "ERR|An unknown error has occurred.";
 
 	public static String signRequest(final String ikey, final String skey, final String akey, final String username) {
-		final String duo_sig;
-		final String app_sig;
+		final String duoSig;
+		final String appSig;
 
 		if (username.equals("")) {
 			return ERR_USER;
@@ -43,39 +43,39 @@ public final class DuoWeb {
 		}
 
 		try {
-			duo_sig = signVals(skey, username, ikey, DUO_PREFIX, DUO_EXPIRE);
-			app_sig = signVals(akey, username, ikey, APP_PREFIX, APP_EXPIRE);
+			duoSig = signVals(skey, username, ikey, DUO_PREFIX, DUO_EXPIRE);
+			appSig = signVals(akey, username, ikey, APP_PREFIX, APP_EXPIRE);
 		} catch (final Exception e) {
 			return ERR_UNKNOWN;
 		}
 
-		return duo_sig + ":" + app_sig;
+		return duoSig + ":" + appSig;
 	}
 
-	public static String verifyResponse(final String ikey, final String skey, final String akey, final String sig_response)
+	public static String verifyResponse(final String ikey, final String skey, final String akey, final String sigResponse)
 		throws DuoWebException, NoSuchAlgorithmException, InvalidKeyException, IOException {
-		String auth_user;
-		String app_user;
+		String authUser;
+		String appUser;
 
-		final String[] sigs = sig_response.split(":");
-		final String auth_sig = sigs[0];
-		final String app_sig = sigs[1];
+		final String[] sigs = sigResponse.split(":");
+		final String authSig = sigs[0];
+		final String appSig = sigs[1];
 
-		auth_user = parseVals(skey, auth_sig, AUTH_PREFIX, ikey);
-		app_user = parseVals(akey, app_sig, APP_PREFIX, ikey);
+		authUser = parseVals(skey, authSig, AUTH_PREFIX, ikey);
+		appUser = parseVals(akey, appSig, APP_PREFIX, ikey);
 
-		if (!auth_user.equals(app_user)) {
+		if (!authUser.equals(appUser)) {
 			throw new DuoWebException("Authentication failed.");
 		}
 
-		return auth_user;
+		return authUser;
 	}
 
 	private static String signVals(final String key, final String username, final String ikey, final String prefix, final int expire)
 		throws InvalidKeyException, NoSuchAlgorithmException {
 		final long ts = System.currentTimeMillis() / 1000;
-		final long expire_ts = ts + expire;
-		final String exp = Long.toString(expire_ts);
+		final long expireTs = ts + expire;
+		final String exp = Long.toString(expireTs);
 
 		final String val = username + "|" + ikey + "|" + exp;
 		final String cookie = prefix + "|" + Base64.encodeBytes(val.getBytes());
@@ -93,36 +93,36 @@ public final class DuoWeb {
 			throw new DuoWebException("Invalid response");
 		}
 
-		final String u_prefix = parts[0];
-		final String u_b64 = parts[1];
-		final String u_sig = parts[2];
+		final String uPrefix = parts[0];
+		final String uB64 = parts[1];
+		final String uSig = parts[2];
 
-		final String sig = Util.hmacSign(key, u_prefix + "|" + u_b64);
-		if (!Util.hmacSign(key, sig).equals(Util.hmacSign(key, u_sig))) {
+		final String sig = Util.hmacSign(key, uPrefix + "|" + uB64);
+		if (!Util.hmacSign(key, sig).equals(Util.hmacSign(key, uSig))) {
 			throw new DuoWebException("Invalid response");
 		}
 
-		if (!u_prefix.equals(prefix)) {
+		if (!uPrefix.equals(prefix)) {
 			throw new DuoWebException("Invalid response");
 		}
 
-		final byte[] decoded = Base64.decode(u_b64);
+		final byte[] decoded = Base64.decode(uB64);
 		final String cookie = new String(decoded);
 
-		final String[] cookie_parts = cookie.split("\\|");
-		if (cookie_parts.length != 3) {
+		final String[] cookieParts = cookie.split("\\|");
+		if (cookieParts.length != 3) {
 			throw new DuoWebException("Invalid response");
 		}
-		final String username = cookie_parts[0];
-		final String u_ikey = cookie_parts[1];
-		final String expire = cookie_parts[2];
+		final String username = cookieParts[0];
+		final String uIkey = cookieParts[1];
+		final String expire = cookieParts[2];
 
-		if (!u_ikey.equals(ikey)) {
+		if (!uIkey.equals(ikey)) {
 			throw new DuoWebException("Invalid response");
 		}
 
-		final long expire_ts = Long.parseLong(expire);
-		if (ts >= expire_ts) {
+		final long expireTs = Long.parseLong(expire);
+		if (ts >= expireTs) {
 			throw new DuoWebException("Transaction has expired. Please check that the system time is correct.");
 		}
 
