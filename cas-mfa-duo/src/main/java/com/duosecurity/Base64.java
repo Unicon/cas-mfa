@@ -584,19 +584,27 @@ public class Base64 {
 		} // end catch
 		finally {
 			try {
-				oos.close();
+				if(oos != null) {
+					oos.close();
+				}
 			} catch (final Exception e) {
 			}
 			try {
-				gzos.close();
+				if(oos != null) {
+					gzos.close();
+				}
 			} catch (final Exception e) {
 			}
 			try {
-				b64os.close();
+				if(b64os != null) {
+					b64os.close();
+				}
 			} catch (final Exception e) {
 			}
 			try {
-				baos.close();
+				if(baos != null) {
+					baos.close();
+				}
 			} catch (final Exception e) {
 			}
 		} // end finally
@@ -872,15 +880,21 @@ public class Base64 {
 			} // end catch
 			finally {
 				try {
-					gzos.close();
+					if(gzos != null) {
+						gzos.close();
+					}
 				} catch (final Exception e) {
 				}
 				try {
-					b64os.close();
+					if(b64os != null) {
+						b64os.close();
+					}
 				} catch (final Exception e) {
 				}
 				try {
-					baos.close();
+					if(baos != null) {
+						baos.close();
+					}
 				} catch (final Exception e) {
 				}
 			} // end finally
@@ -1261,15 +1275,21 @@ public class Base64 {
 				} // end catch
 				finally {
 					try {
-						baos.close();
+						if(baos != null) {
+							baos.close();
+						}
 					} catch (final Exception e) {
 					}
 					try {
-						gzis.close();
+						if(gzis != null) {
+							gzis.close();
+						}
 					} catch (final Exception e) {
 					}
 					try {
-						bais.close();
+						if(bais != null) {
+							bais.close();
+						}
 					} catch (final Exception e) {
 					}
 				} // end finally
