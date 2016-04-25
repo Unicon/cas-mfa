@@ -63,6 +63,7 @@ import java.util.List;
 public class CasMultiFactorWebflowConfigurer implements InitializingBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CasMultiFactorWebflowConfigurer.class);
 
+    private static final String VIEW_MFA_UNRECOGNIZED_AUTHN_METHOD_ERROR_VIEW = "viewMfaUnrecognizedAuthnMethodErrorView";
     private static final String FLOW_ID_LOGIN = "login";
     private static final String FLOW_ID_LOGOUT = "logout";
 
@@ -156,7 +157,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
         addGlobalTransitionIfExceptionIsThrown(flow,
                 STATE_DEFINITION_ID_TGT_EXISTS_CHECK, NoAuthenticationContextAvailable.class);
         addGlobalTransitionIfExceptionIsThrown(flow,
-                "viewMfaUnrecognizedAuthnMethodErrorView", UnrecognizedAuthenticationMethodException.class);
+                VIEW_MFA_UNRECOGNIZED_AUTHN_METHOD_ERROR_VIEW, UnrecognizedAuthenticationMethodException.class);
     }
 
     /**
@@ -272,7 +273,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
      * @param flow the flow
      */
     protected void addMultiFactorViewEndStates(final Flow flow) {
-        addEndStateBackedByView(flow, "viewMfaUnrecognizedAuthnMethodErrorView", "casMfaUnrecognizedAuthnMethodErrorView");
+        addEndStateBackedByView(flow, VIEW_MFA_UNRECOGNIZED_AUTHN_METHOD_ERROR_VIEW, "casMfaUnrecognizedAuthnMethodErrorView");
         addEndStateBackedByView(flow, "viewUnknownPrincipalErrorView", "casUnknownPrincipalErrorView");
     }
 
@@ -434,7 +435,7 @@ public class CasMultiFactorWebflowConfigurer implements InitializingBean {
         subflowState.getTransitionSet().add(createTransition(UNKNOWN_PRINCIPAL_ERROR_EVENT_ID,
                 "viewUnknownPrincipalErrorView"));
         subflowState.getTransitionSet().add(createTransition(MFA_UNRECOGNIZED_AUTHN_METHOD_ERROR_EVENT_ID,
-                "viewMfaUnrecognizedAuthnMethodErrorView"));
+                VIEW_MFA_UNRECOGNIZED_AUTHN_METHOD_ERROR_VIEW));
     }
 
     /**

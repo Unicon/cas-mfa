@@ -235,6 +235,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
      * A POJO to store data retrieved from the Services Manager.
      */
     private class ServiceMfaData {
+        public static final String CANNOT_BE_NULL = "{} cannot be null";
         private String authenticationMethod;
         private String attributeName;
         private String attributePattern;
@@ -270,15 +271,15 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
          */
         public boolean isValid() {
             if (this.attributeName == null) {
-                logger.debug("{} cannot be null", MFA_ATTRIBUTE_NAME);
+                logger.debug(CANNOT_BE_NULL, MFA_ATTRIBUTE_NAME);
                 return false;
             }
             if (this.attributePattern == null) {
-                logger.debug("{} cannot be null", MFA_ATTRIBUTE_PATTERN);
+                logger.debug(CANNOT_BE_NULL, MFA_ATTRIBUTE_PATTERN);
                 return false;
             }
             if (this.authenticationMethod == null) {
-                logger.debug("{} cannot be null", MultiFactorAuthenticationRequestResolver.DEFAULT_MFA_METHOD_ATTRIBUTE_NAME);
+                logger.debug(CANNOT_BE_NULL, MultiFactorAuthenticationRequestResolver.DEFAULT_MFA_METHOD_ATTRIBUTE_NAME);
                 return false;
             }
             return true;

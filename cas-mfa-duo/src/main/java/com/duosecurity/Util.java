@@ -7,6 +7,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Util {
+
+	private Util() {}
+
 	public static String hmacSign(final String skey, final String data)
 			throws NoSuchAlgorithmException, InvalidKeyException {
 		final SecretKeySpec key = new SecretKeySpec(skey.getBytes(), "HmacSHA1");

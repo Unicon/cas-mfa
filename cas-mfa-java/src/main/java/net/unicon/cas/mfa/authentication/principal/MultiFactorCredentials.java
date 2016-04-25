@@ -12,10 +12,10 @@ import org.jasig.cas.authentication.principal.PrincipalFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -133,9 +133,9 @@ public class MultiFactorCredentials implements Credential, Serializable {
              * when composing the authentication chain for the caller.
              */
             final String principalId = this.chainedAuthentication.get(0).getPrincipal().getId();
-            final Map<String, Object> principalAttributes = new Hashtable<>();
+            final Map<String, Object> principalAttributes = new HashMap<>();
 
-            final Map<String, Object> authenticationAttributes = new Hashtable<>();
+            final Map<String, Object> authenticationAttributes = new HashMap<>();
 
             final List<CredentialMetaData> credentials = new ArrayList<>();
             final Map<String, HandlerResult> successes = new LinkedHashMap<>();
