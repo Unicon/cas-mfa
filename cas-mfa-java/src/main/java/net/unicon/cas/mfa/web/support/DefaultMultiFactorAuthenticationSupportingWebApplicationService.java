@@ -63,6 +63,25 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
         this.responseType = responseType;
     }
 
+    /**
+     * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}.
+     *
+     * @param id the service id, potentially with a jsessionid; still needing excised
+     * @param originalUrl the service url
+     * @param artifactId the artifact id
+     * @param responseType the HTTP method for the response
+     * @param authnMethod the authentication method required for this service
+     * @param authenticationMethodSource the authentication method source for this service
+     */
+    public DefaultMultiFactorAuthenticationSupportingWebApplicationService(
+            final String id, final String originalUrl,
+            final String artifactId, final ResponseType responseType,
+            @NotNull final String authnMethod,
+            @NotNull final AuthenticationMethodSource authenticationMethodSource) {
+        this(id, originalUrl, artifactId, responseType, authnMethod);
+        this.authenticationMethodSource = authenticationMethodSource;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -91,25 +110,6 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
                       .append(this.getAuthenticationMethodSource())
                       .append(this.getId())
                       .toHashCode();
-    }
-
-    /**
-     * Create an instance of {@link DefaultMultiFactorAuthenticationSupportingWebApplicationService}.
-     *
-     * @param id the service id, potentially with a jsessionid; still needing excised
-     * @param originalUrl the service url
-     * @param artifactId the artifact id
-     * @param responseType the HTTP method for the response
-     * @param authnMethod the authentication method required for this service
-     * @param authenticationMethodSource the authentication method source for this service
-     */
-    public DefaultMultiFactorAuthenticationSupportingWebApplicationService(
-            final String id, final String originalUrl,
-            final String artifactId, final ResponseType responseType,
-            @NotNull final String authnMethod,
-            @NotNull final AuthenticationMethodSource authenticationMethodSource) {
-        this(id, originalUrl, artifactId, responseType, authnMethod);
-        this.authenticationMethodSource = authenticationMethodSource;
     }
 
     @Override

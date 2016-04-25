@@ -1,8 +1,13 @@
 package com.duosecurity;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 public class Base64 {
+
+	private static final Logger logger = LoggerFactory.getLogger(Base64.class);
 
 	/*  ******** P U B L I C F I E L D S ******** */
 
@@ -294,6 +299,9 @@ public class Base64 {
 			-9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9 // Decimal 244 - 255
 	};
 
+	/** Defeats instantiation. */
+	private Base64() {}
+
 	/*  ******** D E T E R M I N E W H I C H A L H A B E T ******** */
 
 	/**
@@ -327,10 +335,6 @@ public class Base64 {
 			return _STANDARD_DECODABET;
 		}
 	} // end getAlphabet
-
-	/** Defeats instantiation. */
-	private Base64() {
-	}
 
 	/*  ******** E N C O D I N G M E T H O D S ******** */
 
@@ -390,12 +394,12 @@ public class Base64 {
 	private static byte[] encode3to4(final byte[] source, final int srcOffset,
 									 final int numSigBytes, final byte[] destination, final int destOffset, final int options) {
 
-		final byte[] ALPHABET = getAlphabet(options);
+		final byte[] alphabet = getAlphabet(options);
 
 		// 1 2 3
 		// 01234567890123456789012345678901 Bit position
 		// --------000000001111111122222222 Array position from threeBytes
-		// --------| || || || | Six bit groups to index ALPHABET
+		// --------| || || || | Six bit groups to index alphabet
 		// >>18 >>12 >> 6 >> 0 Right shift necessary
 		// 0x3f 0x3f 0x3f Additional AND
 
@@ -409,31 +413,43 @@ public class Base64 {
 				| (numSigBytes > 2 ? ((source[srcOffset + 2] << 24) >>> 24) : 0);
 
 		switch (numSigBytes) {
-		case 3:
-			destination[destOffset] = ALPHABET[(inBuff >>> 18)];
-			destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
-			destination[destOffset + 2] = ALPHABET[(inBuff >>> 6) & 0x3f];
-			destination[destOffset + 3] = ALPHABET[(inBuff) & 0x3f];
-			return destination;
+			case 3:
+				return getBytesCase3(destination, destOffset, alphabet, inBuff);
 
-		case 2:
-			destination[destOffset] = ALPHABET[(inBuff >>> 18)];
-			destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
-			destination[destOffset + 2] = ALPHABET[(inBuff >>> 6) & 0x3f];
-			destination[destOffset + 3] = EQUALS_SIGN;
-			return destination;
+			case 2:
+				return getBytesForCase2(destination, destOffset, alphabet, inBuff);
 
-		case 1:
-			destination[destOffset] = ALPHABET[(inBuff >>> 18)];
-			destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
-			destination[destOffset + 2] = EQUALS_SIGN;
-			destination[destOffset + 3] = EQUALS_SIGN;
-			return destination;
+			case 1:
+				return getBytesForCase1(destination, destOffset, alphabet, inBuff);
 
-		default:
-			return destination;
+			default:
+				return destination;
 		} // end switch
 	} // end encode3to4
+
+	private static byte[] getBytesCase3(byte[] destination, int destOffset, byte[] ALPHABET, int inBuff) {
+		destination[destOffset] = ALPHABET[(inBuff >>> 18)];
+		destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
+		destination[destOffset + 2] = ALPHABET[(inBuff >>> 6) & 0x3f];
+		destination[destOffset + 3] = ALPHABET[(inBuff) & 0x3f];
+		return destination;
+	}
+
+	private static byte[] getBytesForCase2(byte[] destination, int destOffset, byte[] ALPHABET, int inBuff) {
+		destination[destOffset] = ALPHABET[(inBuff >>> 18)];
+		destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
+		destination[destOffset + 2] = ALPHABET[(inBuff >>> 6) & 0x3f];
+		destination[destOffset + 3] = EQUALS_SIGN;
+		return destination;
+	}
+
+	private static byte[] getBytesForCase1(byte[] destination, int destOffset, byte[] ALPHABET, int inBuff) {
+		destination[destOffset] = ALPHABET[(inBuff >>> 18)];
+		destination[destOffset + 1] = ALPHABET[(inBuff >>> 12) & 0x3f];
+		destination[destOffset + 2] = EQUALS_SIGN;
+		destination[destOffset + 3] = EQUALS_SIGN;
+		return destination;
+	}
 
 	/**
 	 * Performs Base64 encoding on the <code>raw</code> ByteBuffer, writing it
@@ -577,11 +593,6 @@ public class Base64 {
 			}
 			oos.writeObject(serializableObject);
 		} // end try
-		catch (final java.io.IOException e) {
-			// Catch it and then throw it immediately so that
-			// the finally{} block is called for cleanup.
-			throw e;
-		} // end catch
 		finally {
 			try {
 				if(oos != null) {
@@ -873,11 +884,6 @@ public class Base64 {
 				gzos.write(source, off, len);
 				gzos.close();
 			} // end try
-			catch (final java.io.IOException e) {
-				// Catch it and then throw it immediately so that
-				// the finally{} block is called for cleanup.
-				throw e;
-			} // end catch
 			finally {
 				try {
 					if(gzos != null) {
@@ -1024,16 +1030,16 @@ public class Base64 {
 									destination.length, destOffset));
 		} // end if
 
-		final byte[] DECODABET = getDecodabet(options);
+		final byte[] decodabet = getDecodabet(options);
 
 		// Example: Dk==
 		if (source[srcOffset + 2] == EQUALS_SIGN) {
 			// Two ways to do the same thing. Don't know which way I like best.
-			// int outBuff = ( ( DECODABET[ source[ srcOffset ] ] << 24 ) >>> 6
+			// int outBuff = ( ( decodabet[ source[ srcOffset ] ] << 24 ) >>> 6
 			// )
-			// | ( ( DECODABET[ source[ srcOffset + 1] ] << 24 ) >>> 12 );
-			final int outBuff = ((DECODABET[source[srcOffset]] & 0xFF) << 18)
-					| ((DECODABET[source[srcOffset + 1]] & 0xFF) << 12);
+			// | ( ( decodabet[ source[ srcOffset + 1] ] << 24 ) >>> 12 );
+			final int outBuff = ((decodabet[source[srcOffset]] & 0xFF) << 18)
+					| ((decodabet[source[srcOffset + 1]] & 0xFF) << 12);
 
 			destination[destOffset] = (byte) (outBuff >>> 16);
 			return 1;
@@ -1042,13 +1048,13 @@ public class Base64 {
 		// Example: DkL=
 		else if (source[srcOffset + 3] == EQUALS_SIGN) {
 			// Two ways to do the same thing. Don't know which way I like best.
-			// int outBuff = ( ( DECODABET[ source[ srcOffset ] ] << 24 ) >>> 6
+			// int outBuff = ( ( decodabet[ source[ srcOffset ] ] << 24 ) >>> 6
 			// )
-			// | ( ( DECODABET[ source[ srcOffset + 1 ] ] << 24 ) >>> 12 )
-			// | ( ( DECODABET[ source[ srcOffset + 2 ] ] << 24 ) >>> 18 );
-			final int outBuff = ((DECODABET[source[srcOffset]] & 0xFF) << 18)
-					| ((DECODABET[source[srcOffset + 1]] & 0xFF) << 12)
-					| ((DECODABET[source[srcOffset + 2]] & 0xFF) << 6);
+			// | ( ( decodabet[ source[ srcOffset + 1 ] ] << 24 ) >>> 12 )
+			// | ( ( decodabet[ source[ srcOffset + 2 ] ] << 24 ) >>> 18 );
+			final int outBuff = ((decodabet[source[srcOffset]] & 0xFF) << 18)
+					| ((decodabet[source[srcOffset + 1]] & 0xFF) << 12)
+					| ((decodabet[source[srcOffset + 2]] & 0xFF) << 6);
 
 			destination[destOffset] = (byte) (outBuff >>> 16);
 			destination[destOffset + 1] = (byte) (outBuff >>> 8);
@@ -1058,15 +1064,15 @@ public class Base64 {
 		// Example: DkLE
 		else {
 			// Two ways to do the same thing. Don't know which way I like best.
-			// int outBuff = ( ( DECODABET[ source[ srcOffset ] ] << 24 ) >>> 6
+			// int outBuff = ( ( decodabet[ source[ srcOffset ] ] << 24 ) >>> 6
 			// )
-			// | ( ( DECODABET[ source[ srcOffset + 1 ] ] << 24 ) >>> 12 )
-			// | ( ( DECODABET[ source[ srcOffset + 2 ] ] << 24 ) >>> 18 )
-			// | ( ( DECODABET[ source[ srcOffset + 3 ] ] << 24 ) >>> 24 );
-			final int outBuff = ((DECODABET[source[srcOffset]] & 0xFF) << 18)
-					| ((DECODABET[source[srcOffset + 1]] & 0xFF) << 12)
-					| ((DECODABET[source[srcOffset + 2]] & 0xFF) << 6)
-					| ((DECODABET[source[srcOffset + 3]] & 0xFF));
+			// | ( ( decodabet[ source[ srcOffset + 1 ] ] << 24 ) >>> 12 )
+			// | ( ( decodabet[ source[ srcOffset + 2 ] ] << 24 ) >>> 18 )
+			// | ( ( decodabet[ source[ srcOffset + 3 ] ] << 24 ) >>> 24 );
+			final int outBuff = ((decodabet[source[srcOffset]] & 0xFF) << 18)
+					| ((decodabet[source[srcOffset + 1]] & 0xFF) << 12)
+					| ((decodabet[source[srcOffset + 2]] & 0xFF) << 6)
+					| ((decodabet[source[srcOffset + 3]] & 0xFF));
 
 			destination[destOffset] = (byte) (outBuff >> 16);
 			destination[destOffset + 1] = (byte) (outBuff >> 8);
@@ -1145,7 +1151,7 @@ public class Base64 {
 							+ len);
 		} // end if
 
-		final byte[] DECODABET = getDecodabet(options);
+		final byte[] decodabet = getDecodabet(options);
 
 		final int len34 = len * 3 / 4; // Estimate on array size
 		final byte[] outBuff = new byte[len34]; // Upper limit on size of output
@@ -1159,7 +1165,7 @@ public class Base64 {
 
 		for (i = off; i < off + len; i++) { // Loop through source
 
-			sbiDecode = DECODABET[source[i] & 0xFF];
+			sbiDecode = decodabet[source[i] & 0xFF];
 
 			// White space, Equals sign, or legit Base64 character
 			// Note the values such as -5 and -9 in the
@@ -1270,7 +1276,7 @@ public class Base64 {
 
 				} // end try
 				catch (final java.io.IOException e) {
-					e.printStackTrace();
+					logger.error("IOException while creating GZIPInputStream", e);
 					// Just return originally-decoded bytes
 				} // end catch
 				finally {

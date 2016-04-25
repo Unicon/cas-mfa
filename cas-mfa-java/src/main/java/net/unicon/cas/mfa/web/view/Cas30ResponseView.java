@@ -18,6 +18,8 @@ import java.util.Map;
  * @author Misagh Moayyed
  */
 public class Cas30ResponseView extends org.jasig.cas.web.view.Cas30ResponseView {
+    private String authenticationMethodResponseAttribute;
+
     /**
      * Instantiates a new Cas 30 response view.
      *
@@ -26,8 +28,6 @@ public class Cas30ResponseView extends org.jasig.cas.web.view.Cas30ResponseView 
     protected Cas30ResponseView(final AbstractUrlBasedView view) {
         super(view);
     }
-
-    private String authenticationMethodResponseAttribute;
 
     @Override
     protected void prepareMergedOutputModel(final Map<String, Object> model, final HttpServletRequest request,
