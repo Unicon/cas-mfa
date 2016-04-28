@@ -21,6 +21,9 @@ public final class DuoWeb {
 	public static final String ERR_SKEY = "ERR|The Duo secret key passed to sign_request() is invalid.";
 	public static final String ERR_AKEY = "ERR|The application secret key passed to sign_request() must be at least " + AKEY_LEN + " characters.";
 	public static final String ERR_UNKNOWN = "ERR|An unknown error has occurred.";
+	public static final String INVALID_RESPONSE = "Invalid response";
+
+	private DuoWeb() {}
 
 	public static String signRequest(final String ikey, final String skey, final String akey, final String username) {
 		final String duoSig;
@@ -90,7 +93,7 @@ public final class DuoWeb {
 
 		final String[] parts = val.split("\\|");
 		if (parts.length != 3) {
-			throw new DuoWebException("Invalid response");
+			throw new DuoWebException(INVALID_RESPONSE);
 		}
 
 		final String uPrefix = parts[0];
