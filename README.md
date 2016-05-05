@@ -11,7 +11,7 @@ ticket validation response, and
 
 ### NOTICE
 
-*Minimum supported version of CAS in versions is `4.1.x`. MFA integration with CAS `3.x` as part of this project is NO LONGER supported or maintained, as CAS `v3.x` itself is EOLed.*
+*Minimum supported version of CAS in versions is `4.1.x`. MFA integration with CAS `3.x` as part of this project is NO LONGER supported or maintained, as CAS `v3.x` itself is EOLed. CAS `v4.2.x` is NOT supported. *
 
 ## Requirements
 * JDK 7+
