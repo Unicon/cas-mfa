@@ -9,9 +9,14 @@ This is a project to develop free and open source compatibly licensed extensions
 ticket validation response, and
 * support for relying parties exerting authentication strength requirements.
 
+### NOTICE
+
+*Minimum supported version of CAS in versions is `4.1.x`. MFA integration with CAS `3.x` as part of this project is NO LONGER supported or maintained, as CAS `v3.x` itself is EOLed.*
+
 ## Requirements
 * JDK 7+
 * Apache Maven 3.3.x
+* CAS 4.1.x
 
 ## MultiFactor Support
 * `duo-two-factor` (via DuoSecurity)
