@@ -5,9 +5,11 @@ import org.jasig.cas.authentication.principal.AbstractWebApplicationService;
 import org.jasig.cas.authentication.principal.GoogleAccountsService;
 import org.jasig.cas.authentication.principal.Response;
 import org.jasig.cas.authentication.principal.Response.ResponseType;
+import org.jasig.cas.authentication.principal.SamlService;
 import org.jasig.cas.authentication.principal.SimpleWebApplicationServiceImpl;
 import org.jasig.cas.util.HttpClient;
 import org.jasig.cas.web.support.GoogleAccountsArgumentExtractor;
+import org.jasig.cas.web.support.SamlArgumentExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -148,6 +150,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
 
     @Override
     public Response getResponse(final String ticketId) {
+
         final Map<String, String> parameters = new HashMap<String, String>();
 
         final RequestContext requestContext = RequestContextHolder.getRequestContext();
@@ -162,10 +165,14 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
         final String samlRequest = req.getParameter("SAMLRequest");
         LOGGER.debug("xmlRequest = " + samlRequest);
 
+        final String samlTarget = req.getParameter("TARGET");
+        LOGGER.debug("samlTarget = " + samlTarget);
+
         if (StringUtils.hasText(ticketId)) {
             parameters.put(CONST_PARAM_TICKET, ticketId);
         }
         if (StringUtils.hasText(samlRequest)) {
+            LOGGER.debug("working through GoogleAccounts response");
             try {
                 final GoogleAccountsArgumentExtractor googleAccountsArgumentExtractor =
                         getBean("googleAccountsArgumentExtractor",
@@ -178,12 +185,33 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
                 if (StringUtils.hasText(samlResponse)) {
                     parameters.put("SAMLResponse", samlResponse);
                     parameters.put("RelayState", relayState);
+
+                    LOGGER.debug("sendingGoogleAccounts response");
                     return Response.getPostResponse(getOriginalUrl(), parameters);
                 }
             } catch (final Exception e) {
                 LOGGER.error(e.getMessage());
             }
+        }
+        if (StringUtils.hasText(samlTarget)) {
+            try {
+                LOGGER.debug("working through Saml (1.1) response");
+                final SamlArgumentExtractor samlArgumentExtractor =
+                        getBean("samlArgumentExtractor",
+                                SamlArgumentExtractor.class);
+                final SamlService samlService =
+                        (SamlService) samlArgumentExtractor.extractService(req);
+                samlService.setPrincipal(getPrincipal());
 
+                parameters.put("SAMLart", ticketId);
+                parameters.put("TARGET", getOriginalUrl());
+
+                LOGGER.debug("sending Saml (1.1) response");
+                return Response.getRedirectResponse(getOriginalUrl(), parameters);
+
+            } catch (final Exception e) {
+                LOGGER.error(e.getMessage());
+            }
         }
 
         if (ResponseType.POST == this.responseType) {
