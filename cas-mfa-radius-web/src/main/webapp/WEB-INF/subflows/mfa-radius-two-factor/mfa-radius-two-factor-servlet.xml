@@ -72,6 +72,7 @@
               c:nasIdentifier="${radius.nas.identifier:333}"
               c:nasPort="${radius.nas.port:1234}"
               c:nasPortType-ref="NAS_PORT_TYPE"
+              c:prependOtpWithUsername="${radius.prepend.otp.with.username:false}"
               p:enableNas="${radius.nas.enabled:false}"
               p:caseSensitive="${radius.case.sensitive:true}"/>
     </util:list>
