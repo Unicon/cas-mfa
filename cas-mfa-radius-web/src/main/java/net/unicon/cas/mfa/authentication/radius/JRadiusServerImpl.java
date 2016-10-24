@@ -70,26 +70,45 @@ public final class JRadiusServerImpl implements RadiusServer {
      */
     protected final int retries;
 
-    /** The radius Authenticator to use. */
+    /**
+     * The radius Authenticator to use.
+     */
     protected final RadiusAuthenticator radiusAuthenticator;
 
-    /** The Nas ip address. */
+    /**
+     * The Nas ip address.
+     */
     protected final String nasIpAddress;
 
-    /** Nas port. */
+    /**
+     * Nas port.
+     */
     protected final long nasPort;
 
-    /** Should nas settings be enabled? */
+    /**
+     * Should nas settings be enabled?
+     */
     protected boolean enableNas = false;
 
-    /** Nas id... */
+    /**
+     * Nas id...
+     */
     protected final long nasIdentifier;
 
-    /** Nas port type... */
+    /**
+     * Nas port type...
+     */
     protected final Long nasPortType;
 
-    /** is radius server case sensitive? */
+    /**
+     * is radius server case sensitive?
+     */
     protected boolean caseSensitive = true;
+
+    /**
+     * prepend otp with username
+     **/
+    protected boolean prependOtpWithUsername = false;
 
     /** Load the dictionary implementation. */
     static {
@@ -99,17 +118,18 @@ public final class JRadiusServerImpl implements RadiusServer {
     /**
      * Instantiates a new jradius server impl.
      *
-     * @param hostName            the host name
-     * @param sharedSecret        the shared secret
-     * @param radiusAuthenticator the radius authenticator
-     * @param authenticationPort  the authentication port
-     * @param accountingPort      the accounting port
-     * @param socketTimeout       the socket timeout
-     * @param retries             the retries
-     * @param nasIpAddress        the nas ip address
-     * @param nasPort             the nas port
-     * @param nasIdentifier       the nas identifier
-     * @param nasPortType         the nas port type
+     * @param hostName               the host name
+     * @param sharedSecret           the shared secret
+     * @param radiusAuthenticator    the radius authenticator
+     * @param authenticationPort     the authentication port
+     * @param accountingPort         the accounting port
+     * @param socketTimeout          the socket timeout
+     * @param retries                the retries
+     * @param nasIpAddress           the nas ip address
+     * @param nasPort                the nas port
+     * @param nasIdentifier          the nas identifier
+     * @param nasPortType            the nas port type
+     * @param prependOtpWithUsername whether to prepend otp with username
      * @throws UnknownHostException the unknown host exception
      */
     public JRadiusServerImpl(final String hostName, final String sharedSecret,
@@ -117,7 +137,8 @@ public final class JRadiusServerImpl implements RadiusServer {
                              final int authenticationPort, final int accountingPort,
                              final int socketTimeout, final int retries,
                              final String nasIpAddress, final long nasPort,
-                             final long nasIdentifier, final Long nasPortType) throws UnknownHostException {
+                             final long nasIdentifier, final Long nasPortType,
+                             final boolean prependOtpWithUsername) throws UnknownHostException {
         this.sharedSecret = sharedSecret;
         this.authenticationPort = authenticationPort;
         this.accountingPort = accountingPort;
@@ -129,6 +150,7 @@ public final class JRadiusServerImpl implements RadiusServer {
         this.nasPort = nasPort;
         this.nasIdentifier = nasIdentifier;
         this.nasPortType = nasPortType;
+        this.prependOtpWithUsername = prependOtpWithUsername;
     }
 
     @Override
@@ -223,7 +245,7 @@ public final class JRadiusServerImpl implements RadiusServer {
             LOGGER.debug("Treating pin as case sensitive. Converted to [{}]", pin);
         }
 
-        final String otp = pin.concat(usernamePasswordCredentials.getPassword());
+        final String otp = this.prependOtpWithUsername ? pin.concat(usernamePasswordCredentials.getPassword()) : pin;
         LOGGER.debug("Concatenated pin and password upon radius authentication for [{}]", pin);
 
         final UsernamePasswordCredentials newCreds = new UsernamePasswordCredentials();
@@ -249,7 +271,6 @@ public final class JRadiusServerImpl implements RadiusServer {
         return new RadiusClient(this.inetAddress, this.sharedSecret,
                 this.authenticationPort, this.accountingPort, this.socketTimeout);
     }
-
 
 
     public void setEnableNas(final boolean enableNas) {
