@@ -106,7 +106,7 @@ public final class JRadiusServerImpl implements RadiusServer {
     protected boolean caseSensitive = true;
 
     /**
-     * prepend otp with username
+     * prepend otp with username.
      **/
     protected boolean prependOtpWithUsername = false;
 
