@@ -239,15 +239,15 @@ public final class JRadiusServerImpl implements RadiusServer {
     protected UsernamePasswordCredentials prepareRadiusOneTimeCredentials(final UsernamePasswordCredentials usernamePasswordCredentials) {
         final RequestContext context = RequestContextHolder.getRequestContext();
 
-        String pin = usernamePasswordCredentials.getUsername();
+        String username = usernamePasswordCredentials.getUsername();
         if (this.caseSensitive) {
-            pin = pin.toLowerCase();
-            LOGGER.debug("Treating pin as case sensitive. Converted to [{}]", pin);
+            username = username.toLowerCase();
+            LOGGER.debug("Treating pin as case sensitive. Converted to [{}]", username);
         }
-
-        final String otp = this.prependOtpWithUsername ? pin.concat(usernamePasswordCredentials.getPassword()) : pin;
+        final String pin = usernamePasswordCredentials.getPassword();
+        final String otp = this.prependOtpWithUsername ? username.concat(pin) : pin;
         if(this.prependOtpWithUsername) {
-            LOGGER.debug("Concatenated pin and password upon radius authentication for [{}]", pin);
+            LOGGER.debug("Concatenated pin and password upon radius authentication for [{}]", username);
         }
 
         final UsernamePasswordCredentials newCreds = new UsernamePasswordCredentials();
