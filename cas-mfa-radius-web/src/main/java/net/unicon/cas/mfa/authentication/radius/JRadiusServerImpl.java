@@ -246,7 +246,9 @@ public final class JRadiusServerImpl implements RadiusServer {
         }
 
         final String otp = this.prependOtpWithUsername ? pin.concat(usernamePasswordCredentials.getPassword()) : pin;
-        LOGGER.debug("Concatenated pin and password upon radius authentication for [{}]", pin);
+        if(this.prependOtpWithUsername) {
+            LOGGER.debug("Concatenated pin and password upon radius authentication for [{}]", pin);
+        }
 
         final UsernamePasswordCredentials newCreds = new UsernamePasswordCredentials();
 
