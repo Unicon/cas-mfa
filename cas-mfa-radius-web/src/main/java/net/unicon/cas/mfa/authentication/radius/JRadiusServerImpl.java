@@ -242,7 +242,7 @@ public final class JRadiusServerImpl implements RadiusServer {
         String username = usernamePasswordCredentials.getUsername();
         if (this.caseSensitive) {
             username = username.toLowerCase();
-            LOGGER.debug("Treating pin as case sensitive. Converted to [{}]", username);
+            LOGGER.debug("Treating username as case sensitive. Converted to [{}]", username);
         }
         final String pin = usernamePasswordCredentials.getPassword();
         final String otp = this.prependOtpWithUsername ? username.concat(pin) : pin;
