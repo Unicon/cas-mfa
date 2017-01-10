@@ -18,5 +18,5 @@ public interface AuthenticationMethodTranslator {
      * @param receivedAuthenticationMethod the received authentication method
      * @return the translated method name
      */
-    String translate(final WebApplicationService targetService, final String receivedAuthenticationMethod);
+    String translate(WebApplicationService targetService, String receivedAuthenticationMethod);
 }

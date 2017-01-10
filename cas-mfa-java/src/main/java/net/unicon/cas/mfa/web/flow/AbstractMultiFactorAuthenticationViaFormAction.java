@@ -197,8 +197,8 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      *
      * @throws Exception the exception
      */
-    protected abstract Event doAuthentication(final RequestContext context, final Credential credentials,
-                                              final MessageContext messageContext, final String id) throws Exception;
+    protected abstract Event doAuthentication(RequestContext context, Credential credentials,
+                                              MessageContext messageContext, String id) throws Exception;
 
     /**
      * Checks if is valid login ticket.
@@ -255,9 +255,9 @@ public abstract class AbstractMultiFactorAuthenticationViaFormAction extends Abs
      * @return the event
      * @throws Exception the exception
      */
-    protected abstract Event multiFactorAuthenticationSuccessful(final Authentication authentication, final RequestContext context,
-                                                                 final Credential credentials, final MessageContext messageContext,
-                                                                 final String id) throws Exception;
+    protected abstract Event multiFactorAuthenticationSuccessful(Authentication authentication, RequestContext context,
+                                                                 Credential credentials, MessageContext messageContext,
+                                                                 String id) throws Exception;
 
     /**
      * CAS instance used to handle authentications. This CAS instance is only

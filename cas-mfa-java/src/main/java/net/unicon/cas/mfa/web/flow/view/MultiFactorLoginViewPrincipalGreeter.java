@@ -15,5 +15,5 @@ public interface MultiFactorLoginViewPrincipalGreeter {
      * @param messageContext context to resolve the message code associated with the greeting
      * @return the greetee
      */
-    String getPersonToGreet(final Principal p, MessageContext messageContext);
+    String getPersonToGreet(Principal p, MessageContext messageContext);
 }

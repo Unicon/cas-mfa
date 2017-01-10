@@ -30,7 +30,7 @@ public interface RegisteredServiceMfaRoleProcessor {
      * @param targetService the target service being tested
      * @return a list (usually one) mfa authn request context.
      */
-    List<MultiFactorAuthenticationRequestContext> resolve(@NotNull final Authentication authentication,
-                                                          @NotNull final WebApplicationService targetService);
+    List<MultiFactorAuthenticationRequestContext> resolve(@NotNull Authentication authentication,
+                                                          @NotNull WebApplicationService targetService);
 
 }

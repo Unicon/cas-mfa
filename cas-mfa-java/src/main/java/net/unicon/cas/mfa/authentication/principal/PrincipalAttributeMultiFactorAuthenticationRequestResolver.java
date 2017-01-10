@@ -71,7 +71,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * @param authenticationMethodConfiguration the authentication method loader
      */
     public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
-                                                                      final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
+                    final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
         this(DEFAULT_MFA_METHOD_ATTRIBUTE_NAME, mfaServiceFactory, authenticationMethodConfiguration);
     }
 
@@ -82,9 +82,9 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * @param mfaServiceFactory                 mfaServiceFactory
      * @param authenticationMethodConfiguration the authentication method loader
      */
-    public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final String authenticationMethodAttributeName,
-                                                                      final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
-                                                                      final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
+    public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final String authenticationMethodAttributeName, 
+                               final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
+                               final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
 
         this.authenticationMethodAttributeName = authenticationMethodAttributeName;
         this.mfaServiceFactory = mfaServiceFactory;
@@ -99,7 +99,8 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
         if ((authentication != null) && (targetService != null)) {
 
             if (mfaRoleProcessor != null) {
-                final List<MultiFactorAuthenticationRequestContext> mfaRoleResults = mfaRoleProcessor.resolve(authentication, targetService);
+                final List<MultiFactorAuthenticationRequestContext> mfaRoleResults = 
+                        mfaRoleProcessor.resolve(authentication, targetService);
                 logger.debug("MFA role results {}", mfaRoleResults);
                 if (mfaRoleResults != null && !mfaRoleResults.isEmpty()) {
                     return mfaRoleResults;

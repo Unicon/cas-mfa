@@ -115,7 +115,7 @@ public final class DefaultMultiFactorAuthenticationSupportingWebApplicationServi
     @Override
     public Response getResponse(final String ticketId) {
         final HashMap parameters = new HashMap();
-        if(StringUtils.hasText(ticketId)) {
+        if (StringUtils.hasText(ticketId)) {
             parameters.put("ticket", ticketId);
         }
 
