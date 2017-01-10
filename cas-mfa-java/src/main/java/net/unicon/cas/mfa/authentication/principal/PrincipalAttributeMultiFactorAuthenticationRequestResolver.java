@@ -67,11 +67,11 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
     /**
      * Ctor.
      *
-     * @param mfaServiceFactory mfaServiceFactory
+     * @param mfaServiceFactory                 mfaServiceFactory
      * @param authenticationMethodConfiguration the authentication method loader
      */
     public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
-                    final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
+                                                                      final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
         this(DEFAULT_MFA_METHOD_ATTRIBUTE_NAME, mfaServiceFactory, authenticationMethodConfiguration);
     }
 
@@ -79,12 +79,12 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
      * Ctor.
      *
      * @param authenticationMethodAttributeName attribute name for mfa
-     * @param mfaServiceFactory mfaServiceFactory
+     * @param mfaServiceFactory                 mfaServiceFactory
      * @param authenticationMethodConfiguration the authentication method loader
      */
     public PrincipalAttributeMultiFactorAuthenticationRequestResolver(final String authenticationMethodAttributeName,
-               final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
-               final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
+                                                                      final MultiFactorWebApplicationServiceFactory mfaServiceFactory,
+                                                                      final AuthenticationMethodConfigurationProvider authenticationMethodConfiguration) {
 
         this.authenticationMethodAttributeName = authenticationMethodAttributeName;
         this.mfaServiceFactory = mfaServiceFactory;
@@ -99,14 +99,16 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
         if ((authentication != null) && (targetService != null)) {
 
             if (mfaRoleProcessor != null) {
-                final List<MultiFactorAuthenticationRequestContext> mfaRoleResults =
-                        mfaRoleProcessor.resolve(authentication, targetService);
-                if (mfaRoleResults != null) {
+                final List<MultiFactorAuthenticationRequestContext> mfaRoleResults = mfaRoleProcessor.resolve(authentication, targetService);
+                logger.debug("MFA role results {}", mfaRoleResults);
+                if (mfaRoleResults != null && !mfaRoleResults.isEmpty()) {
                     return mfaRoleResults;
                 }
             }
 
             final Object mfaMethodAsObject = authentication.getPrincipal().getAttributes().get(this.authenticationMethodAttributeName);
+
+            logger.debug("MFA attribute value from {} is {}", this.authenticationMethodAttributeName, mfaMethodAsObject);
             if (mfaMethodAsObject != null) {
                 if (mfaMethodAsObject instanceof String) {
                     final String mfaMethod = mfaMethodAsObject.toString();
@@ -132,6 +134,7 @@ public class PrincipalAttributeMultiFactorAuthenticationRequestResolver implemen
             logger.debug("No multifactor authentication requests could be resolved based on [{}]",
                     this.authenticationMethodAttributeName);
         }
+        logger.debug("Resolved multifactor authentication requests are {}", list);
         return list;
     }
 
