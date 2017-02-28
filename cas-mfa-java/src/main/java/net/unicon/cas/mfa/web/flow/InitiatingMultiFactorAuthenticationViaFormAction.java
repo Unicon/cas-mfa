@@ -84,11 +84,14 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
 
         final String tgt = WebUtils.getTicketGrantingTicketId(context);
         if (!StringUtils.isBlank(tgt)) {
+            logger.debug("Attempting to remove the pre-existing TGT from the context");
             this.cas.destroyTicketGrantingTicket(tgt);
+            MultiFactorRequestContextUtils.setTicketGrantingTicketId(context, null);
         }
 
         final Event primaryAuthnEvent = this.wrapperAuthenticationAction.submit(context, credentials, messageContext);
         if (!success().getId().equals(primaryAuthnEvent.getId())) {
+            logger.debug("Returning event id [{}]", primaryAuthnEvent);
             return primaryAuthnEvent;
         }
 

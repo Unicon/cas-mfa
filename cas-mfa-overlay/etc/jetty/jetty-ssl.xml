@@ -28,10 +28,10 @@
 <Configure id="Server" class="org.eclipse.jetty.server.Server">
 
   <New id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory">
-    <Set name="KeyStorePath"><Property name="jetty.ssl.keystore.path" default="/etc/cas/jetty/thekeystore" /></Set>
+    <Set name="KeyStorePath"><Property name="jetty.ssl.keystore.path" default="/etc/cas/thekeystore" /></Set>
     <Set name="KeyStorePassword"><Property name="jetty.ssl.keystore.password" default="changeit" /></Set>
     <Set name="KeyManagerPassword"><Property name="jetty.ssl.keymanager.password" default="changeit" /></Set>
-    <Set name="TrustStorePath"><Property name="jetty.ssl.truststore.path" default="/etc/cas/jetty/thekeystore" /></Set>
+    <Set name="TrustStorePath"><Property name="jetty.ssl.truststore.path" default="/etc/cas/thekeystore" /></Set>
     <Set name="TrustStorePassword"><Property name="jetty.ssl.truststore.password" default="changeit" /></Set>
   </New>
 
