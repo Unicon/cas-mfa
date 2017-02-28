@@ -84,7 +84,7 @@ public class InitiatingMultiFactorAuthenticationViaFormAction extends AbstractMu
 
         final String tgt = WebUtils.getTicketGrantingTicketId(context);
         if (!StringUtils.isBlank(tgt)) {
-            logger.debug("Attempting to remove the pre-existing TGT from the context");
+            logger.debug("Attempting to remove the pre-existing TGT from the context [{}]", tgt);
             this.cas.destroyTicketGrantingTicket(tgt);
             MultiFactorRequestContextUtils.setTicketGrantingTicketId(context, null);
         }
