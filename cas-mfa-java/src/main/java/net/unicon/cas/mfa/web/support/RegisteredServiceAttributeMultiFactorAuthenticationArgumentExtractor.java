@@ -35,7 +35,9 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
      */
     private final ServicesManager servicesManager;
 
-    /** The default authentication method to use/force, if service does not specify any. **/
+    /**
+     * The default authentication method to use/force, if service does not specify any.
+     **/
     private String defaultAuthenticationMethod = null;
 
     /**
@@ -51,15 +53,15 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
     /**
      * Ctor.
      *
-     * @param supportedArgumentExtractors supported protocols by argument extractors
+     * @param supportedArgumentExtractors     supported protocols by argument extractors
      * @param mfaWebApplicationServiceFactory mfaWebApplicationServiceFactory
-     * @param servicesManager services manager
-     * @param authenticationMethodVerifier authenticationMethodVerifier
+     * @param servicesManager                 services manager
+     * @param authenticationMethodVerifier    authenticationMethodVerifier
      */
     public RegisteredServiceAttributeMultiFactorAuthenticationArgumentExtractor(final List<ArgumentExtractor> supportedArgumentExtractors,
-                                                              final MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory,
-                                                              final ServicesManager servicesManager,
-                                                              final AuthenticationMethodVerifier authenticationMethodVerifier) {
+                                                                                final MultiFactorWebApplicationServiceFactory mfaWebApplicationServiceFactory,
+                                                                                final ServicesManager servicesManager, 
+                                                                                final AuthenticationMethodVerifier authenticationMethodVerifier) {
         super(supportedArgumentExtractors, mfaWebApplicationServiceFactory, authenticationMethodVerifier);
         this.servicesManager = servicesManager;
     }
@@ -81,18 +83,22 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
             return null;
         }
 
+        logger.debug("Located registered service [{}] with properties [{}]", registeredService, registeredService.getProperties());
+
         if (registeredService.getProperties().containsKey(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_NAME)
-            || registeredService.getProperties().containsKey(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN)) {
+                || registeredService.getProperties().containsKey(RegisteredServiceMfaRoleProcessor.MFA_ATTRIBUTE_PATTERN)) {
             logger.debug("Deferring mfa authn method for Principal Attribute Resolver");
             return null;
         }
 
         if (!registeredService.getProperties().containsKey(this.authenticationMethodAttribute)) {
-            logger.debug("Registered service does not define authentication method attribute [{}]. ", this.authenticationMethodAttribute);
+            logger.debug("Registered service [{}] does not define authentication method attribute [{}]. ", registeredService,
+                    this.authenticationMethodAttribute);
             return determineDefaultAuthenticationMethod();
         }
 
         final String authenticationMethod = registeredService.getProperties().get(this.authenticationMethodAttribute).getValue();
+        logger.debug("Found authentication method [{}] in properties of registered service [{}]", authenticationMethod, registeredService);
         return authenticationMethod;
     }
 
@@ -123,6 +129,7 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
 
     /**
      * Adapts the current request to check user attributes.
+     *
      * @param targetService the targeted service
      * @return the mfa authn method
      */
@@ -147,15 +154,14 @@ public final class RegisteredServiceAttributeMultiFactorAuthenticationArgumentEx
 
         final List<MultiFactorAuthenticationRequestContext> mfaRequestContexts = mfaRoleProcessor.resolve(authentication, targetService);
         if (mfaRequestContexts == null || mfaRequestContexts.isEmpty()) {
-            logger.debug("no 'mfa_role' assigned contexts were found.");
+            logger.debug("No MFA role assignments were found in the authentication context");
             return null;
         }
 
         final String authnMethod = mfaRequestContexts.get(0).getMfaService().getAuthenticationMethod();
-        logger.info("'mfa_role' returned {}.", authnMethod);
+        logger.debug("MFA role returned is [{}]", authnMethod);
         return authnMethod;
     }
-
 
 
     public void setMfaRoleProcessor(final RegisteredServiceMfaRoleProcessor mfaRoleProcessor) {

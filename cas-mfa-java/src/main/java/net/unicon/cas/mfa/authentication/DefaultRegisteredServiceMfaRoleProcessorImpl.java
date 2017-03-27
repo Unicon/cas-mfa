@@ -91,7 +91,7 @@ public class DefaultRegisteredServiceMfaRoleProcessorImpl implements RegisteredS
                 return list;
             }
 
-            logger.debug("Found mfa_role: {}", serviceMfaData);
+            logger.debug("Found MFA Role: {}", serviceMfaData);
 
             authenticationMethodAttributeName = serviceMfaData.attributeName;
 

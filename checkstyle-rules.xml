@@ -87,7 +87,7 @@ Checkstyle configuration based on Sun's conventions, compliant with CAS coding c
         <property name="tokens" value="METHOD_DEF" />
     </module>
     <module name="LineLength">
-      <property name="max" value="140"/>
+      <property name="max" value="170"/>
       <property name="tabWidth" value="4"/>
       <property name="severity" value="error"/>
     </module>
