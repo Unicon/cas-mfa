@@ -1,4 +1,4 @@
-## What is this project?  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.unicon/cas-mfa/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/net.unicon/cas-mfa)
+## What is this project?  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.unicon/cas-mfa/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/net.unicon/cas-mfa) [![Build Status](https://secure.travis-ci.org/Unicon/cas-mfa.png)](http://travis-ci.org/Unicon/cas-mfa)
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Unicon/cas-mfa?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -11,20 +11,17 @@ ticket validation response, and
 
 ### NOTICE
 
-*Minimum supported version of CAS in versions is `4.1.x`. MFA integration with CAS `3.x` as part of this project is NO LONGER supported or maintained, as CAS `v3.x` itself is EOLed. CAS `v4.2.x` is NOT supported.*
+*Minimum supported version of CAS in versions is `4.1.x`. MFA integration with CAS `3.x` as part of this project is NO LONGER maintained, as CAS `v3.x` itself is EOLed. CAS `v4.2.x` is NOT supported.*
 
 ## Requirements
+
 * JDK 7+
 * Apache Maven 3.3.x
 * CAS 4.1.x
 
 ## MultiFactor Support
+
 * `duo-two-factor` (via DuoSecurity)
-
-## Build Status
-* [![Build Status](https://secure.travis-ci.org/Unicon/cas-mfa.png)](http://travis-ci.org/Unicon/cas-mfa)
-* [ ![Codeship Status for Unicon/cas-mfa](https://www.codeship.io/projects/0bbd72d0-b74c-0130-d193-1eff452fc99e/status?branch=master)](https://www.codeship.io/projects/4315)
-
 
 ## Configuration
 
@@ -110,7 +107,7 @@ CAS may aso initiate the sequence for a desired authentication method based on a
 authentication, the principal attributes that are constructed by CAS will be queried for the given attribute. 
 Its value will route the login flow to execute the appropriate authentication level.
 
-```json
+```properties
 mfa.method.userAttribute=memberOf
 ```
 
@@ -144,8 +141,9 @@ an attribute that matches the given pattern.
 ```
 
 ### Opt-In
+
 Opt-in mode requested by applications on demand when MFA is required:
 
-```
+```bash
 https://<cas-server-url>/cas/login?service=xyz&authn_method=duo-two-factor
 ```
