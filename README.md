@@ -1,6 +1,6 @@
 ## What is this project?  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.unicon/cas-mfa/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/net.unicon/cas-mfa)
 
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/Unicon/cas-mfa?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Unicon/cas-mfa?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This is a project to develop free and open source compatibly licensed extensions for the CAS server `v4.1.x` product implementing
 
@@ -29,9 +29,11 @@ ticket validation response, and
 ## Configuration
 
 ### Maven Overlay
+
 Use [the following maven overlay](https://github.com/Unicon/cas-mfa/blob/master/cas-mfa-overlay/pom.xml) as an example.
 
 ### AuthN Methods
+
 An `authn-methods.conf` file is expected to be found at `/etc/cas` with the following content:
 
 ```json
