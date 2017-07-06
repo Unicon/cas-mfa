@@ -1,10 +1,38 @@
 /**
  * Duo Web SDK v2
- * Copyright 2015, Duo Security
+ * Copyright 2017, Duo Security
  */
-window.Duo = (function(document, window) {
+
+(function (root, factory) {
+    /*eslint-disable */
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], factory);
+    /*eslint-enable */
+    } else if (typeof module === 'object' && module.exports) {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        var Duo = factory();
+        // If the Javascript was loaded via a script tag, attempt to autoload
+        // the frame.
+        Duo._onReady(Duo.init);
+
+        // Attach Duo to the `window` object
+        root.Duo = Duo;
+  }
+}(this, function() {
     var DUO_MESSAGE_FORMAT = /^(?:AUTH|ENROLL)+\|[A-Za-z0-9\+\/=]+\|[A-Za-z0-9\+\/=]+$/;
     var DUO_ERROR_FORMAT = /^ERR\|[\w\s\.\(\)]+$/;
+    var DUO_OPEN_WINDOW_FORMAT = /^DUO_OPEN_WINDOW\|/;
+    var VALID_OPEN_WINDOW_DOMAINS = [
+        'duo.com',
+        'duosecurity.com',
+        'duomobile.s3-us-west-1.amazonaws.com'
+    ];
 
     var iframeId = 'duo_iframe',
         postAction = '',
@@ -13,7 +41,8 @@ window.Duo = (function(document, window) {
         sigRequest,
         duoSig,
         appSig,
-        iframe;
+        iframe,
+        submitCallback;
 
     function throwError(message, url) {
         throw new Error(
@@ -148,7 +177,8 @@ window.Duo = (function(document, window) {
             typeof event.data === 'string' &&
             (
                 event.data.match(DUO_MESSAGE_FORMAT) ||
-                event.data.match(DUO_ERROR_FORMAT)
+                event.data.match(DUO_ERROR_FORMAT) ||
+                event.data.match(DUO_OPEN_WINDOW_FORMAT)
             )
         );
     }
@@ -190,6 +220,9 @@ window.Duo = (function(document, window) {
      * @param {String} options.sig_request                    Request token
      * @param {String} [options.post_action='']               URL to POST back to after successful auth
      * @param {String} [options.post_argument='sig_response'] Parameter name to use for response token
+     * @param {Function} [options.submit_callback]            If provided, duo will not submit the form instead execute
+     *                                                        the callback function with reference to the "duo_form" form object
+     *                                                        submit_callback can be used to prevent the webpage from reloading.
      */
     function init(options) {
         if (options) {
@@ -210,11 +243,15 @@ window.Duo = (function(document, window) {
             }
 
             if (options.iframe) {
-                if ('tagName' in options.iframe) {
+                if (options.iframe.tagName) {
                     iframe = options.iframe;
                 } else if (typeof options.iframe === 'string') {
                     iframeId = options.iframe;
                 }
+            }
+
+            if (typeof options.submit_callback === 'function') {
+                submitCallback = options.submit_callback;
             }
         }
 
@@ -248,12 +285,50 @@ window.Duo = (function(document, window) {
      */
     function onReceivedMessage(event) {
         if (isDuoMessage(event)) {
-            // the event came from duo, do the post back
-            doPostBack(event.data);
+            if (event.data.match(DUO_OPEN_WINDOW_FORMAT)) {
+                var url = event.data.substring("DUO_OPEN_WINDOW|".length);
+                if (isValidUrlToOpen(url)) {
+                    // Open the URL that comes after the DUO_WINDOW_OPEN token.
+                    window.open(url, "_self");
+                }
+            }
+            else {
+                // the event came from duo, do the post back
+                doPostBack(event.data);
 
-            // always clean up after yourself!
-            offMessage(onReceivedMessage);
+                // always clean up after yourself!
+                offMessage(onReceivedMessage);
+            }
         }
+    }
+
+    /**
+     * Validate that this passed in URL is one that we will actually allow to
+     * be opened.
+     * @param url String URL that the message poster wants to open
+     * @returns {boolean} true if we allow this url to be opened in the window
+     */
+    function isValidUrlToOpen(url) {
+        if (!url) {
+            return false;
+        }
+
+        var parser = document.createElement('a');
+        parser.href = url;
+
+        if (parser.protocol === "duotrustedendpoints:") {
+            return true;
+        } else if (parser.protocol !== "https:") {
+            return false;
+        }
+
+        for (var i = 0; i < VALID_OPEN_WINDOW_DOMAINS.length; i++) {
+           if (parser.hostname.endsWith("." + VALID_OPEN_WINDOW_DOMAINS[i]) ||
+                   parser.hostname === VALID_OPEN_WINDOW_DOMAINS[i]) {
+               return true;
+           }
+        }
+        return false;
     }
 
     /**
@@ -299,8 +374,8 @@ window.Duo = (function(document, window) {
         // point the iframe at Duo
         iframe.src = [
             'https://', host, '/frame/web/v1/auth?tx=', duoSig,
-            '&parent=', document.location.href,
-            '&v=2.1'
+            '&parent=', encodeURIComponent(document.location.href),
+            '&v=2.6'
         ].join('');
 
         // listen for the 'message' event
@@ -338,16 +413,18 @@ window.Duo = (function(document, window) {
         form.appendChild(input);
 
         // away we go!
-        form.submit();
+        if (typeof submitCallback === "function") {
+            submitCallback.call(null, form);
+        } else {
+            form.submit();
+        }
     }
-
-    // when the DOM is ready, initialize
-    // note that this will get cleaned up if the user calls init directly!
-    onReady(init);
 
     return {
         init: init,
+        _onReady: onReady,
         _parseSigRequest: parseSigRequest,
-        _isDuoMessage: isDuoMessage
+        _isDuoMessage: isDuoMessage,
+        _doPostBack: doPostBack
     };
-}(document, window));
+}));
